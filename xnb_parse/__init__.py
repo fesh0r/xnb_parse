@@ -1,0 +1,3 @@
+"""
+MS XNB file parser
+"""
