@@ -26,19 +26,17 @@ class XNB(object):
 
     _header = '3s c B B I'
 
-    def __init__(self, data, file_platform, file_version, graphics_profile, compressed, file_size):
+    def __init__(self, data, file_platform, file_version, graphics_profile, compressed):
         self.data = data
         self.file_platform = file_platform
         self.file_version = file_version
         self.graphics_profile = graphics_profile
         self.compressed = compressed
-        self.file_size = file_size
 
     @classmethod
     def read(cls, data):
         stream = BinaryReader(data, False)
-        header_struct = stream.struct(cls._header)
-        (sig, platform, version, attribs, size) = stream.unpack_with(header_struct)
+        (sig, platform, version, attribs, size) = stream.unpack(cls._header)
         if sig != XNB_SIGNATURE:
             raise ValueError('bad sig: %s' % repr(sig))
         if platform not in cls.platforms:
@@ -55,9 +53,8 @@ class XNB(object):
                 raise ValueError('bad profile: %s' % repr(profile))
         if version >= VERSION_30:
             compressed = bool(attribs & cls._compress_mask)
+            size -= stream.calc_size(cls._header)
         if compressed:
-            todo = size - header_struct.size - stream.size('u4')
-            size = stream.read('u4')
-        else:
-            size -= header_struct.size
-        return cls(stream.remainder(), platform, version, profile, compressed, size)
+            uncomp = stream.read('u4')
+            size -= stream.size('u4')
+        return cls(stream.pull(size), platform, version, profile, compressed)

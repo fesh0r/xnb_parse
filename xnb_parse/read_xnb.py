@@ -3,8 +3,7 @@
 Dump info from XNB
 """
 
-import argparse
-import os
+import sys
 
 from xnb import XNB
 
@@ -20,10 +19,11 @@ def read_xnb(filename):
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Dump XNB file')
-    parser.add_argument('xnb_file', help='xnb file')
-    args = parser.parse_args()
-    read_xnb(args.xnb_file)
+    if len(sys.argv) > 1:
+        for filename in sys.argv[1:]:
+            read_xnb(filename)
+    else:
+        print 'No file specified, giving up'
 
 
 if __name__ == '__main__':

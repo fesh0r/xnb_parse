@@ -71,19 +71,14 @@ class BinaryReader(BinaryStream):
         self._index = len(self._stream)
         return v
 
-    def struct(self, fmt):
-        return struct.Struct(self._fmt_end + fmt)
-
     def unpack(self, fmt):
-        s = self.struct(fmt)
+        s = struct.Struct(self._fmt_end + fmt)
         values = s.unpack_from(self._stream, self._index)
         self._index += s.size
         return values
 
-    def unpack_with(self, s):
-        values = s.unpack_from(self._stream, self._index)
-        self._index += s.size
-        return values
+    def calc_size(self, fmt):
+        return struct.calcsize(self._fmt_end + fmt)
 
     def size(self, type_):
         return self._types[type_].size
