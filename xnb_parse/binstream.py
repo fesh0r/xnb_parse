@@ -3,6 +3,7 @@
 """
 
 import struct
+from io import BytesIO
 
 
 class BinaryStream(object):
@@ -31,6 +32,53 @@ class BinaryStream(object):
         for name, type_ in self._type_fmt.items():
             self._types[name] = struct.Struct(self._fmt_end + type_)
 
+    def calc_size(self, fmt):
+        return struct.calcsize(self._fmt_end + fmt)
+
+    def size(self, type_):
+        return self._types[type_].size
+
+
+class BinaryWriter(BinaryStream):
+    def __init__(self, big_endian=False):
+        BinaryStream.__init__(self, big_endian)
+        self.stream = BytesIO()
+
+    def clear(self):
+        self.stream = BytesIO()
+
+    def write(self, value, type_):
+        try:
+            self.stream.write(self._types[type_].pack(value))
+        except KeyError:
+            if type_ == 'str':
+                self.write_7bit_int(len(value))
+                self.stream.write(value)
+            elif type_ == '7b':
+                self.write_7bit_int(value)
+            else:
+                raise
+
+    def pack(self, fmt, *values):
+        s = struct.Struct(self._fmt_end + fmt)
+        self.stream.write(s.pack(*values))
+
+    def write_7bit_int(self, value):
+        temp = value
+        out = ''
+        while temp >= 128:
+            out += chr(0x000000FF & (temp | 0x80))
+            temp >>= 7
+        out += chr(temp)
+        self.stream.write(out)
+
+    def extend(self, value):
+        self.stream.write(value)
+
+    def serial(self):
+        self.stream.seek(0)
+        return self.stream.read()
+
 
 class BinaryReader(BinaryStream):
     def __init__(self, data, big_endian=False):
@@ -40,7 +88,7 @@ class BinaryReader(BinaryStream):
 
     def read(self, type_):
         try:
-            value = self._types[type_].unpack_from(self._stream, self._index)[0]
+            value, = self._types[type_].unpack_from(self._stream, self._index)
             self._index += self._types[type_].size
         except KeyError:
             if type_ == 'str':
@@ -76,12 +124,6 @@ class BinaryReader(BinaryStream):
         values = s.unpack_from(self._stream, self._index)
         self._index += s.size
         return values
-
-    def calc_size(self, fmt):
-        return struct.calcsize(self._fmt_end + fmt)
-
-    def size(self, type_):
-        return self._types[type_].size
 
     def read_7bit_int(self):
         value = 0

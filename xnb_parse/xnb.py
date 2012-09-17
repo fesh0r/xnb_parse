@@ -2,7 +2,8 @@
 XNB parser
 """
 
-from binstream import BinaryReader
+from binstream import BinaryReader, BinaryWriter
+from xna_native import decompress
 
 
 XNB_SIGNATURE = 'XNB'
@@ -17,9 +18,9 @@ VERSION_40 = 5
 
 
 class XNB(object):
-    platforms = [PLATFORM_WINDOWS, PLATFORM_XBOX, PLATFORM_MOBILE]
-    versions = [VERSION_30, VERSION_31, VERSION_40]
-    profiles = [PROFILE_REACH, PROFILE_HIDEF]
+    platforms = {PLATFORM_WINDOWS: 'W', PLATFORM_XBOX: 'X', PLATFORM_MOBILE: 'M'}
+    versions = {VERSION_30: '30', VERSION_31: '31', VERSION_40: '40'}
+    profiles = {PROFILE_REACH: 'r', PROFILE_HIDEF: 'h'}
 
     _profile_mask = 0x7f
     _compress_mask = 0x80
@@ -57,4 +58,33 @@ class XNB(object):
         if compressed:
             uncomp = stream.read('u4')
             size -= stream.size('u4')
-        return cls(stream.pull(size), platform, version, profile, compressed)
+            content_comp = stream.pull(size)
+            content = decompress(content_comp, uncomp)
+        else:
+            content = stream.pull(size)
+        return cls(content, platform, version, profile, compressed)
+
+    def write(self, compress=False):
+        stream = BinaryWriter(False)
+        attribs = 0
+        if self.file_platform not in self.platforms:
+            raise ValueError('bad platform: %s' % repr(self.file_platform))
+        if self.file_version not in self.versions:
+            raise ValueError('bad version: %s' % repr(self.file_version))
+        if self.file_version >= VERSION_40:
+            if self.graphics_profile not in self.profiles:
+                raise ValueError('bad profile: %s' % repr(self.graphics_profile))
+            attribs |= self.graphics_profile & self._profile_mask
+        do_compress = False
+        if self.file_version >= VERSION_30:
+            if compress:
+                do_compress = True
+                attribs |= self._compress_mask
+        if do_compress:
+            raise ValueError('Recompression not supported')
+        else:
+            data = self.data
+            size = len(data) + stream.calc_size(self._header)
+        stream.pack(self._header, XNB_SIGNATURE, self.file_platform, self.file_version, attribs, size)
+        stream.extend(data)
+        return stream.serial()
