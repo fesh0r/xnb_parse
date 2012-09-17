@@ -3,6 +3,7 @@ wrapper for native XNA functions
 """
 
 import os
+import platform
 import sys
 import ctypes
 
@@ -17,7 +18,7 @@ class XnaNative(object):
     __single = False
 
     def __init__(self):
-        if not sys.platform.startswith('win'):
+        if not sys.platform == 'win32' or not platform.architecture()[0] == '32bit':
             raise IOError('win32 required for decompression')
         if self.__single:
             return
