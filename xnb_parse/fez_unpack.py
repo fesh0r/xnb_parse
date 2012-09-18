@@ -15,10 +15,11 @@ def unpack(in_file, out_dir):
     stream = BinaryReader(d)
     capacity = stream.read('u4')
     for _ in range(capacity):
-        filename = os.path.normpath(stream.read('str') + '.xnb')
+        filename = stream.read('str')
         filesize = stream.read('u4')
         filedata = stream.pull(filesize)
         print '"%s" : %d' % (filename, filesize)
+        filename = os.path.normpath(filename + '.xnb')
         filename = os.path.join(out_dir, filename)
         filedir = os.path.dirname(filename)
         if filedir:
