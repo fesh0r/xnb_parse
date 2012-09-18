@@ -119,6 +119,9 @@ class BinaryReader(BinaryStream):
         self._index = len(self._stream)
         return v
 
+    def remaining(self):
+        return len(self._stream) - self._index
+
     def unpack(self, fmt):
         s = struct.Struct(self._fmt_end + fmt)
         values = s.unpack_from(self._stream, self._index)

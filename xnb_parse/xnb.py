@@ -27,15 +27,40 @@ class XNB(object):
 
     _header = '3s c B B I'
 
-    def __init__(self, data, file_platform, file_version, graphics_profile, compressed):
+    def __init__(self, data, file_platform=PLATFORM_WINDOWS, file_version=VERSION_40, graphics_profile=PROFILE_REACH,
+                 compressed=False, type_reader_manager=None):
         self.data = data
         self.file_platform = file_platform
         self.file_version = file_version
         self.graphics_profile = graphics_profile
         self.compressed = compressed
+        self.type_reader_manager = type_reader_manager
+        self.type_readers = []
+        self.shared_objects = []
+        self.content = None
+        self.parsed = False
+
+    def parse(self):
+        if self.type_reader_manager is None:
+            raise ValueError('No type reader manager')
+        if self.parsed:
+            return
+        self.parsed = True
+        stream = BinaryReader(self.data)
+
+        print 'Type readers:'
+        reader_count = stream.read('7b')
+        for _ in range(reader_count):
+            reader_name = stream.read('str')
+            reader_version = stream.read('s4')
+            reader_type = self.type_reader_manager.get_type(reader_name, reader_version)
+            self.type_readers.append(reader_type)
+            print reader_type
+
+        print 'remaining: %d' % stream.remaining()
 
     @classmethod
-    def read(cls, data):
+    def read(cls, data, type_reader_manager=None):
         stream = BinaryReader(data, False)
         (sig, platform, version, attribs, size) = stream.unpack(cls._header)
         if sig != XNB_SIGNATURE:
@@ -44,8 +69,8 @@ class XNB(object):
             raise ValueError('bad platform: %s' % repr(platform))
         if version not in cls.versions:
             raise ValueError('bad version: %s' % repr(version))
-        if len(data) < size:
-            raise ValueError('bad size: %d < %d' % (len(data), size))
+        if len(data) != size:
+            raise ValueError('bad size: %d != %d' % (len(data), size))
         compressed = False
         profile = 0
         if version >= VERSION_40:
@@ -62,7 +87,7 @@ class XNB(object):
             content = decompress(content_comp, uncomp)
         else:
             content = stream.pull(size)
-        return cls(content, platform, version, profile, compressed)
+        return cls(content, platform, version, profile, compressed, type_reader_manager)
 
     def write(self, compress=False):
         stream = BinaryWriter(False)
