@@ -4,6 +4,7 @@ Dump info from XNB
 """
 
 import sys
+import os
 import time
 
 from xnb import XNB
