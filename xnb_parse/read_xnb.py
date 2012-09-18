@@ -13,18 +13,8 @@ def read_xnb(filename):
     print 'Reading %s' % filename
     with open(filename, 'rb') as f:
         d = f.read()
-
-    print 'Parsing %s' % filename
     xnb = XNB.read(d)
-
-    filename2 = 'out_' + filename
-
-    print 'Building %s' % filename2
-    out = xnb.write()
-
-    print 'Writing %s' % filename2
-    with open(filename2, 'wb') as f:
-        f.write(out)
+    print xnb
 
 
 def main():
@@ -34,7 +24,7 @@ def main():
             read_xnb(filename)
         print '> Done in %.2f seconds' % (time.time() - totaltime)
     else:
-        print 'No file specified, giving up'
+        print 'read_xnb.py file1.xnb ...'
 
 
 if __name__ == '__main__':
