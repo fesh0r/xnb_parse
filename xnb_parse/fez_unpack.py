@@ -1,0 +1,41 @@
+"""
+Extract FEZ .pak files
+"""
+
+import sys
+import os
+import time
+
+from binstream import BinaryReader
+
+
+def unpack(in_file, out_dir):
+    with open(in_file, 'rb') as f:
+        d = f.read()
+    stream = BinaryReader(d)
+    capacity = stream.read('u4')
+    for _ in range(capacity):
+        filename = os.path.normpath(stream.read('str') + '.xnb')
+        filesize = stream.read('u4')
+        filedata = stream.pull(filesize)
+        print '"%s" : %d' % (filename, filesize)
+        filename = os.path.join(out_dir, filename)
+        filedir = os.path.dirname(filename)
+        if filedir:
+            if not os.path.isdir(filedir):
+                os.makedirs(filedir)
+        with open(filename, 'wb') as out_file:
+            out_file.write(filedata)
+
+
+def main():
+    if len(sys.argv) == 3:
+        totaltime = time.time()
+        unpack(os.path.normpath(sys.argv[1]), os.path.normpath(sys.argv[2]))
+        print '> Done in %.2f seconds' % (time.time() - totaltime)
+    else:
+        print 'fez_unpack.py in.pak out_dir'
+
+
+if __name__ == '__main__':
+    main()
