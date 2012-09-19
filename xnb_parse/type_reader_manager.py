@@ -18,7 +18,7 @@ class TypeReaderManager(object):
     @staticmethod
     def strip_assembly_version(name):
         type_spec = TypeSpec.parse(name)
-        return type_spec.name
+        return type_spec.full_name
 
 
 class BaseTypeReader(object):
@@ -61,7 +61,32 @@ class TypeSpec(object):
         self.is_byref = False
 
     def __str__(self):
-        return self.name
+        return self.full_name
+
+    @property
+    def full_name(self):
+        name = self.name
+        if self.nested:
+            name += '+' + '+'.join(self.nested)
+        if self.generic_params:
+            name += ','.join(['[' + n.full_name + ']' for n in self.generic_params])
+        if self.array_spec:
+            a = []
+            for i in self.array_spec:
+                c = ''
+                if i[1]:
+                    c = '*'
+                a.append('[' + ','.join([c] * i[0]) + ']')
+            name += ''.join(a)
+        if self.pointer_level:
+            name += '*' * self.pointer_level
+        if self.is_byref:
+            name += '&'
+        return name
+
+    @property
+    def is_generic(self):
+        return self.generic_params is not None
 
     @property
     def is_array(self):
@@ -91,7 +116,6 @@ class TypeSpec(object):
 
     @staticmethod
     def _parse(name, pos=0, is_recurse=False, allow_aqn=False):
-        print 'parse:', name[pos:], pos, is_recurse, allow_aqn
         in_modifiers = False
         data = TypeSpec()
         pos = _skip_space(name, pos)
