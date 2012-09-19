@@ -71,13 +71,12 @@ class TypeSpec(object):
         if self.generic_params:
             name += ','.join(['[' + n.full_name + ']' for n in self.generic_params])
         if self.array_spec:
-            a = []
             for i in self.array_spec:
-                c = ''
                 if i[1]:
-                    c = '*'
-                a.append('[' + ','.join([c] * i[0]) + ']')
-            name += ''.join(a)
+                    n = '*'
+                else:
+                    n = ',' * (i[0] - 1)
+                name += '[' + n + ']'
         if self.pointer_level:
             name += '*' * self.pointer_level
         if self.is_byref:
@@ -148,21 +147,14 @@ class TypeSpec(object):
             data.add_name(name[name_start:pos])
         if in_modifiers:
             while pos < len(name):
-                if name[pos] == '\\':
-                    # skip escaped char
-                    pos += 1
-                    if pos >= len(name):
-                        raise ValueError("Fell off end of name after backslash")
-                elif name[pos] == '&':
+                if name[pos] == '&':
                     if data.is_byref:
                         raise ValueError("Can't have a byref of a byref")
                     data.is_byref = True
-                    break
                 elif name[pos] == '*':
                     if data.is_byref:
                         raise ValueError("Can't have a pointer to a byref type")
                     data.pointer_level += 1
-                    break
                 elif name[pos] == ',':
                     if is_recurse:
                         end = pos
@@ -234,4 +226,6 @@ class TypeSpec(object):
                 else:
                     raise ValueError("Bad type def, can't handle '%s' at %d" % (name[pos], pos))
                 pos += 1
+        if pos > len(name):
+            raise ValueError("Fell off end of name")
         return data, pos
