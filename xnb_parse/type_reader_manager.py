@@ -3,6 +3,8 @@ load and manage type readers
 .net type parser
 """
 
+import re
+
 
 class TypeReaderManager(object):
     def __init__(self, reader_dir=None):
@@ -34,6 +36,18 @@ def _skip_space(name, pos):
     while p < len(name) and name[p].isspace():
         p += 1
     return p
+
+
+_ESCAPE_RE = re.compile(r'([,+&*\[\]\\])')
+_UNESCAPE_RE = re.compile(r'\\([,+&*\[\]\\])')
+
+
+def _name_escape(name):
+    return _ESCAPE_RE.sub(r'\\\1', name)
+
+
+def _name_unescape(name):
+    return _UNESCAPE_RE.sub(r'\1', name)
 
 
 class TypeSpec(object):
@@ -77,12 +91,18 @@ class TypeSpec(object):
 
     @staticmethod
     def _parse(name, pos=0, is_recurse=False, allow_aqn=False):
+        print 'parse:', name[pos:], pos, is_recurse, allow_aqn
         in_modifiers = False
         data = TypeSpec()
         pos = _skip_space(name, pos)
         name_start = pos
         while pos < len(name):
-            if name[pos] == '+':
+            if name[pos] == '\\':
+                # skip escaped char
+                pos += 1
+                if pos >= len(name):
+                    raise ValueError("Fell off end of name after backslash")
+            elif name[pos] == '+':
                 data.add_name(name[name_start:pos])
                 name_start = pos + 1
             elif name[pos] == ',' or name[pos] == ']':
@@ -104,7 +124,12 @@ class TypeSpec(object):
             data.add_name(name[name_start:pos])
         if in_modifiers:
             while pos < len(name):
-                if name[pos] == '&':
+                if name[pos] == '\\':
+                    # skip escaped char
+                    pos += 1
+                    if pos >= len(name):
+                        raise ValueError("Fell off end of name after backslash")
+                elif name[pos] == '&':
                     if data.is_byref:
                         raise ValueError("Can't have a byref of a byref")
                     data.is_byref = True
