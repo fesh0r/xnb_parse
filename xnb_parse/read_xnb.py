@@ -1,4 +1,3 @@
-#!/usr/bin/python
 """
 Dump info from XNB
 """
@@ -7,8 +6,8 @@ import sys
 import os
 import time
 
-from xnb import XNB
-from type_reader_manager import TypeReaderManager
+from xnb_parse.xnb import XNB
+from xnb_parse.type_reader_manager import TypeReaderManager
 
 
 def read_xnb(in_file, type_reader_manager=None):
@@ -29,7 +28,3 @@ def main():
         print '> Done in %.2f seconds' % (time.time() - totaltime)
     else:
         print 'read_xnb.py file1.xnb ...'
-
-
-if __name__ == '__main__':
-    main()

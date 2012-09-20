@@ -2,8 +2,8 @@
 XNB parser
 """
 
-from binstream import BinaryReader, BinaryWriter
-from xna_native import decompress
+from xnb_parse.binstream import BinaryReader, BinaryWriter
+from xnb_parse.xna_native import decompress
 
 
 XNB_SIGNATURE = 'XNB'

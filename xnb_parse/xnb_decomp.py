@@ -1,4 +1,3 @@
-#!/usr/bin/python
 """
 Decompress XNB files.
 Requires win32
@@ -9,7 +8,7 @@ import time
 import os
 import fnmatch
 
-from xnb import XNB
+from xnb_parse.xnb import XNB
 
 
 def read_xnb(in_dir, out_dir):
@@ -38,7 +37,3 @@ def main():
         print '> Done in %.2f seconds' % (time.time() - totaltime)
     else:
         print 'xnb_decomp.py in_dir out_dir'
-
-
-if __name__ == '__main__':
-    main()

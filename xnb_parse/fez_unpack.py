@@ -6,7 +6,7 @@ import sys
 import os
 import time
 
-from binstream import BinaryReader
+from xnb_parse.binstream import BinaryReader
 
 
 def unpack(in_file, out_dir):
@@ -36,7 +36,3 @@ def main():
         print '> Done in %.2f seconds' % (time.time() - totaltime)
     else:
         print 'fez_unpack.py in.pak out_dir'
-
-
-if __name__ == '__main__':
-    main()
