@@ -7,6 +7,14 @@ import pkgutil
 from xnb_parse.type_spec import TypeSpec
 
 
+class Error(Exception):
+    pass
+
+
+class ReaderError(Error):
+    pass
+
+
 class TypeReaderManager(object):
     type_readers = {}
 
@@ -14,23 +22,37 @@ class TypeReaderManager(object):
         self.reader_dir = reader_dir
         self.type_readers = {}
         classes = _find_subclasses('xnb_parse.type_readers', BaseTypeReader)
-        print classes
+        for c in classes:
+            if c.reader_name in self.type_readers:
+                raise ReaderError("Duplicate type reader: '%s'" % c.reader_name)
+            self.type_readers[c.reader_name] = c
 
     def get_type(self, name, version):
-        name = self.strip_assembly_version(name)
-        return name
-
-    @staticmethod
-    def strip_assembly_version(name):
         type_spec = TypeSpec.parse(name)
-        return type_spec.full_name
+        type_reader = None
+
+        simple_name = type_spec.full_name
+        if simple_name in self.type_readers:
+            type_reader = self.type_readers[simple_name](version)
+
+        if type_reader is not None:
+            return type_reader
+        raise ReaderError("Type reader not found for '%s'" % simple_name)
 
 
 class BaseTypeReader(object):
-    name = None
+    target_type = None
+    reader_name = None
+    is_value_type = False
+
+    def __init__(self, version):
+        self.version = version
 
     def __str__(self):
-        return self.name
+        return self.reader_name
+
+    def read(self, stream):
+        raise ReaderError("Unimplemented type reader: '%s'" % self.reader_name)
 
 
 def _find_subclasses(pkgname, cls):

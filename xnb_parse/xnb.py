@@ -61,7 +61,7 @@ class XNB(object):
 
     @classmethod
     def read(cls, data, type_reader_manager=None):
-        stream = BinaryReader(data, False)
+        stream = BinaryReader(data, big_endian=False)
         (sig, platform, version, attribs, size) = stream.unpack(cls._header)
         if sig != XNB_SIGNATURE:
             raise ValueError('bad sig: %s' % repr(sig))
@@ -90,7 +90,7 @@ class XNB(object):
         return cls(content, platform, version, profile, compressed, type_reader_manager)
 
     def write(self, compress=False):
-        stream = BinaryWriter(False)
+        stream = BinaryWriter(big_endian=False)
         attribs = 0
         if self.file_platform not in self.platforms:
             raise ValueError('bad platform: %s' % repr(self.file_platform))

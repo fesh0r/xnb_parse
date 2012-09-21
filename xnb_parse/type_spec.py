@@ -5,6 +5,14 @@
 import re
 
 
+class Error(Exception):
+    pass
+
+
+class TypeError(Error):
+    pass
+
+
 def _skip_space(name, pos):
     p = pos
     while p < len(name) and name[p].isspace():
@@ -67,11 +75,11 @@ class TypeSpec(object):
 
     @staticmethod
     def parse(type_name):
-        if type_name is None:
-            raise ValueError('type_name')
+        if not type_name:
+            raise TypeError('type_name empty')
         res, pos = TypeSpec._parse(type_name)
         if pos < len(type_name):
-            raise ValueError("Could not parse the whole type name: %d < %d" % (pos, len(type_name)))
+            raise TypeError("Could not parse the whole type name: %d < %d" % (pos, len(type_name)))
         return res
 
     def add_name(self, type_name):
@@ -98,7 +106,7 @@ class TypeSpec(object):
                 # skip escaped char
                 pos += 1
                 if pos >= len(name):
-                    raise ValueError("Fell off end of name after backslash")
+                    raise TypeError("Fell off end of name after backslash")
             elif name[pos] == '+':
                 data.add_name(name[name_start:pos])
                 name_start = pos + 1
@@ -110,7 +118,7 @@ class TypeSpec(object):
                     return data, pos
             elif name[pos] == '&' or name[pos] == '*' or name[pos] == '[':
                 if name[pos] != '[' and is_recurse:
-                    raise ValueError("Generic argument can't be byref or pointer type")
+                    raise TypeError("Generic argument can't be byref or pointer type")
                 data.add_name(name[name_start:pos])
                 name_start = pos + 1
                 in_modifiers = True
@@ -123,11 +131,11 @@ class TypeSpec(object):
             while pos < len(name):
                 if name[pos] == '&':
                     if data.is_byref:
-                        raise ValueError("Can't have a byref of a byref")
+                        raise TypeError("Can't have a byref of a byref")
                     data.is_byref = True
                 elif name[pos] == '*':
                     if data.is_byref:
-                        raise ValueError("Can't have a pointer to a byref type")
+                        raise TypeError("Can't have a pointer to a byref type")
                     data.pointer_level += 1
                 elif name[pos] == ',':
                     if is_recurse:
@@ -135,7 +143,7 @@ class TypeSpec(object):
                         while end < len(name) and name[end] != ']':
                             end += 1
                         if end >= len(name):
-                            raise ValueError("Unmatched ']' while parsing generic argument assembly name")
+                            raise TypeError("Unmatched ']' while parsing generic argument assembly name")
                         data.assembly_name = name[pos + 1:end].strip()
                         pos = end + 1
                         return data, pos
@@ -144,15 +152,15 @@ class TypeSpec(object):
                     break
                 elif name[pos] == '[':
                     if data.is_byref:
-                        raise ValueError("Byref qualifier must be the last one of a type")
+                        raise TypeError("Byref qualifier must be the last one of a type")
                     pos += 1
                     if pos >= len(name):
-                        raise ValueError("Invalid array/generic spec")
+                        raise TypeError("Invalid array/generic spec")
                     pos = _skip_space(name, pos)
                     if name[pos] != ',' and name[pos] != '*' and name[pos] != ']':
                         # generic args
                         if data.is_array:
-                            raise ValueError("generic args after array spec")
+                            raise TypeError("generic args after array spec")
                         args = []
                         while pos < len(name):
                             pos = _skip_space(name, pos)
@@ -162,15 +170,15 @@ class TypeSpec(object):
                             new_type, pos = TypeSpec._parse(name, pos, True, aqn)
                             args.append(new_type)
                             if pos >= len(name):
-                                raise ValueError("Invalid generic arguments spec")
+                                raise TypeError("Invalid generic arguments spec")
                             if name[pos] == ']':
                                 break
                             if name[pos] == ',':
                                 pos += 1
                             else:
-                                raise ValueError("Invalid generic arguments separator '%s'" % name[pos])
+                                raise TypeError("Invalid generic arguments separator '%s'" % name[pos])
                         if pos >= len(name) or name[pos] != ']':
-                            raise ValueError("Error parsing generic params spec")
+                            raise TypeError("Error parsing generic params spec")
                         data.generic_params = args
                     else:
                         # array spec
@@ -179,27 +187,27 @@ class TypeSpec(object):
                         while pos < len(name) and name[pos] != ']':
                             if name[pos] == '*':
                                 if bound:
-                                    raise ValueError("Array spec cannot have 2 bound dimensions")
+                                    raise TypeError("Array spec cannot have 2 bound dimensions")
                                 bound = True
                             elif name[pos] != ',':
-                                raise ValueError("Invalid character in array spec '%s'" % name[pos])
+                                raise TypeError("Invalid character in array spec '%s'" % name[pos])
                             else:
                                 dimensions += 1
                             pos += 1
                             pos = _skip_space(name, pos)
                         if name[pos] != ']':
-                            raise ValueError("Error parsing array spec")
+                            raise TypeError("Error parsing array spec")
                         if dimensions > 1 and bound:
-                            raise ValueError("Invalid array spec, multi-dimensional array cannot be bound")
+                            raise TypeError("Invalid array spec, multi-dimensional array cannot be bound")
                         data.add_array(dimensions, bound)
                 elif name[pos] == ']':
                     if is_recurse:
                         pos += 1
                         return data, pos
-                    raise ValueError("Unmatched ]")
+                    raise TypeError("Unmatched ]")
                 else:
-                    raise ValueError("Bad type def, can't handle '%s' at %d" % (name[pos], pos))
+                    raise TypeError("Bad type def, can't handle '%s' at %d" % (name[pos], pos))
                 pos += 1
         if pos > len(name):
-            raise ValueError("Fell off end of name")
+            raise TypeError("Fell off end of name")
         return data, pos
