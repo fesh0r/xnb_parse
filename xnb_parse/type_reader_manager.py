@@ -29,14 +29,13 @@ class TypeReaderManager(object):
 
     def get_type(self, name):
         type_spec = TypeSpec.parse(name)
-        type_reader = None
 
         simple_name = type_spec.full_name
         if simple_name in self.type_readers:
-            type_reader = self.type_readers[simple_name]
+            return self.type_readers[simple_name]
 
-        if type_reader is not None:
-            return type_reader
+        # need special handling for generic type readers
+
         raise ReaderError("Type reader not found for '%s'" % simple_name)
 
 
@@ -64,7 +63,7 @@ def _find_subclasses(pkgname, cls):
     for d in pkgname.split('.')[1:]:
         pkg = getattr(pkg, d)
     for _, modulename, _ in pkgutil.walk_packages(pkg.__path__, pkg.__name__ + '.'):
-        print 'searching', modulename
+#        print 'searching', modulename
         module = __import__(modulename)
         for d in modulename.split('.')[1:]:
             module = getattr(module, d)
@@ -74,7 +73,7 @@ def _find_subclasses(pkgname, cls):
                 continue
             try:
                 if issubclass(entry, cls):
-                    print 'Found subclass:', key
+#                    print 'Found subclass:', key
                     subclasses.append(entry)
             except TypeError:
                 # this happens when a non-type is passed in to issubclass. We don't care as it can't be a subclass of

@@ -4,6 +4,7 @@ XNB parser
 
 from xnb_parse.binstream import BinaryReader, BinaryWriter
 from xnb_parse.xna_native import decompress
+from type_reader_manager import ReaderError
 
 
 XNB_SIGNATURE = 'XNB'
@@ -42,12 +43,15 @@ class XNBReader(BinaryReader):
         if parse:
             self.parse()
 
+    def __str__(self):
+        return 'XNB %s%s%s s%d' % (self.platforms[self.file_platform], self.versions[self.file_version],
+                                   self.profiles[self.graphics_profile], len(self.data))
+
     def parse(self):
         if self.type_reader_manager is None:
             raise ValueError('No type reader manager')
         if self.parsed:
             return self.content
-        stream = BinaryReader(self.data)
 
         print 'Type readers:'
         reader_count = self.read('7b')
@@ -59,7 +63,19 @@ class XNBReader(BinaryReader):
             self.type_readers.append(reader)
             print reader
 
-        print 'remaining: %d' % stream.remaining()
+        shared_count = self.read('7b')
+
+        print 'Asset:'
+        self.content = self.read_object()
+        print self.content
+
+        for i in range(shared_count):
+            print 'Shared resource %d:' % i
+            obj = self.read_object()
+            self.shared_objects.append(obj)
+
+        if self.remaining():
+            print 'remaining: %d' % self.remaining()
         self.parsed = True
         return self.content
 
@@ -117,3 +133,20 @@ class XNBReader(BinaryReader):
         stream.pack(self._header, XNB_SIGNATURE, self.file_platform, self.file_version, attribs, size)
         stream.extend(data)
         return stream.serial()
+
+    def read_object(self):
+        type_reader = self.read_type_id()
+        if type_reader is None:
+            print 'null'
+            return None
+        print 'Type: %s' % type_reader.target_type
+        return type_reader.read()
+
+    def read_type_id(self):
+        type_id = self.read('7b')
+        if type_id == 0:
+            # null object
+            return None
+        if type_id > len(self.type_readers):
+            raise ReaderError("type id out of range: %d > %d" % (type_id, len(self.type_readers)))
+        return self.type_readers[type_id - 1]

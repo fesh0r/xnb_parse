@@ -16,7 +16,6 @@ def read_xnb(in_file, type_reader_manager=None):
         d = f.read()
     xnb = XNBReader.load(d, type_reader_manager)
     print xnb
-    print xnb.content
 
 
 def main():
