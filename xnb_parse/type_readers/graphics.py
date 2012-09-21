@@ -9,7 +9,7 @@ class TextureReader(BaseTypeReader):
     target_type = 'Microsoft.Xna.Framework.Graphics.Texture'
     reader_name = 'Microsoft.Xna.Framework.Content.TextureReader'
 
-    def read(self, stream):
+    def read(self):
         raise ReaderError("TextureReader should never be invoked directly")
 
 

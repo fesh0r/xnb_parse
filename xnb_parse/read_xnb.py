@@ -6,7 +6,7 @@ import sys
 import os
 import time
 
-from xnb_parse.xnb import XNB
+from xnb_parse.xnb_reader import XNBReader
 from xnb_parse.type_reader_manager import TypeReaderManager
 
 
@@ -14,9 +14,9 @@ def read_xnb(in_file, type_reader_manager=None):
     print 'Reading %s' % in_file
     with open(in_file, 'rb') as f:
         d = f.read()
-    xnb = XNB.read(d, type_reader_manager)
+    xnb = XNBReader.load(d, type_reader_manager)
     print xnb
-    xnb.parse()
+    print xnb.content
 
 
 def main():

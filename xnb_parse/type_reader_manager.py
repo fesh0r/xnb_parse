@@ -27,13 +27,13 @@ class TypeReaderManager(object):
                 raise ReaderError("Duplicate type reader: '%s'" % c.reader_name)
             self.type_readers[c.reader_name] = c
 
-    def get_type(self, name, version):
+    def get_type(self, name):
         type_spec = TypeSpec.parse(name)
         type_reader = None
 
         simple_name = type_spec.full_name
         if simple_name in self.type_readers:
-            type_reader = self.type_readers[simple_name](version)
+            type_reader = self.type_readers[simple_name]
 
         if type_reader is not None:
             return type_reader
@@ -45,13 +45,14 @@ class BaseTypeReader(object):
     reader_name = None
     is_value_type = False
 
-    def __init__(self, version):
+    def __init__(self, stream, version):
+        self.stream = stream
         self.version = version
 
     def __str__(self):
         return self.reader_name
 
-    def read(self, stream):
+    def read(self):
         raise ReaderError("Unimplemented type reader: '%s'" % self.reader_name)
 
 

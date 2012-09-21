@@ -83,12 +83,12 @@ class BinaryWriter(BinaryStream):
 class BinaryReader(BinaryStream):
     def __init__(self, data, big_endian=False):
         BinaryStream.__init__(self, big_endian)
-        self._stream = data
+        self.data = data
         self._index = 0
 
     def read(self, type_):
         try:
-            value, = self._types[type_].unpack_from(self._stream, self._index)
+            value, = self._types[type_].unpack_from(self.data, self._index)
             self._index += self._types[type_].size
         except KeyError:
             if type_ == 'str':
@@ -101,10 +101,10 @@ class BinaryReader(BinaryStream):
         return value
 
     def next(self, count):
-        return self._stream[self._index:self._index + count]
+        return self.data[self._index:self._index + count]
 
     def pull(self, count):
-        value = self._stream[self._index:self._index + count]
+        value = self.data[self._index:self._index + count]
         self._index += count
         return value
 
@@ -115,16 +115,16 @@ class BinaryReader(BinaryStream):
         return value
 
     def remainder(self):
-        v = self._stream[self._index:]
-        self._index = len(self._stream)
+        v = self.data[self._index:]
+        self._index = len(self.data)
         return v
 
     def remaining(self):
-        return len(self._stream) - self._index
+        return len(self.data) - self._index
 
     def unpack(self, fmt):
         s = struct.Struct(self._fmt_end + fmt)
-        values = s.unpack_from(self._stream, self._index)
+        values = s.unpack_from(self.data, self._index)
         self._index += s.size
         return values
 

@@ -8,7 +8,7 @@ import time
 import os
 import fnmatch
 
-from xnb_parse.xnb import XNB
+from xnb_parse.xnb_reader import XNBReader
 
 
 def read_xnb(in_dir, out_dir):
@@ -20,12 +20,11 @@ def read_xnb(in_dir, out_dir):
             if not os.path.isdir(os.path.dirname(out_file)):
                 os.makedirs(os.path.dirname(out_file))
 
-#            print 'Reading %s' % in_file
+            print 'Decompressing %s' % out_file
             with open(in_file, 'rb') as f:
                 d = f.read()
-            xnb = XNB.read(d)
-#            print 'Writing %s' % out_file
-            out = xnb.write()
+            xnb = XNBReader.load(d, parse=False)
+            out = xnb.save()
             with open(out_file, 'wb') as f:
                 f.write(out)
 

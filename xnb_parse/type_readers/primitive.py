@@ -2,7 +2,7 @@
 primitive types
 """
 
-from xnb_parse.type_reader_manager import BaseTypeReader, ReaderError
+from xnb_parse.type_reader_manager import BaseTypeReader
 
 
 class ValueTypeReader(BaseTypeReader):
