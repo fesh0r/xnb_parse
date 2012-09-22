@@ -4,7 +4,7 @@ XNB parser
 
 from xnb_parse.binstream import BinaryReader, BinaryWriter
 from xnb_parse.xna_native import decompress
-from type_reader_manager import ReaderError
+from xnb_parse.type_reader_manager import ReaderError
 
 
 XNB_SIGNATURE = 'XNB'
