@@ -14,8 +14,9 @@ def read_xnb(in_file, type_reader_manager=None):
     print 'Reading %s' % in_file
     with open(in_file, 'rb') as f:
         d = f.read()
-    xnb = XNBReader.load(d, type_reader_manager)
+    xnb = XNBReader.load(d, type_reader_manager, parse=False)
     print xnb
+    xnb.parse()
 
 
 def main():
