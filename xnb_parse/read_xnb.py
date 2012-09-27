@@ -12,9 +12,9 @@ from xnb_parse.type_reader_manager import TypeReaderManager
 
 def read_xnb(in_file, type_reader_manager=None):
     print 'Reading %s' % in_file
-    with open(in_file, 'rb') as f:
-        d = f.read()
-    xnb = XNBReader.load(d, type_reader_manager, parse=False)
+    with open(in_file, 'rb') as in_handle:
+        in_data = in_handle.read()
+    xnb = XNBReader.load(in_data, type_reader_manager, parse=False)
     print xnb
     xnb.parse()
 

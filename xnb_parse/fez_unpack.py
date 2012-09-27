@@ -10,9 +10,9 @@ from xnb_parse.binstream import BinaryReader
 
 
 def unpack(in_file, out_dir):
-    with open(in_file, 'rb') as f:
-        d = f.read()
-    stream = BinaryReader(d)
+    with open(in_file, 'rb') as in_handle:
+        in_data = in_handle.read()
+    stream = BinaryReader(in_data)
     capacity = stream.read('u4')
     for _ in range(capacity):
         filename = stream.read('str')

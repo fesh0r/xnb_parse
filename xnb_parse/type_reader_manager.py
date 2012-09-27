@@ -35,8 +35,8 @@ class TypeReaderManager(object):
 def _find_subclasses(pkgname, cls):
     # iccck, must be a better way of doing this
     pkg = __import__(pkgname)
-    for d in pkgname.split('.')[1:]:
-        pkg = getattr(pkg, d)
+    for sub_pkg in pkgname.split('.')[1:]:
+        pkg = getattr(pkg, sub_pkg)
     for _, modulename, _ in pkgutil.walk_packages(pkg.__path__, pkg.__name__ + '.'):
         __import__(modulename)
     return cls.__subclasses__()

@@ -21,12 +21,12 @@ def read_xnb(in_dir, out_dir):
                 os.makedirs(os.path.dirname(out_file))
 
             print 'Decompressing %s' % out_file
-            with open(in_file, 'rb') as f:
-                d = f.read()
-            xnb = XNBReader.load(d, parse=False)
-            out = xnb.save()
-            with open(out_file, 'wb') as f:
-                f.write(out)
+            with open(in_file, 'rb') as in_handle:
+                in_data = in_handle.read()
+            xnb = XNBReader.load(in_data, parse=False)
+            out_data = xnb.save()
+            with open(out_file, 'wb') as out_handle:
+                out_handle.write(out_data)
 
 
 def main():

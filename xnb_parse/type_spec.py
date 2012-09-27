@@ -3,6 +3,7 @@
 """
 
 import re
+from collections import namedtuple
 
 
 class Error(Exception):
@@ -13,11 +14,11 @@ class TypeSpecError(Error):
     pass
 
 
-def _skip_space(name, pos):
-    p = pos
-    while p < len(name) and name[p].isspace():
-        p += 1
-    return p
+def _skip_space(name, start_pos):
+    cur_pos = start_pos
+    while cur_pos < len(name) and name[cur_pos].isspace():
+        cur_pos += 1
+    return cur_pos
 
 
 _ESCAPE_RE = re.compile(r'([,+&*\[\]\\])')
@@ -30,6 +31,11 @@ def _name_escape(name):
 
 def _name_unescape(name):
     return _UNESCAPE_RE.sub(r'\1', name)
+
+
+# pylint: disable-msg=C0103
+ArraySpec = namedtuple('ArraySpec', ['dimensions', 'bound'])
+# pylint: enable-msg=C0103
 
 
 class TypeSpec(object):
@@ -51,14 +57,14 @@ class TypeSpec(object):
         if self.nested:
             name += '+' + '+'.join(self.nested)
         if self.generic_params:
-            name += ','.join(['[' + n.full_name + ']' for n in self.generic_params])
+            name += ','.join(['[' + part.full_name + ']' for part in self.generic_params])
         if self.array_spec:
-            for i in self.array_spec:
-                if i[1]:
-                    n = '*'
+            for cur_index in self.array_spec:
+                if cur_index.bound:
+                    part = '*'
                 else:
-                    n = ',' * (i[0] - 1)
-                name += '[' + n + ']'
+                    part = ',' * (cur_index.dimensions - 1)
+                name += '[' + part + ']'
         if self.pointer_level:
             name += '*' * self.pointer_level
         if self.is_byref:
@@ -93,7 +99,7 @@ class TypeSpec(object):
     def add_array(self, dimensions, bound):
         if self.array_spec is None:
             self.array_spec = []
-        self.array_spec.append((dimensions, bound))
+        self.array_spec.append(ArraySpec(dimensions, bound))
 
     @staticmethod
     def _parse(name, pos=0, is_recurse=False, allow_aqn=False):
