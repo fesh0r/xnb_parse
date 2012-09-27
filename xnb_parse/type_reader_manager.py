@@ -20,7 +20,7 @@ class TypeReaderManager(object):
                 raise ReaderError("Duplicate type reader: '%s'" % c.reader_name)
             self.type_readers[c.reader_name] = c
 
-    def get_type(self, name):
+    def get_type_reader(self, name):
         type_spec = TypeSpec.parse(name)
 
         simple_name = type_spec.full_name

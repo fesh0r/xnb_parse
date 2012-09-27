@@ -1,5 +1,5 @@
 """
-primitive types
+primitive type readers
 """
 
 from xnb_parse.type_reader_manager import TypeReaderPlugin

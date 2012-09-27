@@ -58,8 +58,8 @@ class XNBReader(BinaryReader):
         for _ in range(reader_count):
             reader_name = self.read('str')
             reader_version = self.read('s4')
-            reader_type = self.type_reader_manager.get_type(reader_name)
-            reader = reader_type(self, reader_version)
+            reader_type_class = self.type_reader_manager.get_type_reader(reader_name)
+            reader = reader_type_class(self, reader_version)
             self.type_readers.append(reader)
             print reader
 
