@@ -39,7 +39,8 @@ ArraySpec = namedtuple('ArraySpec', ['dimensions', 'bound'])
 
 
 class TypeSpec(object):
-    def __init__(self):
+    def __init__(self, complete_name):
+        self.complete_name = complete_name
         self.name = None
         self.assembly_name = None
         self.nested = None
@@ -82,7 +83,7 @@ class TypeSpec(object):
     @staticmethod
     def parse(type_name):
         if not type_name:
-            raise TypeSpecError('type_name empty')
+            raise TypeSpecError("type_name empty")
         res, pos = TypeSpec._parse(type_name)
         if pos < len(type_name):
             raise TypeSpecError("Could not parse the whole type name: %d < %d" % (pos, len(type_name)))
@@ -104,7 +105,7 @@ class TypeSpec(object):
     @staticmethod
     def _parse(name, pos=0, is_recurse=False, allow_aqn=False):
         in_modifiers = False
-        data = TypeSpec()
+        data = TypeSpec(name)
         pos = _skip_space(name, pos)
         name_start = pos
         while pos < len(name):

@@ -18,7 +18,7 @@ def unpack(in_file, out_dir):
         filename = stream.read('str')
         filesize = stream.read('u4')
         filedata = stream.pull(filesize)
-        print '"%s" : %d' % (filename, filesize)
+        print "'%s' %d" % (filename, filesize)
         filename = os.path.normpath(filename + '.xnb')
         filename = os.path.join(out_dir, filename)
         filedir = os.path.dirname(filename)

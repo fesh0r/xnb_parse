@@ -64,6 +64,9 @@ class XNBReader(BinaryReader):
             self.type_readers.append(reader)
             print reader_index, reader
 
+        for reader in self.type_readers:
+            reader.init()
+
         shared_count = self.read('7b')
 
         self.content = self.read_object()
