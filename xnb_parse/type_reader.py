@@ -16,7 +16,7 @@ class BaseTypeReader(object):
     reader_name = None
     is_value_type = False
 
-    def __init__(self, stream, version):
+    def __init__(self, stream=None, version=None):
         self.stream = stream
         self.version = version
 
@@ -25,6 +25,11 @@ class BaseTypeReader(object):
 
     def read(self):
         raise ReaderError("Unimplemented type reader: '%s'" % self.reader_name)
+
+    @classmethod
+    def read_from(cls, stream):
+        local_reader = cls.__init__(stream)
+        return local_reader.read()
 
 
 class ValueTypeReader(BaseTypeReader):

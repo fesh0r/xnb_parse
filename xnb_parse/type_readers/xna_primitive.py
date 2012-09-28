@@ -3,7 +3,15 @@ primitive type readers
 """
 
 from xnb_parse.type_reader_manager import TypeReaderPlugin
-from xnb_parse.type_reader import BaseTypeReader, ValueTypeReader
+from xnb_parse.type_reader import BaseTypeReader, ValueTypeReader, ReaderError
+
+
+class NullReader(ValueTypeReader, TypeReaderPlugin):
+    target_type = 'null'
+    reader_name = 'NullReader'
+
+    def read(self):
+        return None
 
 
 class ByteReader(ValueTypeReader, TypeReaderPlugin):
@@ -113,3 +121,6 @@ class StringReader(BaseTypeReader, TypeReaderPlugin):
 class ObjectReader(BaseTypeReader, TypeReaderPlugin):
     target_type = 'System.Object'
     reader_name = 'Microsoft.Xna.Framework.Content.ObjectReader'
+
+    def read(self):
+        raise ReaderError("ObjectReader should never be invoked directly")

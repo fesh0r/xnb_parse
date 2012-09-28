@@ -37,6 +37,7 @@ class XNBReader(BinaryReader):
         self.compressed = compressed
         self.type_reader_manager = type_reader_manager
         self.type_readers = []
+        self.null_reader = self.type_reader_manager.get_type_reader('NullReader')
         self.shared_objects = []
         self.content = None
         self.parsed = False
@@ -44,8 +45,8 @@ class XNBReader(BinaryReader):
             self.parse()
 
     def __str__(self):
-        return 'XNB %s%s%s s%d' % (self.platforms[self.file_platform], self.versions[self.file_version],
-                                   self.profiles[self.graphics_profile], len(self.data))
+        return 'XNB %s%s%s s:%d' % (self.platforms[self.file_platform], self.versions[self.file_version],
+                                    self.profiles[self.graphics_profile], len(self.data))
 
     def parse(self):
         if self.type_reader_manager is None:
@@ -55,19 +56,18 @@ class XNBReader(BinaryReader):
 
         print 'Type readers:'
         reader_count = self.read('7b')
-        for _ in range(reader_count):
+        for reader_index in range(reader_count):
             reader_name = self.read('str')
             reader_version = self.read('s4')
             reader_type_class = self.type_reader_manager.get_type_reader(reader_name)
             reader = reader_type_class(self, reader_version)
             self.type_readers.append(reader)
-            print reader
+            print reader_index, reader
 
         shared_count = self.read('7b')
 
-        print 'Asset:'
         self.content = self.read_object()
-        print self.content
+        print 'Asset: %s' % str(self.content)
 
         for i in range(shared_count):
             print 'Shared resource %d:' % i
@@ -134,19 +134,21 @@ class XNBReader(BinaryReader):
         stream.extend(data)
         return stream.serial()
 
-    def read_object(self):
+    def read_object(self, expected_type=None):
         type_reader = self.read_type_id()
-        if type_reader is None:
-            print 'null'
-            return None
-        print 'Type: %s' % type_reader.target_type
+        if expected_type:
+            print 'Type: %s Expected: %s' % (type_reader.target_type, expected_type)
+            if type_reader.target_type != expected_type:
+                raise ReaderError("Unexpected type: %s != %s" % (type_reader.target_type, expected_type))
+        else:
+            print 'Type: %s' % type_reader.target_type
         return type_reader.read()
 
     def read_type_id(self):
         type_id = self.read('7b')
         if type_id == 0:
             # null object
-            return None
+            return self.null_reader
         if type_id > len(self.type_readers):
             raise ReaderError("type id out of range: %d > %d" % (type_id, len(self.type_readers)))
         return self.type_readers[type_id - 1]
