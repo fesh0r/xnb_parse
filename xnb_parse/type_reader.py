@@ -48,8 +48,8 @@ class GenericTypeReader(BaseTypeReader):
     is_value_type = False
     is_generic_type = True
     name_index = 0
-    arguments = []
-    readers = []
+    arguments = None
+    readers = None
 
     def init(self):
         for arg in self.arguments:
@@ -71,6 +71,7 @@ class GenericTypeReader(BaseTypeReader):
         body['target_type'] = target_type
         body['reader_name'] = reader_name
         body['arguments'] = args
+        body['readers'] = []
         class_ = type(class_name, cls.__bases__, body)
         return class_
 
