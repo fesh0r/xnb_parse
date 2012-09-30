@@ -5,6 +5,7 @@ XNB parser
 from xnb_parse.binstream import BinaryReader, BinaryWriter
 from xnb_parse.xna_native import decompress
 from xnb_parse.type_reader_manager import ReaderError
+from xnb_parse.type_readers.xna_primitive import NullReader
 
 
 XNB_SIGNATURE = 'XNB'
@@ -37,8 +38,8 @@ class XNBReader(BinaryReader):
         self.compressed = compressed
         self.type_reader_manager = type_reader_manager
         self.type_readers = []
-        self.null_reader = self.type_reader_manager.get_type_reader('NullReader')
         self.shared_objects = []
+        self.null_reader = None
         self.content = None
         self.parsed = False
         if parse:
@@ -53,6 +54,9 @@ class XNBReader(BinaryReader):
             raise ValueError('No type reader manager')
         if self.parsed:
             return self.content
+
+        self.null_reader = self.get_type_reader(NullReader.reader_name)
+        self.null_reader.init_reader()
 
         print 'Type readers:'
         reader_count = self.read('7b')

@@ -4,6 +4,7 @@ media type readers
 
 from xnb_parse.type_reader import BaseTypeReader
 from xnb_parse.type_reader_manager import TypeReaderPlugin
+from xnb_parse.type_readers.xna_primitive import StringReader, Int32Reader, SingleReader
 from xnb_parse.xna_types.xna_media import SoundEffect, Song, Video
 
 
@@ -27,8 +28,8 @@ class SongReader(BaseTypeReader, TypeReaderPlugin):
     reader_name = 'Microsoft.Xna.Framework.Content.SongReader'
 
     def read(self):
-        filename = self.stream.read_object('System.String')
-        duration = self.stream.read_object('System.Int32')
+        filename = self.stream.read_object(StringReader.target_type)
+        duration = self.stream.read_object(Int32Reader.target_type)
         return Song(filename, duration)
 
 
@@ -37,10 +38,10 @@ class VideoReader(BaseTypeReader, TypeReaderPlugin):
     reader_name = 'Microsoft.Xna.Framework.Content.VideoReader'
 
     def read(self):
-        filename = self.stream.read_object('System.String')
-        duration = self.stream.read_object('System.Int32')
-        width = self.stream.read_object('System.Int32')
-        height = self.stream.read_object('System.Int32')
-        fps = self.stream.read_object('System.Single')
-        video_type = self.stream.read_object('System.Int32')
+        filename = self.stream.read_object(StringReader.target_type)
+        duration = self.stream.read_object(Int32Reader.target_type)
+        width = self.stream.read_object(Int32Reader.target_type)
+        height = self.stream.read_object(Int32Reader.target_type)
+        fps = self.stream.read_object(SingleReader.target_type)
+        video_type = self.stream.read_object(Int32Reader.target_type)
         return Video(filename, duration, width, height, fps, video_type)

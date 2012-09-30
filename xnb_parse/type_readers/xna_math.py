@@ -84,6 +84,10 @@ class PlaneReader(ValueTypeReader, TypeReaderPlugin):
         TypeReaderPlugin.__init__(self)
         self.vector2_reader = self.stream.get_type_reader(Vector2Reader.reader_name)
 
+    def init_reader(self):
+        BaseTypeReader.init_reader(self)
+        self.vector2_reader.init_reader()
+
     def read(self):
         plane_normal = self.vector2_reader.read()
         plane_d = self.stream.read('f')
@@ -121,6 +125,10 @@ class BoundingBoxReader(ValueTypeReader, TypeReaderPlugin):
         TypeReaderPlugin.__init__(self)
         self.vector3_reader = self.stream.get_type_reader(Vector3Reader.reader_name)
 
+    def init_reader(self):
+        BaseTypeReader.init_reader(self)
+        self.vector3_reader.init_reader()
+
     def read(self):
         v_min = self.vector3_reader.read()
         v_max = self.vector3_reader.read()
@@ -135,6 +143,10 @@ class BoundingSphereReader(ValueTypeReader, TypeReaderPlugin):
         ValueTypeReader.__init__(self, stream=stream, version=version)
         TypeReaderPlugin.__init__(self)
         self.vector3_reader = self.stream.get_type_reader(Vector3Reader.reader_name)
+
+    def init_reader(self):
+        BaseTypeReader.init_reader(self)
+        self.vector3_reader.init_reader()
 
     def read(self):
         v_centre = self.vector3_reader.read()
@@ -151,6 +163,10 @@ class BoundingFrustumReader(BaseTypeReader, TypeReaderPlugin):
         TypeReaderPlugin.__init__(self)
         self.matrix_reader = self.stream.get_type_reader(MatrixReader.reader_name)
 
+    def init_reader(self):
+        BaseTypeReader.init_reader(self)
+        self.matrix_reader.init_reader()
+
     def read(self):
         value = self.matrix_reader.read()
         return value
@@ -164,6 +180,10 @@ class RayReader(ValueTypeReader, TypeReaderPlugin):
         ValueTypeReader.__init__(self, stream=stream, version=version)
         TypeReaderPlugin.__init__(self)
         self.vector3_reader = self.stream.get_type_reader(Vector3Reader.reader_name)
+
+    def init_reader(self):
+        BaseTypeReader.init_reader(self)
+        self.vector3_reader.init_reader()
 
     def read(self):
         v_pos = self.vector3_reader.read()
