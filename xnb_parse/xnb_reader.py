@@ -59,13 +59,12 @@ class XNBReader(BinaryReader):
         for reader_index in range(reader_count):
             reader_name = self.read('str')
             reader_version = self.read('s4')
-            reader_type_class = self.type_reader_manager.get_type_reader(reader_name)
-            reader = reader_type_class(self, reader_version)
+            reader = self.get_type_reader(reader_name, reader_version)
             self.type_readers.append(reader)
             print reader_index, reader
 
         for reader in self.type_readers:
-            reader.init()
+            reader.init_reader()
 
         shared_count = self.read('7b')
 
@@ -81,6 +80,14 @@ class XNBReader(BinaryReader):
             print 'remaining: %d' % self.remaining()
         self.parsed = True
         return self.content
+
+    def get_type_reader(self, name, version=None):
+        reader_type_class = self.type_reader_manager.get_type_reader(name)
+        return reader_type_class(self, version)
+
+    def get_type_reader_by_type(self, reader_type, version=None):
+        reader_type_class = self.type_reader_manager.get_type_reader_by_type(reader_type)
+        return reader_type_class(self, version)
 
     @classmethod
     def load(cls, data, type_reader_manager=None, parse=True):
@@ -140,12 +147,15 @@ class XNBReader(BinaryReader):
     def read_object(self, expected_type=None):
         type_reader = self.read_type_id()
         if expected_type:
-            print 'Type: %s Expected: %s' % (type_reader.target_type, expected_type)
             if type_reader.target_type != expected_type:
                 raise ReaderError("Unexpected type: %s != %s" % (type_reader.target_type, expected_type))
-        else:
-            print 'Type: %s' % type_reader.target_type
         return type_reader.read()
+
+    def read_value_or_object(self, type_reader):
+        if type_reader.is_value_type:
+            return type_reader.read()
+        else:
+            return self.read_object(type_reader.target_type)
 
     def read_type_id(self):
         type_id = self.read('7b')

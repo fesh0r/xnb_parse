@@ -60,8 +60,8 @@ class BinaryWriter(BinaryStream):
                 raise
 
     def pack(self, fmt, *values):
-        s = struct.Struct(self._fmt_end + fmt)
-        self.stream.write(s.pack(*values))
+        local_struct = struct.Struct(self._fmt_end + fmt)
+        self.stream.write(local_struct.pack(*values))
 
     def write_7bit_int(self, value):
         temp = value
@@ -115,17 +115,17 @@ class BinaryReader(BinaryStream):
         return value
 
     def remainder(self):
-        v = self.data[self._index:]
+        rest = self.data[self._index:]
         self._index = len(self.data)
-        return v
+        return rest
 
     def remaining(self):
         return len(self.data) - self._index
 
     def unpack(self, fmt):
-        s = struct.Struct(self._fmt_end + fmt)
-        values = s.unpack_from(self.data, self._index)
-        self._index += s.size
+        local_struct = struct.Struct(self._fmt_end + fmt)
+        values = local_struct.unpack_from(self.data, self._index)
+        self._index += local_struct.size
         return values
 
     def read_7bit_int(self):
@@ -138,5 +138,5 @@ class BinaryReader(BinaryStream):
                 break
             shift += 7
         if shift >= 32:
-            raise ValueError
+            raise ValueError("Shift out of range")
         return value

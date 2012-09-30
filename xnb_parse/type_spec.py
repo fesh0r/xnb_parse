@@ -54,7 +54,11 @@ class TypeSpec(object):
 
     @property
     def full_name(self):
-        name = self.name
+        return self.name + self.suffix
+
+    @property
+    def suffix(self):
+        name = ''
         if self.nested:
             name += '+' + '+'.join(self.nested)
         if self.generic_params:

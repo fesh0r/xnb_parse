@@ -3,17 +3,27 @@ system type readers
 """
 
 from xnb_parse.type_reader_manager import TypeReaderPlugin
-from xnb_parse.type_reader import BaseTypeReader, ValueTypeReader, GenericTypeReader, GenericValueTypeReader
+from xnb_parse.type_reader import ValueTypeReader, GenericTypeReader, GenericValueTypeReader
 
 
 class EnumReader(GenericValueTypeReader, TypeReaderPlugin):
     generic_target_type = 'System.Enum`1'
     generic_reader_name = 'Microsoft.Xna.Framework.Content.EnumReader`1'
 
+    def read(self):
+        return self.stream.read('u4')
+
 
 class NullableReader(GenericValueTypeReader, TypeReaderPlugin):
     generic_target_type = 'System.Nullable`1'
     generic_reader_name = 'Microsoft.Xna.Framework.Content.NullableReader`1'
+
+    def read(self):
+        has_value = self.stream.read('?')
+        if has_value:
+            return self.readers[0].read()
+        else:
+            return None
 
 
 class ArrayReader(GenericTypeReader, TypeReaderPlugin):
@@ -22,9 +32,11 @@ class ArrayReader(GenericTypeReader, TypeReaderPlugin):
 
     def read(self):
         elements = self.stream.read('u4')
-        array_values = []
-        print 'elements:', elements
-        raise ValueError
+        values = []
+        for _ in range(elements):
+            element = self.stream.read_value_or_object(self.readers[0])
+            values.append(element)
+        return values
 
 
 class ListReader(GenericTypeReader, TypeReaderPlugin):
@@ -33,9 +45,11 @@ class ListReader(GenericTypeReader, TypeReaderPlugin):
 
     def read(self):
         elements = self.stream.read('u4')
-        list_values = []
-        print 'elements:', elements
-        raise ValueError
+        values = []
+        for _ in range(elements):
+            element = self.stream.read_value_or_object(self.readers[0])
+            values.append(element)
+        return values
 
 
 class DictionaryReader(GenericTypeReader, TypeReaderPlugin):
@@ -44,10 +58,12 @@ class DictionaryReader(GenericTypeReader, TypeReaderPlugin):
 
     def read(self):
         elements = self.stream.read('u4')
-        dict_keys = []
-        dict_values = []
-        print 'elements:', elements
-        raise ValueError
+        values = {}
+        for _ in range(elements):
+            key = self.stream.read_value_or_object(self.readers[0])
+            value = self.stream.read_value_or_object(self.readers[1])
+            values[key] = value
+        return values
 
 
 class TimeSpanReader(ValueTypeReader, TypeReaderPlugin):

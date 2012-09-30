@@ -43,7 +43,7 @@ class TypeReaderManager(object):
         if type_spec.generic_params:
             if type_spec.name in self.generic_type_readers:
                 generic_type_class = self.generic_type_readers[type_spec.name]
-                generic_type_reader_class = generic_type_class.create(type_spec)
+                generic_type_reader_class = generic_type_class.create_from_type(type_spec)
                 if generic_type_reader_class.reader_name in self.type_readers:
                     raise ReaderError("Duplicate type reader name from generic: '%s' '%s'" % (
                         generic_type_reader_class.reader_name, generic_type_class.generic_reader_name))

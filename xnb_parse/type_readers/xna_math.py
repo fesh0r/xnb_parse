@@ -79,8 +79,13 @@ class PlaneReader(ValueTypeReader, TypeReaderPlugin):
     target_type = 'Microsoft.Xna.Framework.Plane'
     reader_name = 'Microsoft.Xna.Framework.Content.PlaneReader'
 
+    def __init__(self, stream=None, version=None):
+        ValueTypeReader.__init__(self, stream=stream, version=version)
+        TypeReaderPlugin.__init__(self)
+        self.vector2_reader = self.stream.get_type_reader(Vector2Reader.reader_name)
+
     def read(self):
-        plane_normal = Vector2Reader.read_from(self.stream)
+        plane_normal = self.vector2_reader.read()
         plane_d = self.stream.read('f')
         return plane_normal, plane_d
 
@@ -111,9 +116,14 @@ class BoundingBoxReader(ValueTypeReader, TypeReaderPlugin):
     target_type = 'Microsoft.Xna.Framework.BoundingBox'
     reader_name = 'Microsoft.Xna.Framework.Content.BoundingBoxReader'
 
+    def __init__(self, stream=None, version=None):
+        ValueTypeReader.__init__(self, stream=stream, version=version)
+        TypeReaderPlugin.__init__(self)
+        self.vector3_reader = self.stream.get_type_reader(Vector3Reader.reader_name)
+
     def read(self):
-        v_min = Vector3Reader.read_from(self.stream)
-        v_max = Vector3Reader.read_from(self.stream)
+        v_min = self.vector3_reader.read()
+        v_max = self.vector3_reader.read()
         return v_min, v_max
 
 
@@ -121,8 +131,13 @@ class BoundingSphereReader(ValueTypeReader, TypeReaderPlugin):
     target_type = 'Microsoft.Xna.Framework.BoundingSphere'
     reader_name = 'Microsoft.Xna.Framework.Content.BoundingSphereReader'
 
+    def __init__(self, stream=None, version=None):
+        ValueTypeReader.__init__(self, stream=stream, version=version)
+        TypeReaderPlugin.__init__(self)
+        self.vector3_reader = self.stream.get_type_reader(Vector3Reader.reader_name)
+
     def read(self):
-        v_centre = Vector3Reader.read_from(self.stream)
+        v_centre = self.vector3_reader.read()
         v_radius = self.stream.read('f')
         return v_centre, v_radius
 
@@ -131,8 +146,13 @@ class BoundingFrustumReader(BaseTypeReader, TypeReaderPlugin):
     target_type = 'Microsoft.Xna.Framework.BoundingFrustum'
     reader_name = 'Microsoft.Xna.Framework.Content.BoundingFrustumReader'
 
+    def __init__(self, stream=None, version=None):
+        BaseTypeReader.__init__(self, stream=stream, version=version)
+        TypeReaderPlugin.__init__(self)
+        self.matrix_reader = self.stream.get_type_reader(MatrixReader.reader_name)
+
     def read(self):
-        value = MatrixReader.read_from(self.stream)
+        value = self.matrix_reader.read()
         return value
 
 
@@ -140,12 +160,32 @@ class RayReader(ValueTypeReader, TypeReaderPlugin):
     target_type = 'Microsoft.Xna.Framework.Ray'
     reader_name = 'Microsoft.Xna.Framework.Content.RayReader'
 
+    def __init__(self, stream=None, version=None):
+        ValueTypeReader.__init__(self, stream=stream, version=version)
+        TypeReaderPlugin.__init__(self)
+        self.vector3_reader = self.stream.get_type_reader(Vector3Reader.reader_name)
+
     def read(self):
-        v_pos = Vector3Reader.read_from(self.stream)
-        v_dir = Vector3Reader.read_from(self.stream)
+        v_pos = self.vector3_reader.read()
+        v_dir = self.vector3_reader.read()
         return v_pos, v_dir
 
 
 class CurveReader(BaseTypeReader, TypeReaderPlugin):
     target_type = 'Microsoft.Xna.Framework.Curve'
     reader_name = 'Microsoft.Xna.Framework.Content.CurveReader'
+
+    def read(self):
+        pre_loop = self.stream.read('s4')
+        post_loop = self.stream.read('s4')
+        key_count = self.stream.read('u4')
+        keys = []
+        for _ in range(key_count):
+            pos = self.stream.read('f')
+            value = self.stream.read('f')
+            tangent_in = self.stream.read('f')
+            tangent_out = self.stream.read('f')
+            cont = self.stream.read('s4')
+            key = (pos, value, tangent_in, tangent_out, cont)
+            keys.append(key)
+        return pre_loop, post_loop, keys

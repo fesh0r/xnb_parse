@@ -26,7 +26,6 @@ class Texture2DReader(BaseTypeReader, TypeReaderPlugin):
         width = self.stream.read('u4')
         height = self.stream.read('u4')
         mip_count = self.stream.read('u4')
-
         mip_levels = []
         for _ in range(mip_count):
             data_size = self.stream.read('u4')
@@ -45,7 +44,6 @@ class Texture3DReader(BaseTypeReader, TypeReaderPlugin):
         height = self.stream.read('u4')
         depth = self.stream.read('u4')
         mip_count = self.stream.read('u4')
-
         mip_levels = []
         for _ in range(mip_count):
             data_size = self.stream.read('u4')
@@ -62,7 +60,6 @@ class TextureCubeReader(BaseTypeReader, TypeReaderPlugin):
         texture_format = self.stream.read('s4')
         texture_size = self.stream.read('u4')
         mip_count = self.stream.read('u4')
-
         sides = {}
         for side in CUBE_SIDES:
             mip_levels = []
@@ -89,10 +86,34 @@ class VertexBufferReader(BaseTypeReader, TypeReaderPlugin):
     target_type = 'Microsoft.Xna.Framework.Graphics.VertexBuffer'
     reader_name = 'Microsoft.Xna.Framework.Content.VertexBufferReader'
 
+    def __init__(self, stream=None, version=None):
+        BaseTypeReader.__init__(self, stream=stream, version=version)
+        TypeReaderPlugin.__init__(self)
+        self.vertexdec_reader = self.stream.get_type_reader(VertexDeclarationReader.reader_name)
+
+    def read(self):
+        vertex_dec = self.vertexdec_reader.read()
+        vertex_count = self.stream.read('u4')
+        vertex_data = self.stream.pull(vertex_dec[0] * vertex_count)
+        return vertex_dec, vertex_data
+
 
 class VertexDeclarationReader(BaseTypeReader, TypeReaderPlugin):
     target_type = 'Microsoft.Xna.Framework.Graphics.VertexDeclaration'
     reader_name = 'Microsoft.Xna.Framework.Content.VertexDeclarationReader'
+
+    def read(self):
+        stride = self.stream.read('u4')
+        element_count = self.stream.read('s4')
+        elements = []
+        for _ in range(element_count):
+            offset = self.stream.read('u4')
+            format_ = self.stream.read('s4')
+            usage = self.stream.read('s4')
+            usage_index = self.stream.read('u4')
+            element = offset, format_, usage, usage_index
+            elements.append(element)
+        return stride, elements
 
 
 class EffectReader(BaseTypeReader, TypeReaderPlugin):
@@ -109,59 +130,129 @@ class EffectMaterialReader(BaseTypeReader, TypeReaderPlugin):
     target_type = 'Microsoft.Xna.Framework.Graphics.EffectMaterial'
     reader_name = 'Microsoft.Xna.Framework.Content.EffectMaterialReader'
 
+    def __init__(self, stream=None, version=None):
+        BaseTypeReader.__init__(self, stream=stream, version=version)
+        TypeReaderPlugin.__init__(self)
+        self.externalref_reader = self.stream.get_type_reader(ExternalReferenceReader.reader_name)
+
+    def read(self):
+        effect = self.externalref_reader.read()
+        parameters = self.stream.read_object()
+        return effect, parameters
+
 
 class BasicEffectReader(BaseTypeReader, TypeReaderPlugin):
     target_type = 'Microsoft.Xna.Framework.Graphics.BasicEffect'
     reader_name = 'Microsoft.Xna.Framework.Content.BasicEffectReader'
 
+    def __init__(self, stream=None, version=None):
+        BaseTypeReader.__init__(self, stream=stream, version=version)
+        TypeReaderPlugin.__init__(self)
+        self.externalref_reader = self.stream.get_type_reader(ExternalReferenceReader.reader_name)
+        self.vector3_reader = self.stream.get_type_reader(Vector3Reader.reader_name)
+
     def read(self):
-        texture = ExternalReferenceReader.read_from(self.stream)
-        colour_d = Vector3Reader.read_from(self.stream)
-        colour_e = Vector3Reader.read_from(self.stream)
-        colour_s = Vector3Reader.read_from(self.stream)
+        texture = self.externalref_reader.read()
+        colour_d = self.vector3_reader.read()
+        colour_e = self.vector3_reader.read()
+        colour_s = self.vector3_reader.read()
         spec = self.stream.read('f')
         alpha = self.stream.read('f')
         colour_v = self.stream.read('?')
+        return texture, colour_d, colour_e, colour_s, spec, alpha, colour_v
 
 
 class AlphaTestEffectReader(BaseTypeReader, TypeReaderPlugin):
     target_type = 'Microsoft.Xna.Framework.Graphics.AlphaTestEffect'
     reader_name = 'Microsoft.Xna.Framework.Content.AlphaTestEffectReader'
 
+    def __init__(self, stream=None, version=None):
+        BaseTypeReader.__init__(self, stream=stream, version=version)
+        TypeReaderPlugin.__init__(self)
+        self.externalref_reader = self.stream.get_type_reader(ExternalReferenceReader.reader_name)
+        self.vector3_reader = self.stream.get_type_reader(Vector3Reader.reader_name)
+
     def read(self):
-        texture = ExternalReferenceReader.read_from(self.stream)
+        texture = self.externalref_reader.read()
         compare = self.stream.read('s4')
         ref_alpha = self.stream.read('u4')
-        colour_d = Vector3Reader.read_from(self.stream)
+        colour_d = self.vector3_reader.read()
         alpha = self.stream.read('f')
         colour_v = self.stream.read('?')
+        return texture, compare, ref_alpha, colour_d, alpha, colour_v
 
 
 class DualTextureEffectReader(BaseTypeReader, TypeReaderPlugin):
     target_type = 'Microsoft.Xna.Framework.Graphics.DualTextureEffect'
     reader_name = 'Microsoft.Xna.Framework.Content.DualTextureEffectReader'
 
+    def __init__(self, stream=None, version=None):
+        BaseTypeReader.__init__(self, stream=stream, version=version)
+        TypeReaderPlugin.__init__(self)
+        self.externalref_reader = self.stream.get_type_reader(ExternalReferenceReader.reader_name)
+        self.vector3_reader = self.stream.get_type_reader(Vector3Reader.reader_name)
+
     def read(self):
-        texture1 = ExternalReferenceReader.read_from(self.stream)
-        texture2 = ExternalReferenceReader.read_from(self.stream)
-        colour_d = Vector3Reader.read_from(self.stream)
+        texture1 = self.externalref_reader.read()
+        texture2 = self.externalref_reader.read()
+        colour_d = self.vector3_reader.read()
         alpha = self.stream.read('f')
         colour_v = self.stream.read('?')
+        return texture1, texture2, colour_d, alpha, colour_v
 
 
 class EnvironmentMapEffect(BaseTypeReader, TypeReaderPlugin):
     target_type = 'Microsoft.Xna.Framework.Graphics.EnvironmentMapEffect'
     reader_name = 'Microsoft.Xna.Framework.Content.EnvironmentMapEffectReader'
 
+    def __init__(self, stream=None, version=None):
+        BaseTypeReader.__init__(self, stream=stream, version=version)
+        TypeReaderPlugin.__init__(self)
+        self.externalref_reader = self.stream.get_type_reader(ExternalReferenceReader.reader_name)
+        self.vector3_reader = self.stream.get_type_reader(Vector3Reader.reader_name)
+
+    def read(self):
+        texture = self.externalref_reader.read()
+        env_texture = self.externalref_reader.read()
+        env_amount = self.stream.read('f')
+        env_spec = self.vector3_reader.read()
+        fresnel = self.stream.read('f')
+        colour_d = self.vector3_reader.read()
+        colour_e = self.vector3_reader.read()
+        alpha = self.stream.read('f')
+        return texture, env_texture, env_amount, env_spec, fresnel, colour_d, colour_e, alpha
+
 
 class SkinnedEffect(BaseTypeReader, TypeReaderPlugin):
     target_type = 'Microsoft.Xna.Framework.Graphics.SkinnedEffect'
     reader_name = 'Microsoft.Xna.Framework.Content.SkinnedEffectReader'
 
+    def __init__(self, stream=None, version=None):
+        BaseTypeReader.__init__(self, stream=stream, version=version)
+        TypeReaderPlugin.__init__(self)
+        self.externalref_reader = self.stream.get_type_reader(ExternalReferenceReader.reader_name)
+        self.vector3_reader = self.stream.get_type_reader(Vector3Reader.reader_name)
+
+    def read(self):
+        texture = self.externalref_reader.read()
+        weights = self.stream.read('u4')
+        colour_d = self.vector3_reader.read()
+        colour_e = self.vector3_reader.read()
+        colour_s = self.vector3_reader.read()
+        spec_pow = self.stream.read('f')
+        alpha = self.stream.read('f')
+        return texture, weights, colour_d, colour_e, colour_s, spec_pow, alpha
+
 
 class SpriteFontReader(BaseTypeReader, TypeReaderPlugin):
     target_type = 'Microsoft.Xna.Framework.Graphics.SpriteFont'
     reader_name = 'Microsoft.Xna.Framework.Content.SpriteFontReader'
+
+    def __init__(self, stream=None, version=None):
+        BaseTypeReader.__init__(self, stream=stream, version=version)
+        TypeReaderPlugin.__init__(self)
+        self.nullable_char_reader = self.stream.get_type_reader(
+            'Microsoft.Xna.Framework.Content.NullableReader`1[System.Char]')
 
     def read(self):
         texture = self.stream.read_object('Microsoft.Xna.Framework.Graphics.Texture2D')
@@ -170,7 +261,9 @@ class SpriteFontReader(BaseTypeReader, TypeReaderPlugin):
         char_map = self.stream.read_object()
         v_space = self.stream.read('s4')
         h_space = self.stream.read('f')
-        default_char = self.stream.read('c')
+        kerning = self.stream.read_object()
+        default_char = self.nullable_char_reader.read()
+        return texture, glyphs, cropping, char_map, v_space, h_space, kerning, default_char
 
 
 class Model(BaseTypeReader, TypeReaderPlugin):
