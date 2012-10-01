@@ -12,10 +12,6 @@ class TrackedSongReader(BaseTypeReader, TypeReaderPlugin):
     target_type = 'FezEngine.Structure.TrackedSong'
     reader_name = 'FezEngine.Readers.TrackedSongReader'
 
-    def __init__(self, stream=None, version=None):
-        BaseTypeReader.__init__(self, stream=stream, version=version)
-        TypeReaderPlugin.__init__(self)
-
     def read(self):
         loops = self.stream.read_object(generic_reader_type(ListReader, [LoopReader]))
         name = self.stream.read('str')
@@ -31,10 +27,6 @@ class TrackedSongReader(BaseTypeReader, TypeReaderPlugin):
 class LoopReader(BaseTypeReader, TypeReaderPlugin):
     target_type = 'FezEngine.Structure.Loop'
     reader_name = 'FezEngine.Readers.LoopReader'
-
-    def __init__(self, stream=None, version=None):
-        BaseTypeReader.__init__(self, stream=stream, version=version)
-        TypeReaderPlugin.__init__(self)
 
     def read(self):
         duration = self.stream.read('s4')
