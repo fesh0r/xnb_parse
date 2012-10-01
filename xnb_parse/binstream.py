@@ -18,7 +18,6 @@ class BinaryStream(object):
         's1': 'b',
         'f': 'f',
         'd': 'd',
-        'c': 'c',
         '?': '?'
     }
 
@@ -51,9 +50,12 @@ class BinaryWriter(BinaryStream):
         try:
             self.stream.write(self._types[type_].pack(value))
         except KeyError:
-            if type_ == 'str':
-                self.write_7bit_int(len(value))
-                self.stream.write(value)
+            if type_ == 'c':
+                self.write_utf8_char(value)
+            elif type_ == 'str':
+                raw_value = value.encode('utf-8')
+                self.write_7bit_int(len(raw_value))
+                self.stream.write(raw_value)
             elif type_ == '7b':
                 self.write_7bit_int(value)
             else:
@@ -71,6 +73,10 @@ class BinaryWriter(BinaryStream):
             temp >>= 7
         out += chr(temp)
         self.stream.write(out)
+
+    def write_utf8_char(self, value):
+        raw_value = value.encode('utf-8')
+        self.stream.write(raw_value)
 
     def extend(self, value):
         self.stream.write(value)
@@ -91,9 +97,12 @@ class BinaryReader(BinaryStream):
             value, = self._types[type_].unpack_from(self.data, self._index)
             self._index += self._types[type_].size
         except KeyError:
-            if type_ == 'str':
+            if type_ == 'c':
+                value = self.read_utf8_char()
+            elif type_ == 'str':
                 size = self.read_7bit_int()
-                value = self.pull(size)
+                raw_value = self.pull(size)
+                value = raw_value.decode('utf-8')
             elif type_ == '7b':
                 value = self.read_7bit_int()
             else:
@@ -139,4 +148,17 @@ class BinaryReader(BinaryStream):
             shift += 7
         if shift >= 32:
             raise ValueError("Shift out of range")
+        return value
+
+    def read_utf8_char(self):
+        raw_value = ord(self.pull(1))
+        byte_count = 0
+        while raw_value & (0x80 >> byte_count):
+            byte_count += 1
+        raw_value &= (1 << (8 - byte_count)) - 1
+        while byte_count > 1:
+            raw_value <<= 6
+            raw_value |= ord(self.pull(1)) & 0x3f
+            byte_count -= 1
+        value = unichr(raw_value)
         return value
