@@ -65,6 +65,15 @@ class GenericValueTypeReader(GenericTypeReader):
     is_value_type = True
 
 
-def generic_reader_name(main_type, args):
+def generic_reader_name(main_type, args=None):
+    if args is None:
+        args = []
     full_args = ['[' + arg.target_type + ']' for arg in args]
     return main_type.generic_reader_name + ','.join(full_args)
+
+
+def generic_reader_type(main_type, args=None):
+    if args is None:
+        args = []
+    full_args = ['[' + arg.target_type + ']' for arg in args]
+    return main_type.generic_target_type + ','.join(full_args)

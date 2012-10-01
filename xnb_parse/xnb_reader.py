@@ -152,7 +152,8 @@ class XNBReader(BinaryReader):
         type_reader = self.read_type_id()
         if expected_type:
             if type_reader.target_type != expected_type:
-                raise ReaderError("Unexpected type: %s != %s" % (type_reader.target_type, expected_type))
+#                raise ReaderError("Unexpected type: %s != %s" % (type_reader.target_type, expected_type))
+                print "Unexpected type: %s != %s" % (type_reader.target_type, expected_type)
         return type_reader.read()
 
     def read_value_or_object(self, type_reader):
