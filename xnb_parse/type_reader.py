@@ -16,6 +16,7 @@ class BaseTypeReader(object):
     reader_name = None
     is_value_type = False
     is_generic_type = False
+    is_null = False
 
     def __init__(self, stream=None, version=None):
         self.stream = stream

@@ -81,7 +81,7 @@ class XNBReader(BinaryReader):
             self.shared_objects.append(obj)
 
         if self.remaining():
-            print 'remaining: %d' % self.remaining()
+            raise ReaderError('remaining: %d' % self.remaining())
         self.parsed = True
         return self.content
 
@@ -151,7 +151,7 @@ class XNBReader(BinaryReader):
     def read_object(self, expected_type=None):
         type_reader = self.read_type_id()
 #        print "Expected: '%s' Actual: '%s'" % (expected_type, type_reader.target_type)
-        if expected_type:
+        if expected_type and not type_reader.is_null:
             if type_reader.target_type != expected_type:
 #                raise ReaderError("Unexpected type: %s != %s" % (type_reader.target_type, expected_type))
                 print "Unexpected type: %s != %s" % (type_reader.target_type, expected_type)

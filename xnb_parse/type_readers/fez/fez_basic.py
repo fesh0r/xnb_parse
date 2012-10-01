@@ -20,3 +20,11 @@ class LevelNodeTypeReader(ValueTypeReader, TypeReaderPlugin):
 
     def read(self):
         return self.stream.read('u4')
+
+
+class NpcActionReader(ValueTypeReader, TypeReaderPlugin):
+    target_type = 'FezEngine.Structure.NpcAction'
+    reader_name = 'FezEngine.Readers.NpcActionReader'
+
+    def read(self):
+        return self.stream.read('u4')

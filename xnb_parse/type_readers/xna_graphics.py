@@ -2,11 +2,11 @@
 graphics type readers
 """
 
-from xnb_parse.type_reader import BaseTypeReader, ReaderError, generic_reader_name
+from xnb_parse.type_reader import BaseTypeReader, ReaderError, generic_reader_name, generic_reader_type
 from xnb_parse.type_reader_manager import TypeReaderPlugin
 from xnb_parse.xna_types.xna_graphics import Texture2D, Texture3D, TextureCube, CUBE_SIDES, IndexBuffer, Effect
-from xnb_parse.type_readers.xna_system import ExternalReferenceReader, NullableReader
-from xnb_parse.type_readers.xna_math import Vector3Reader
+from xnb_parse.type_readers.xna_system import ExternalReferenceReader, NullableReader, ListReader
+from xnb_parse.type_readers.xna_math import Vector3Reader, RectangleReader
 from xnb_parse.type_readers.xna_primitive import CharReader
 
 
@@ -294,16 +294,16 @@ class SpriteFontReader(BaseTypeReader, TypeReaderPlugin):
 
     def read(self):
         texture = self.stream.read_object(Texture2DReader.target_type)
-        glyphs = self.stream.read_object()
-        cropping = self.stream.read_object()
-        char_map = self.stream.read_object()
+        glyphs = self.stream.read_object(generic_reader_type(ListReader, [RectangleReader]))
+        cropping = self.stream.read_object(generic_reader_type(ListReader, [RectangleReader]))
+        char_map = self.stream.read_object(generic_reader_type(ListReader, [CharReader]))
         v_space = self.stream.read('s4')
         h_space = self.stream.read('f')
-        kerning = self.stream.read_object()
+        kerning = self.stream.read_object(generic_reader_type(ListReader, [Vector3Reader]))
         default_char = self.nullable_char_reader.read()
         return texture, glyphs, cropping, char_map, v_space, h_space, kerning, default_char
 
 
-class Model(BaseTypeReader, TypeReaderPlugin):
+class ModelReader(BaseTypeReader, TypeReaderPlugin):
     target_type = 'Microsoft.Xna.Framework.Graphics.Model'
     reader_name = 'Microsoft.Xna.Framework.Content.ModelReader'

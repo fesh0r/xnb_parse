@@ -1,0 +1,3 @@
+"""
+FEZ graphics types
+"""

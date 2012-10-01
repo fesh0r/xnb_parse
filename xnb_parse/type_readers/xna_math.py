@@ -64,7 +64,7 @@ class QuaternionReader(ValueTypeReader, TypeReaderPlugin):
 
 
 class ColorReader(ValueTypeReader, TypeReaderPlugin):
-    target_type = 'Microsoft.Xna.Framework.Color'
+    target_type = 'Microsoft.Xna.Framework.Graphics.Color'
     reader_name = 'Microsoft.Xna.Framework.Content.ColorReader'
 
     def read(self):
