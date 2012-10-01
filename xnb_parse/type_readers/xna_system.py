@@ -11,7 +11,7 @@ class EnumReader(GenericValueTypeReader, TypeReaderPlugin):
     generic_reader_name = 'Microsoft.Xna.Framework.Content.EnumReader`1'
 
     def read(self):
-        return self.stream.read('u4')
+        return self.readers[0].read()
 
 
 class NullableReader(GenericValueTypeReader, TypeReaderPlugin):
