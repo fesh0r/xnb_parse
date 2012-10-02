@@ -2,7 +2,7 @@
 graphics type readers
 """
 
-from xnb_parse.type_reader import BaseTypeReader, ReaderError, generic_reader_name
+from xnb_parse.type_reader import BaseTypeReader, ValueTypeReader, ReaderError, generic_reader_name
 from xnb_parse.type_reader_manager import TypeReaderPlugin
 from xnb_parse.xna_types.xna_graphics import Texture2D, Texture3D, TextureCube, CUBE_SIDES, IndexBuffer, Effect
 from xnb_parse.type_readers.xna_system import ExternalReferenceReader, NullableReader, ListReader
@@ -307,3 +307,11 @@ class SpriteFontReader(BaseTypeReader, TypeReaderPlugin):
 class ModelReader(BaseTypeReader, TypeReaderPlugin):
     target_type = 'Microsoft.Xna.Framework.Graphics.Model'
     reader_name = 'Microsoft.Xna.Framework.Content.ModelReader'
+
+
+class PrimitiveTypeReader(ValueTypeReader, TypeReaderPlugin):
+    target_type = 'Microsoft.Xna.Framework.Graphics.PrimitiveType'
+    reader_name = 'Microsoft.Xna.Framework.Content.PrimitiveTypeReader'
+
+    def read(self):
+        return self.stream.read('u4')

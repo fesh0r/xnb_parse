@@ -28,3 +28,11 @@ class NpcActionReader(ValueTypeReader, TypeReaderPlugin):
 
     def read(self):
         return self.stream.read('u4')
+
+
+class ActorTypeReader(ValueTypeReader, TypeReaderPlugin):
+    target_type = 'FezEngine.Structure.ActorType'
+    reader_name = 'FezEngine.Readers.ActorTypeReader'
+
+    def read(self):
+        return self.stream.read('u4')
