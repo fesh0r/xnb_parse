@@ -59,7 +59,7 @@ class VertexPositionNormalTextureInstanceReader(ValueTypeReader, TypeReaderPlugi
         self.vector3_reader = self.stream.get_type_reader(Vector3Reader)
 
     def init_reader(self):
-        BaseTypeReader.init_reader(self)
+        ValueTypeReader.init_reader(self)
         self.vector2_reader.init_reader()
         self.vector3_reader.init_reader()
 

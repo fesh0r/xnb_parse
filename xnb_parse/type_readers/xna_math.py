@@ -85,7 +85,7 @@ class PlaneReader(ValueTypeReader, TypeReaderPlugin):
         self.vector2_reader = self.stream.get_type_reader(Vector2Reader)
 
     def init_reader(self):
-        BaseTypeReader.init_reader(self)
+        ValueTypeReader.init_reader(self)
         self.vector2_reader.init_reader()
 
     def read(self):
@@ -126,7 +126,7 @@ class BoundingBoxReader(ValueTypeReader, TypeReaderPlugin):
         self.vector3_reader = self.stream.get_type_reader(Vector3Reader)
 
     def init_reader(self):
-        BaseTypeReader.init_reader(self)
+        ValueTypeReader.init_reader(self)
         self.vector3_reader.init_reader()
 
     def read(self):
@@ -145,7 +145,7 @@ class BoundingSphereReader(ValueTypeReader, TypeReaderPlugin):
         self.vector3_reader = self.stream.get_type_reader(Vector3Reader)
 
     def init_reader(self):
-        BaseTypeReader.init_reader(self)
+        ValueTypeReader.init_reader(self)
         self.vector3_reader.init_reader()
 
     def read(self):
@@ -164,7 +164,7 @@ class BoundingFrustumReader(BaseTypeReader, TypeReaderPlugin):
         self.matrix_reader = self.stream.get_type_reader(MatrixReader)
 
     def init_reader(self):
-        BaseTypeReader.init_reader(self)
+        ValueTypeReader.init_reader(self)
         self.matrix_reader.init_reader()
 
     def read(self):
@@ -182,7 +182,7 @@ class RayReader(ValueTypeReader, TypeReaderPlugin):
         self.vector3_reader = self.stream.get_type_reader(Vector3Reader)
 
     def init_reader(self):
-        BaseTypeReader.init_reader(self)
+        ValueTypeReader.init_reader(self)
         self.vector3_reader.init_reader()
 
     def read(self):
