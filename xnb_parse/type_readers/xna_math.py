@@ -164,7 +164,7 @@ class BoundingFrustumReader(BaseTypeReader, TypeReaderPlugin):
         self.matrix_reader = self.stream.get_type_reader(MatrixReader)
 
     def init_reader(self):
-        ValueTypeReader.init_reader(self)
+        BaseTypeReader.init_reader(self)
         self.matrix_reader.init_reader()
 
     def read(self):
