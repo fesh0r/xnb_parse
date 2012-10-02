@@ -93,4 +93,4 @@ def generic_reader_type(main_type, args=None):
     try:
         return main_type.generic_target_type + '[' + ','.join(full_args) + ']'
     except AttributeError:
-        raise NotGenericError("Not generic type: '%s'" % main_type)
+        raise NotGenericError("Not generic type: '%s'" % main_type.complete_name)

@@ -2,13 +2,13 @@
 FEZ graphics type readers
 """
 
-from xnb_parse.type_reader import BaseTypeReader, ValueTypeReader, GenericTypeReader
+from xnb_parse.type_reader import BaseTypeReader, ValueTypeReader, GenericTypeReader, generic_reader_type
 from xnb_parse.type_reader_manager import TypeReaderPlugin
-from xnb_parse.type_readers.xna_system import ListReader, ArrayReader, TimeSpanReader, EnumReader
+from xnb_parse.type_readers.xna_system import ListReader, ArrayReader, TimeSpanReader, EnumReader, ReflectiveReader
 from xnb_parse.type_readers.xna_math import ColorReader, Vector2Reader, Vector3Reader, MatrixReader
 from xnb_parse.type_readers.xna_graphics import PrimitiveTypeReader
 from xnb_parse.type_readers.xna_primitive import StringReader, UInt16Reader
-from xnb_parse.type_readers.fez.fez_basic import NpcActionReader, ActorTypeReader
+from xnb_parse.type_readers.fez.fez_basic import NpcActionReader, ActorTypeReader, SetReader, FaceOrientationReader
 
 
 class ArtObjectReader(BaseTypeReader, TypeReaderPlugin):
@@ -32,7 +32,8 @@ class ArtObjectReader(BaseTypeReader, TypeReaderPlugin):
                                            [VertexPositionNormalTextureInstanceReader, MatrixReader])
         actor_type = self.stream.read_object(EnumReader, [ActorTypeReader])
         no_silhouette = self.stream.read('?')
-        laser_outlets = self.stream.read_object()
+        laser_outlets = self.stream.read_object(ReflectiveReader, [generic_reader_type(SetReader,
+                                                                                       [FaceOrientationReader])])
         return name, cubemap_path, size, geometry, actor_type, no_silhouette, laser_outlets
 
 

@@ -2,7 +2,7 @@
 FEZ basic type readers
 """
 
-from xnb_parse.type_reader import ValueTypeReader
+from xnb_parse.type_reader import ValueTypeReader, GenericTypeReader
 from xnb_parse.type_reader_manager import TypeReaderPlugin
 
 
@@ -36,3 +36,16 @@ class ActorTypeReader(ValueTypeReader, TypeReaderPlugin):
 
     def read(self):
         return self.stream.read('u4')
+
+
+class SetReader(GenericTypeReader, TypeReaderPlugin):
+    generic_target_type = 'Common.Set`1'
+    generic_reader_name = 'FezEngine.SetReader`1'
+
+    def read(self):
+        return None
+
+
+class IEqualityComparerFaceOrientationReader(GenericTypeReader, TypeReaderPlugin):
+    generic_target_type = 'System.Collections.Generic.IEqualityComparer`1'
+    generic_reader_name = 'FezEngine.IEqualityComparerReader`1'

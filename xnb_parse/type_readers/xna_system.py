@@ -106,5 +106,8 @@ class ExternalReferenceReader(ValueTypeReader, TypeReaderPlugin):
 
 
 class ReflectiveReader(GenericTypeReader, TypeReaderPlugin):
-    generic_target_type = 'System.Object'
+    generic_target_type = 'Reflective'
     generic_reader_name = 'Microsoft.Xna.Framework.Content.ReflectiveReader`1'
+
+    def read(self):
+        return self.readers[0].read()
