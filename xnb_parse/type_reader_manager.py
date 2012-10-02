@@ -66,10 +66,26 @@ class TypeReaderManager(object):
         except AttributeError:
             reader_type = type_reader
 
-        if reader_type in self.type_readers_type:
-            return self.type_readers_type[reader_type]
+        type_spec = TypeSpec.parse(reader_type)
 
-        raise ReaderError("Type reader not found for '%s'" % reader_type)
+        if type_spec.full_name in self.type_readers_type:
+            return self.type_readers_type[type_spec.full_name]
+
+        if type_spec.generic_params:
+            if type_spec.name in self.generic_type_readers_type:
+                generic_type_class = self.generic_type_readers_type[type_spec.name]
+                generic_type_reader_class = generic_type_class.create_from_type(type_spec)
+                if generic_type_reader_class.reader_name in self.type_readers:
+                    raise ReaderError("Duplicate type reader name from generic: '%s' '%s'" % (
+                        generic_type_reader_class.reader_name, generic_type_class.generic_reader_name))
+                self.type_readers[generic_type_reader_class.reader_name] = generic_type_reader_class
+                if generic_type_reader_class.target_type in self.type_readers_type:
+                    raise ReaderError("Duplicate type reader type from generic: '%s' '%s'" % (
+                        generic_type_reader_class.target_type, generic_type_class.generic_target_type))
+                self.type_readers_type[generic_type_reader_class.target_type] = generic_type_reader_class
+                return generic_type_reader_class
+
+        raise ReaderError("Type reader not found for '%s'" % type_spec.full_name)
 
 
 def _find_subclasses(pkgname, cls):

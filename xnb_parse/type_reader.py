@@ -60,7 +60,7 @@ class GenericTypeReader(BaseTypeReader):
         # really need to figure out how to do this more cleanly
         body = dict(cls.__dict__)
         body['target_type'] = cls.generic_target_type + type_spec.suffix
-        body['reader_name'] = type_spec.full_name
+        body['reader_name'] = cls.generic_reader_name + type_spec.suffix
         body['generic_params'] = [arg.full_name for arg in type_spec.generic_params]
         class_ = type(cls.__name__, cls.__bases__, body)
         return class_
