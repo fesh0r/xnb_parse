@@ -49,7 +49,7 @@ class XNBReader(BinaryReader):
         return 'XNB %s%s%s s:%d' % (self.platforms[self.file_platform], self.versions[self.file_version],
                                     self.profiles[self.graphics_profile], len(self.data))
 
-    def parse(self):
+    def parse(self, verbose=True):
         if self.type_reader_manager is None:
             raise ValueError('No type reader manager')
         if self.parsed:
@@ -58,14 +58,19 @@ class XNBReader(BinaryReader):
         self.null_reader = self.get_type_reader(NullReader.reader_name)
         self.null_reader.init_reader()
 
-        print 'Type readers:'
+        if verbose:
+            print 'Type readers:'
         reader_count = self.read('7b')
         for reader_index in range(reader_count):
             reader_name = self.read('str')
             reader_version = self.read('s4')
             reader = self.get_type_reader(reader_name, reader_version)
             self.type_readers.append(reader)
-            print reader_index, reader
+            if verbose:
+                print reader_index, reader
+
+#        if not verbose:
+#            print 'Type:', self.type_readers[0]
 
         for reader in self.type_readers:
             reader.init_reader()
@@ -73,10 +78,12 @@ class XNBReader(BinaryReader):
         shared_count = self.read('7b')
 
         self.content = self.read_object()
-        print 'Asset: %s' % str(self.content)
+        if verbose:
+            print 'Asset: %s' % str(self.content)
 
         for i in range(shared_count):
-            print 'Shared resource %d:' % i
+            if verbose:
+                print 'Shared resource %d:' % i
             obj = self.read_object()
             self.shared_objects.append(obj)
 
