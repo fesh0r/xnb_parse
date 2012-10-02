@@ -4,10 +4,14 @@ FEZ level type readers
 
 from xnb_parse.type_reader import BaseTypeReader
 from xnb_parse.type_reader_manager import TypeReaderPlugin
-from xnb_parse.type_readers.xna_math import Vector3Reader, Vector2Reader
-from xnb_parse.type_readers.xna_system import ListReader, EnumReader
+from xnb_parse.type_readers.xna_graphics import Texture2DReader
+from xnb_parse.type_readers.xna_math import Vector3Reader, Vector2Reader, Vector4Reader
+from xnb_parse.type_readers.xna_system import ListReader, EnumReader, DictionaryReader
 from xnb_parse.type_readers.xna_primitive import Int32Reader, StringReader
-from xnb_parse.type_readers.fez.fez_basic import LevelNodeTypeReader, FaceOrientationReader
+from xnb_parse.type_readers.fez.fez_basic import LevelNodeTypeReader, FaceOrientationReader, CollisionTypeReader
+from xnb_parse.type_readers.fez.fez_basic import ActorTypeReader, SurfaceTypeReader
+from xnb_parse.type_readers.fez.fez_graphics import ShaderInstancedIndexedPrimitivesReader
+from xnb_parse.type_readers.fez.fez_graphics import VertexPositionNormalTextureInstanceReader
 
 
 class MapTreeReader(BaseTypeReader, TypeReaderPlugin):
@@ -116,8 +120,8 @@ class TrileSetReader(BaseTypeReader, TypeReaderPlugin):
 
     def read(self):
         name = self.stream.read('str')
-        triles = self.stream.read_object()
-        texture_atlas = self.stream.read_object()
+        triles = self.stream.read_object(DictionaryReader, [Int32Reader, TrileReader])
+        texture_atlas = self.stream.read_object(Texture2DReader)
         return name, triles, texture_atlas
 
 
@@ -145,11 +149,12 @@ class TrileReader(BaseTypeReader, TypeReaderPlugin):
         see_through = self.stream.read('?')
         thin = self.stream.read('?')
         force_hugging = self.stream.read('?')
-        faces = self.stream.read_object()
-        geometry = self.stream.read_object()
-        actor_settings_type = self.stream.read_object()
-        actor_settings_face = self.stream.read_object()
-        surface_type = self.stream.read_object()
+        faces = self.stream.read_object(DictionaryReader, [FaceOrientationReader, CollisionTypeReader])
+        geometry = self.stream.read_object(ShaderInstancedIndexedPrimitivesReader,
+                                           [VertexPositionNormalTextureInstanceReader, Vector4Reader])
+        actor_settings_type = self.stream.read_object(EnumReader, [ActorTypeReader])
+        actor_settings_face = self.stream.read_object(EnumReader, [FaceOrientationReader])
+        surface_type = self.stream.read_object(EnumReader, [SurfaceTypeReader])
         atlas_offset = self.vector2_reader.read()
         return (name, cubemap_path, size, offset, immaterial, see_through, thin, force_hugging, faces, geometry,
                 actor_settings_type, actor_settings_face, surface_type, atlas_offset)
