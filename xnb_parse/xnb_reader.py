@@ -4,7 +4,7 @@ XNB parser
 
 from xnb_parse.binstream import BinaryReader, BinaryWriter
 from xnb_parse.xna_native import decompress
-from xnb_parse.type_reader import ReaderError, NotGenericError, generic_reader_type
+from xnb_parse.type_reader import ReaderError, generic_reader_type
 from xnb_parse.type_readers.xna_primitive import NullReader
 
 
@@ -152,12 +152,12 @@ class XNBReader(BinaryReader):
         type_reader = self.read_type_id()
         if expected_type_reader is not None and not type_reader.is_null:
             try:
-                expected_type = generic_reader_type(expected_type_reader, type_params)
-            except NotGenericError:
-                try:
+                if expected_type_reader.is_generic_type and expected_type_reader.target_type is None:
+                    expected_type = generic_reader_type(expected_type_reader, type_params)
+                else:
                     expected_type = expected_type_reader.target_type
-                except AttributeError:
-                    expected_type = expected_type_reader
+            except AttributeError:
+                expected_type = expected_type_reader
 #            print "Expected: '%s' Actual: '%s'" % (expected_type, type_reader.target_type)
             if type_reader.target_type != expected_type:
                 raise ReaderError("Unexpected type: %s != %s" % (type_reader.target_type, expected_type))

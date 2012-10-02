@@ -5,7 +5,7 @@ FEZ music type readers
 from xnb_parse.type_reader import BaseTypeReader, ValueTypeReader
 from xnb_parse.type_reader_manager import TypeReaderPlugin
 from xnb_parse.type_readers.xna_system import ListReader, ArrayReader, EnumReader
-from xnb_parse.type_readers.xna_primitive import UInt32Reader
+from xnb_parse.type_readers.xna_primitive import Int32Reader
 
 
 class TrackedSongReader(BaseTypeReader, TypeReaderPlugin):
@@ -20,7 +20,7 @@ class TrackedSongReader(BaseTypeReader, TypeReaderPlugin):
         notes = self.stream.read_object(ArrayReader, [ShardNotesReader])
         assemble_chord = self.stream.read_object(EnumReader, [AssembleChordsReader])
         random_ordering = self.stream.read('?')
-        custom_ordering = self.stream.read_object(ArrayReader, [UInt32Reader])
+        custom_ordering = self.stream.read_object(ArrayReader, [Int32Reader])
         return loops, name, tempo, time_signature, notes, assemble_chord, random_ordering, custom_ordering
 
 

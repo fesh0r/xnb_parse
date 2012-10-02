@@ -9,8 +9,7 @@ from xnb_parse.type_reader import ReaderError, GenericTypeReader, BaseTypeReader
 
 
 class TypeReaderManager(object):
-    def __init__(self, reader_dir=None):
-        self.reader_dir = reader_dir
+    def __init__(self):
         self.type_readers = {}
         self.type_readers_type = {}
         self.generic_type_readers = {}
