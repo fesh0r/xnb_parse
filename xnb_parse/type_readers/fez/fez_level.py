@@ -2,7 +2,7 @@
 FEZ level type readers
 """
 
-from xnb_parse.type_reader import BaseTypeReader, generic_reader_type
+from xnb_parse.type_reader import BaseTypeReader
 from xnb_parse.type_reader_manager import TypeReaderPlugin
 from xnb_parse.type_readers.xna_system import ListReader, EnumReader
 from xnb_parse.type_readers.xna_primitive import Int32Reader, StringReader
@@ -14,7 +14,7 @@ class MapTreeReader(BaseTypeReader, TypeReaderPlugin):
     reader_name = 'FezEngine.Readers.MapTreeReader'
 
     def read(self):
-        root = self.stream.read_object(MapNodeReader.target_type)
+        root = self.stream.read_object(MapNodeReader)
         return root
 
 
@@ -24,9 +24,9 @@ class MapNodeReader(BaseTypeReader, TypeReaderPlugin):
 
     def read(self):
         level_name = self.stream.read('str')
-        connections = self.stream.read_object(generic_reader_type(ListReader, [MapNodeConnectionReader]))
-        node_type = self.stream.read_object(generic_reader_type(EnumReader, [LevelNodeTypeReader]))
-        conditions = self.stream.read_object(WinConditionsReader.target_type)
+        connections = self.stream.read_object(ListReader, [MapNodeConnectionReader])
+        node_type = self.stream.read_object(EnumReader, [LevelNodeTypeReader])
+        conditions = self.stream.read_object(WinConditionsReader)
         has_lesser_gate = self.stream.read('?')
         has_warp_gate = self.stream.read('?')
         return level_name, connections, node_type, conditions, has_lesser_gate, has_warp_gate
@@ -37,8 +37,8 @@ class MapNodeConnectionReader(BaseTypeReader, TypeReaderPlugin):
     reader_name = 'FezEngine.Readers.MapNodeConnectionReader'
 
     def read(self):
-        face = self.stream.read_object(generic_reader_type(EnumReader, [FaceOrientationReader]))
-        node = self.stream.read_object(MapNodeReader.target_type)
+        face = self.stream.read_object(EnumReader, [FaceOrientationReader])
+        node = self.stream.read_object(MapNodeReader)
         branch_oversize = self.stream.read('f')
         return face, node, branch_oversize
 
@@ -51,7 +51,7 @@ class WinConditionsReader(BaseTypeReader, TypeReaderPlugin):
         chest_count = self.stream.read('s4')
         locked_door_count = self.stream.read('s4')
         unlocked_door_count = self.stream.read('s4')
-        script_ids = self.stream.read_object(generic_reader_type(ListReader, [Int32Reader]))
+        script_ids = self.stream.read_object(ListReader, [Int32Reader])
         cube_shard_count = self.stream.read('s4')
         other_collectible_count = self.stream.read('s4')
         split_up_count = self.stream.read('s4')
@@ -70,11 +70,11 @@ class SkyReader(BaseTypeReader, TypeReaderPlugin):
         wind_speed = self.stream.read('f')
         density = self.stream.read('f')
         fog_density = self.stream.read('f')
-        layers = self.stream.read_object(generic_reader_type(ListReader, [SkyLayerReader]))
-        clouds = self.stream.read_object(generic_reader_type(ListReader, [StringReader]))
-        shadows = self.stream.read_object(StringReader.target_type)
-        stars = self.stream.read_object(StringReader.target_type)
-        cloud_tint = self.stream.read_object(StringReader.target_type)
+        layers = self.stream.read_object(ListReader, [SkyLayerReader])
+        clouds = self.stream.read_object(ListReader, [StringReader])
+        shadows = self.stream.read_object(StringReader)
+        stars = self.stream.read_object(StringReader)
+        cloud_tint = self.stream.read_object(StringReader)
         vertical_tiling = self.stream.read('?')
         horizontal_scrolling = self.stream.read('?')
         layer_base_height = self.stream.read('f')

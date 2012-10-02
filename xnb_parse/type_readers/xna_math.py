@@ -82,7 +82,7 @@ class PlaneReader(ValueTypeReader, TypeReaderPlugin):
     def __init__(self, stream=None, version=None):
         ValueTypeReader.__init__(self, stream=stream, version=version)
         TypeReaderPlugin.__init__(self)
-        self.vector2_reader = self.stream.get_type_reader(Vector2Reader.reader_name)
+        self.vector2_reader = self.stream.get_type_reader(Vector2Reader)
 
     def init_reader(self):
         BaseTypeReader.init_reader(self)
@@ -123,7 +123,7 @@ class BoundingBoxReader(ValueTypeReader, TypeReaderPlugin):
     def __init__(self, stream=None, version=None):
         ValueTypeReader.__init__(self, stream=stream, version=version)
         TypeReaderPlugin.__init__(self)
-        self.vector3_reader = self.stream.get_type_reader(Vector3Reader.reader_name)
+        self.vector3_reader = self.stream.get_type_reader(Vector3Reader)
 
     def init_reader(self):
         BaseTypeReader.init_reader(self)
@@ -142,7 +142,7 @@ class BoundingSphereReader(ValueTypeReader, TypeReaderPlugin):
     def __init__(self, stream=None, version=None):
         ValueTypeReader.__init__(self, stream=stream, version=version)
         TypeReaderPlugin.__init__(self)
-        self.vector3_reader = self.stream.get_type_reader(Vector3Reader.reader_name)
+        self.vector3_reader = self.stream.get_type_reader(Vector3Reader)
 
     def init_reader(self):
         BaseTypeReader.init_reader(self)
@@ -161,7 +161,7 @@ class BoundingFrustumReader(BaseTypeReader, TypeReaderPlugin):
     def __init__(self, stream=None, version=None):
         BaseTypeReader.__init__(self, stream=stream, version=version)
         TypeReaderPlugin.__init__(self)
-        self.matrix_reader = self.stream.get_type_reader(MatrixReader.reader_name)
+        self.matrix_reader = self.stream.get_type_reader(MatrixReader)
 
     def init_reader(self):
         BaseTypeReader.init_reader(self)
@@ -179,7 +179,7 @@ class RayReader(ValueTypeReader, TypeReaderPlugin):
     def __init__(self, stream=None, version=None):
         ValueTypeReader.__init__(self, stream=stream, version=version)
         TypeReaderPlugin.__init__(self)
-        self.vector3_reader = self.stream.get_type_reader(Vector3Reader.reader_name)
+        self.vector3_reader = self.stream.get_type_reader(Vector3Reader)
 
     def init_reader(self):
         BaseTypeReader.init_reader(self)

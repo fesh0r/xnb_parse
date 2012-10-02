@@ -2,7 +2,7 @@
 graphics type readers
 """
 
-from xnb_parse.type_reader import BaseTypeReader, ReaderError, generic_reader_name, generic_reader_type
+from xnb_parse.type_reader import BaseTypeReader, ReaderError, generic_reader_name
 from xnb_parse.type_reader_manager import TypeReaderPlugin
 from xnb_parse.xna_types.xna_graphics import Texture2D, Texture3D, TextureCube, CUBE_SIDES, IndexBuffer, Effect
 from xnb_parse.type_readers.xna_system import ExternalReferenceReader, NullableReader, ListReader
@@ -90,7 +90,7 @@ class VertexBufferReader(BaseTypeReader, TypeReaderPlugin):
     def __init__(self, stream=None, version=None):
         BaseTypeReader.__init__(self, stream=stream, version=version)
         TypeReaderPlugin.__init__(self)
-        self.vertexdec_reader = self.stream.get_type_reader(VertexDeclarationReader.reader_name)
+        self.vertexdec_reader = self.stream.get_type_reader(VertexDeclarationReader)
 
     def init_reader(self):
         BaseTypeReader.init_reader(self)
@@ -138,7 +138,7 @@ class EffectMaterialReader(BaseTypeReader, TypeReaderPlugin):
     def __init__(self, stream=None, version=None):
         BaseTypeReader.__init__(self, stream=stream, version=version)
         TypeReaderPlugin.__init__(self)
-        self.externalref_reader = self.stream.get_type_reader(ExternalReferenceReader.reader_name)
+        self.externalref_reader = self.stream.get_type_reader(ExternalReferenceReader)
 
     def init_reader(self):
         BaseTypeReader.init_reader(self)
@@ -157,8 +157,8 @@ class BasicEffectReader(BaseTypeReader, TypeReaderPlugin):
     def __init__(self, stream=None, version=None):
         BaseTypeReader.__init__(self, stream=stream, version=version)
         TypeReaderPlugin.__init__(self)
-        self.externalref_reader = self.stream.get_type_reader(ExternalReferenceReader.reader_name)
-        self.vector3_reader = self.stream.get_type_reader(Vector3Reader.reader_name)
+        self.externalref_reader = self.stream.get_type_reader(ExternalReferenceReader)
+        self.vector3_reader = self.stream.get_type_reader(Vector3Reader)
 
     def init_reader(self):
         BaseTypeReader.init_reader(self)
@@ -183,8 +183,8 @@ class AlphaTestEffectReader(BaseTypeReader, TypeReaderPlugin):
     def __init__(self, stream=None, version=None):
         BaseTypeReader.__init__(self, stream=stream, version=version)
         TypeReaderPlugin.__init__(self)
-        self.externalref_reader = self.stream.get_type_reader(ExternalReferenceReader.reader_name)
-        self.vector3_reader = self.stream.get_type_reader(Vector3Reader.reader_name)
+        self.externalref_reader = self.stream.get_type_reader(ExternalReferenceReader)
+        self.vector3_reader = self.stream.get_type_reader(Vector3Reader)
 
     def init_reader(self):
         BaseTypeReader.init_reader(self)
@@ -208,8 +208,8 @@ class DualTextureEffectReader(BaseTypeReader, TypeReaderPlugin):
     def __init__(self, stream=None, version=None):
         BaseTypeReader.__init__(self, stream=stream, version=version)
         TypeReaderPlugin.__init__(self)
-        self.externalref_reader = self.stream.get_type_reader(ExternalReferenceReader.reader_name)
-        self.vector3_reader = self.stream.get_type_reader(Vector3Reader.reader_name)
+        self.externalref_reader = self.stream.get_type_reader(ExternalReferenceReader)
+        self.vector3_reader = self.stream.get_type_reader(Vector3Reader)
 
     def init_reader(self):
         BaseTypeReader.init_reader(self)
@@ -232,8 +232,8 @@ class EnvironmentMapEffect(BaseTypeReader, TypeReaderPlugin):
     def __init__(self, stream=None, version=None):
         BaseTypeReader.__init__(self, stream=stream, version=version)
         TypeReaderPlugin.__init__(self)
-        self.externalref_reader = self.stream.get_type_reader(ExternalReferenceReader.reader_name)
-        self.vector3_reader = self.stream.get_type_reader(Vector3Reader.reader_name)
+        self.externalref_reader = self.stream.get_type_reader(ExternalReferenceReader)
+        self.vector3_reader = self.stream.get_type_reader(Vector3Reader)
 
     def init_reader(self):
         BaseTypeReader.init_reader(self)
@@ -259,8 +259,8 @@ class SkinnedEffect(BaseTypeReader, TypeReaderPlugin):
     def __init__(self, stream=None, version=None):
         BaseTypeReader.__init__(self, stream=stream, version=version)
         TypeReaderPlugin.__init__(self)
-        self.externalref_reader = self.stream.get_type_reader(ExternalReferenceReader.reader_name)
-        self.vector3_reader = self.stream.get_type_reader(Vector3Reader.reader_name)
+        self.externalref_reader = self.stream.get_type_reader(ExternalReferenceReader)
+        self.vector3_reader = self.stream.get_type_reader(Vector3Reader)
 
     def init_reader(self):
         BaseTypeReader.init_reader(self)
@@ -293,13 +293,13 @@ class SpriteFontReader(BaseTypeReader, TypeReaderPlugin):
         self.nullable_char_reader.readers[0].init_reader()
 
     def read(self):
-        texture = self.stream.read_object(Texture2DReader.target_type)
-        glyphs = self.stream.read_object(generic_reader_type(ListReader, [RectangleReader]))
-        cropping = self.stream.read_object(generic_reader_type(ListReader, [RectangleReader]))
-        char_map = self.stream.read_object(generic_reader_type(ListReader, [CharReader]))
+        texture = self.stream.read_object(Texture2DReader)
+        glyphs = self.stream.read_object(ListReader, [RectangleReader])
+        cropping = self.stream.read_object(ListReader, [RectangleReader])
+        char_map = self.stream.read_object(ListReader, [CharReader])
         v_space = self.stream.read('s4')
         h_space = self.stream.read('f')
-        kerning = self.stream.read_object(generic_reader_type(ListReader, [Vector3Reader]))
+        kerning = self.stream.read_object(ListReader, [Vector3Reader])
         default_char = self.nullable_char_reader.read()
         return texture, glyphs, cropping, char_map, v_space, h_space, kerning, default_char
 

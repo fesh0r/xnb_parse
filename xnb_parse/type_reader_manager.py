@@ -34,7 +34,12 @@ class TypeReaderManager(object):
             else:
                 raise ReaderError("Unknown base class for reader: %s" % str(class_))
 
-    def get_type_reader(self, name):
+    def get_type_reader(self, type_reader):
+        try:
+            name = type_reader.reader_name
+        except AttributeError:
+            name = type_reader
+
         type_spec = TypeSpec.parse(name)
 
         if type_spec.full_name in self.type_readers:
@@ -56,7 +61,12 @@ class TypeReaderManager(object):
 
         raise ReaderError("Type reader not found for '%s'" % type_spec.full_name)
 
-    def get_type_reader_by_type(self, reader_type):
+    def get_type_reader_by_type(self, type_reader):
+        try:
+            reader_type = type_reader.target_type
+        except AttributeError:
+            reader_type = type_reader
+
         if reader_type in self.type_readers_type:
             return self.type_readers_type[reader_type]
 

@@ -11,6 +11,10 @@ class ReaderError(Error):
     pass
 
 
+class NotGenericError(ReaderError):
+    pass
+
+
 class BaseTypeReader(object):
     target_type = None
     reader_name = None
@@ -70,11 +74,17 @@ def generic_reader_name(main_type, args=None):
     if args is None:
         args = []
     full_args = ['[' + arg.target_type + ']' for arg in args]
-    return main_type.generic_reader_name + ','.join(full_args)
+    try:
+        return main_type.generic_reader_name + ','.join(full_args)
+    except AttributeError:
+        raise ReaderError("Not generic type: '%s'" % main_type)
 
 
 def generic_reader_type(main_type, args=None):
     if args is None:
         args = []
     full_args = ['[' + arg.target_type + ']' for arg in args]
-    return main_type.generic_target_type + ','.join(full_args)
+    try:
+        return main_type.generic_target_type + ','.join(full_args)
+    except AttributeError:
+        raise NotGenericError("Not generic type: '%s'" % main_type)

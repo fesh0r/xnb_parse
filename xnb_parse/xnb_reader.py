@@ -4,7 +4,7 @@ XNB parser
 
 from xnb_parse.binstream import BinaryReader, BinaryWriter
 from xnb_parse.xna_native import decompress
-from xnb_parse.type_reader_manager import ReaderError
+from xnb_parse.type_reader import ReaderError, NotGenericError, generic_reader_type
 from xnb_parse.type_readers.xna_primitive import NullReader
 
 
@@ -85,12 +85,12 @@ class XNBReader(BinaryReader):
         self.parsed = True
         return self.content
 
-    def get_type_reader(self, name, version=None):
-        reader_type_class = self.type_reader_manager.get_type_reader(name)
+    def get_type_reader(self, type_reader, version=None):
+        reader_type_class = self.type_reader_manager.get_type_reader(type_reader)
         return reader_type_class(self, version)
 
-    def get_type_reader_by_type(self, reader_type, version=None):
-        reader_type_class = self.type_reader_manager.get_type_reader_by_type(reader_type)
+    def get_type_reader_by_type(self, type_reader, version=None):
+        reader_type_class = self.type_reader_manager.get_type_reader_by_type(type_reader)
         return reader_type_class(self, version)
 
     @classmethod
@@ -148,20 +148,26 @@ class XNBReader(BinaryReader):
         stream.extend(data)
         return stream.serial()
 
-    def read_object(self, expected_type=None):
+    def read_object(self, expected_type_reader=None, type_params=None):
         type_reader = self.read_type_id()
-#        print "Expected: '%s' Actual: '%s'" % (expected_type, type_reader.target_type)
-        if expected_type and not type_reader.is_null:
+        if expected_type_reader is not None and not type_reader.is_null:
+            try:
+                expected_type = generic_reader_type(expected_type_reader, type_params)
+            except NotGenericError:
+                try:
+                    expected_type = expected_type_reader.target_type
+                except AttributeError:
+                    expected_type = expected_type_reader
+#            print "Expected: '%s' Actual: '%s'" % (expected_type, type_reader.target_type)
             if type_reader.target_type != expected_type:
-#                raise ReaderError("Unexpected type: %s != %s" % (type_reader.target_type, expected_type))
-                print "Unexpected type: %s != %s" % (type_reader.target_type, expected_type)
+                raise ReaderError("Unexpected type: %s != %s" % (type_reader.target_type, expected_type))
         return type_reader.read()
 
     def read_value_or_object(self, type_reader):
         if type_reader.is_value_type:
             return type_reader.read()
         else:
-            return self.read_object(type_reader.target_type)
+            return self.read_object(type_reader)
 
     def read_type_id(self):
         type_id = self.read('7b')

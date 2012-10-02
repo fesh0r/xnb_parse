@@ -28,8 +28,8 @@ class SongReader(BaseTypeReader, TypeReaderPlugin):
     reader_name = 'Microsoft.Xna.Framework.Content.SongReader'
 
     def read(self):
-        filename = self.stream.read_object(StringReader.target_type)
-        duration = self.stream.read_object(Int32Reader.target_type)
+        filename = self.stream.read_object(StringReader)
+        duration = self.stream.read_object(Int32Reader)
         return Song(filename, duration)
 
 
@@ -38,10 +38,10 @@ class VideoReader(BaseTypeReader, TypeReaderPlugin):
     reader_name = 'Microsoft.Xna.Framework.Content.VideoReader'
 
     def read(self):
-        filename = self.stream.read_object(StringReader.target_type)
-        duration = self.stream.read_object(Int32Reader.target_type)
-        width = self.stream.read_object(Int32Reader.target_type)
-        height = self.stream.read_object(Int32Reader.target_type)
-        fps = self.stream.read_object(SingleReader.target_type)
-        video_type = self.stream.read_object(Int32Reader.target_type)
+        filename = self.stream.read_object(StringReader)
+        duration = self.stream.read_object(Int32Reader)
+        width = self.stream.read_object(Int32Reader)
+        height = self.stream.read_object(Int32Reader)
+        fps = self.stream.read_object(SingleReader)
+        video_type = self.stream.read_object(Int32Reader)
         return Video(filename, duration, width, height, fps, video_type)
