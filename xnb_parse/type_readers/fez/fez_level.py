@@ -158,3 +158,123 @@ class TrileReader(BaseTypeReader, TypeReaderPlugin):
         atlas_offset = self.vector2_reader.read()
         return (name, cubemap_path, size, offset, immaterial, see_through, thin, force_hugging, faces, geometry,
                 actor_settings_type, actor_settings_face, surface_type, atlas_offset)
+
+
+class LevelReader(BaseTypeReader, TypeReaderPlugin):
+    target_type = 'FezEngine.Structure.Level'
+    reader_name = 'FezEngine.Readers.LevelReader'
+
+
+class VolumeReader(BaseTypeReader, TypeReaderPlugin):
+    target_type = 'FezEngine.Structure.Volume'
+    reader_name = 'FezEngine.Readers.VolumeReader'
+
+
+class TrileEmplacementReader(BaseTypeReader, TypeReaderPlugin):
+    target_type = 'FezEngine.Structure.TrileEmplacement'
+    reader_name = 'FezEngine.Readers.TrileEmplacementReader'
+
+
+class TrileInstanceReader(BaseTypeReader, TypeReaderPlugin):
+    target_type = 'FezEngine.Structure.TrileInstance'
+    reader_name = 'FezEngine.Readers.TrileInstanceReader'
+
+
+class ArtObjectInstanceReader(BaseTypeReader, TypeReaderPlugin):
+    target_type = 'FezEngine.Structure.ArtObjectInstance'
+    reader_name = 'FezEngine.Readers.ArtObjectInstanceReader'
+
+
+class BackgroundPlaneReader(BaseTypeReader, TypeReaderPlugin):
+    target_type = 'FezEngine.Structure.BackgroundPlane'
+    reader_name = 'FezEngine.Readers.BackgroundPlaneReader'
+
+
+class TrileGroupReader(BaseTypeReader, TypeReaderPlugin):
+    target_type = 'FezEngine.Structure.TrileGroup'
+    reader_name = 'FezEngine.Readers.TrileGroupReader'
+
+
+class TrileFaceReader(BaseTypeReader, TypeReaderPlugin):
+    target_type = 'FezEngine.Structure.TrileFace'
+    reader_name = 'FezEngine.Readers.TrileFaceReader'
+
+
+class NpcInstanceReader(BaseTypeReader, TypeReaderPlugin):
+    target_type = 'FezEngine.Structure.NpcInstance'
+    reader_name = 'FezEngine.Readers.NpcInstanceReader'
+
+
+class MovementPathReader(BaseTypeReader, TypeReaderPlugin):
+    target_type = 'FezEngine.Structure.MovementPath'
+    reader_name = 'FezEngine.Readers.MovementPathReader'
+
+
+class AmbienceTrackReader(BaseTypeReader, TypeReaderPlugin):
+    target_type = 'FezEngine.Structure.AmbienceTrack'
+    reader_name = 'FezEngine.Readers.AmbienceTrackReader'
+
+
+class VolumeActorSettingsReader(BaseTypeReader, TypeReaderPlugin):
+    target_type = 'FezEngine.Structure.VolumeActorSettings'
+    reader_name = 'FezEngine.Readers.VolumeActorSettingsReader'
+
+
+class DotDialogueLineReader(BaseTypeReader, TypeReaderPlugin):
+    target_type = 'FezEngine.Structure.DotDialogueLine'
+    reader_name = 'FezEngine.Readers.DotDialogueLineReader'
+
+
+class ScriptReader(BaseTypeReader, TypeReaderPlugin):
+    target_type = 'FezEngine.Structure.Scripting.Script'
+    reader_name = 'FezEngine.Readers.ScriptReader'
+
+
+class ScriptTriggerReader(BaseTypeReader, TypeReaderPlugin):
+    target_type = 'FezEngine.Structure.Scripting.ScriptTrigger'
+    reader_name = 'FezEngine.Readers.ScriptTriggerReader'
+
+
+class ScriptActionReader(BaseTypeReader, TypeReaderPlugin):
+    target_type = 'FezEngine.Structure.Scripting.ScriptAction'
+    reader_name = 'FezEngine.Readers.ScriptActionReader'
+
+
+class ScriptConditionReader(BaseTypeReader, TypeReaderPlugin):
+    target_type = 'FezEngine.Structure.Scripting.ScriptCondition'
+    reader_name = 'FezEngine.Readers.ScriptConditionReader'
+
+
+class EntityReader(BaseTypeReader, TypeReaderPlugin):
+    target_type = 'FezEngine.Structure.Scripting.Entity'
+    reader_name = 'FezEngine.Readers.EntityReader'
+
+
+class InstanceActorSettingsReader(BaseTypeReader, TypeReaderPlugin):
+    target_type = 'FezEngine.Structure.InstanceActorSettings'
+    reader_name = 'FezEngine.Readers.InstanceActorSettingsReader'
+
+
+class ArtObjectActorSettingsReader(BaseTypeReader, TypeReaderPlugin):
+    target_type = 'FezEngine.Structure.ArtObjectActorSettings'
+    reader_name = 'FezEngine.Readers.ArtObjectActorSettingsReader'
+
+
+class PathSegmentReader(BaseTypeReader, TypeReaderPlugin):
+    target_type = 'FezEngine.Structure.PathSegment'
+    reader_name = 'FezEngine.Readers.PathSegmentReader'
+
+
+class SpeechLineReader(BaseTypeReader, TypeReaderPlugin):
+    target_type = 'FezEngine.Structure.SpeechLine'
+    reader_name = 'FezEngine.Readers.SpeechLineReader'
+
+
+class NpcActionContentReader(BaseTypeReader, TypeReaderPlugin):
+    target_type = 'FezEngine.Structure.NpcActionContent'
+    reader_name = 'FezEngine.Readers.NpcActionContentReader'
+
+
+class CameraNodeDataReader(BaseTypeReader, TypeReaderPlugin):
+    target_type = 'FezEngine.Structure.CameraNodeData'
+    reader_name = 'FezEngine.Readers.CameraNodeDataReader'

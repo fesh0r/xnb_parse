@@ -54,6 +54,54 @@ class SurfaceTypeReader(ValueTypeReader, TypeReaderPlugin):
         return self.stream.read('u4')
 
 
+class LiquidTypeReader(ValueTypeReader, TypeReaderPlugin):
+    target_type = 'FezEngine.Structure.LiquidType'
+    reader_name = 'FezEngine.Readers.LiquidTypeReader'
+
+    def read(self):
+        return self.stream.read('u4')
+
+
+class ViewpointReader(ValueTypeReader, TypeReaderPlugin):
+    target_type = 'FezEngine.Viewpoint'
+    reader_name = 'FezEngine.Readers.ViewpointReader'
+
+    def read(self):
+        return self.stream.read('u4')
+
+
+class PathEndBehaviorReader(ValueTypeReader, TypeReaderPlugin):
+    target_type = 'FezEngine.Structure.PathEndBehavior'
+    reader_name = 'FezEngine.Readers.PathEndBehaviorReader'
+
+    def read(self):
+        return self.stream.read('u4')
+
+
+class ComparisonOperatorReader(ValueTypeReader, TypeReaderPlugin):
+    target_type = 'FezEngine.Structure.Scripting.ComparisonOperator'
+    reader_name = 'FezEngine.Readers.ComparisonOperatorReader'
+
+    def read(self):
+        return self.stream.read('u4')
+
+
+class CodeInputReader(ValueTypeReader, TypeReaderPlugin):
+    target_type = 'FezEngine.Structure.Input.CodeInput'
+    reader_name = 'FezEngine.Readers.CodeInputReader'
+
+    def read(self):
+        return self.stream.read('u4')
+
+
+class VibrationMotorReader(ValueTypeReader, TypeReaderPlugin):
+    target_type = 'FezEngine.Structure.Input.VibrationMotor'
+    reader_name = 'FezEngine.Readers.VibrationMotorReader'
+
+    def read(self):
+        return self.stream.read('u4')
+
+
 class SetReader(GenericTypeReader, TypeReaderPlugin):
     generic_target_type = 'Common.Set`1'
     generic_reader_name = 'FezEngine.SetReader`1'
