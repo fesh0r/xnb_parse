@@ -4,6 +4,7 @@ FEZ level type readers
 
 from xnb_parse.type_reader import BaseTypeReader
 from xnb_parse.type_reader_manager import TypeReaderPlugin
+from xnb_parse.type_readers.xna_math import Vector3Reader, Vector2Reader
 from xnb_parse.type_readers.xna_system import ListReader, EnumReader
 from xnb_parse.type_readers.xna_primitive import Int32Reader, StringReader
 from xnb_parse.type_readers.fez.fez_basic import LevelNodeTypeReader, FaceOrientationReader
@@ -107,3 +108,48 @@ class SkyLayerReader(BaseTypeReader, TypeReaderPlugin):
         opacity = self.stream.read('f')
         fog_tint = self.stream.read('f')
         return name, in_front, opacity, fog_tint
+
+
+class TrileSetReader(BaseTypeReader, TypeReaderPlugin):
+    target_type = 'FezEngine.Structure.TrileSet'
+    reader_name = 'FezEngine.Readers.TrileSetReader'
+
+    def read(self):
+        name = self.stream.read('str')
+        triles = self.stream.read_object()
+        texture_atlas = self.stream.read_object()
+        return name, triles, texture_atlas
+
+
+class TrileReader(BaseTypeReader, TypeReaderPlugin):
+    target_type = 'FezEngine.Structure.Trile'
+    reader_name = 'FezEngine.Readers.TrileReader'
+
+    def __init__(self, stream=None, version=None):
+        BaseTypeReader.__init__(self, stream=stream, version=version)
+        TypeReaderPlugin.__init__(self)
+        self.vector2_reader = self.stream.get_type_reader(Vector2Reader)
+        self.vector3_reader = self.stream.get_type_reader(Vector3Reader)
+
+    def init_reader(self):
+        BaseTypeReader.init_reader(self)
+        self.vector2_reader.init_reader()
+        self.vector3_reader.init_reader()
+
+    def read(self):
+        name = self.stream.read('str')
+        cubemap_path = self.stream.read('str')
+        size = self.vector3_reader.read()
+        offset = self.vector3_reader.read()
+        immaterial = self.stream.read('?')
+        see_through = self.stream.read('?')
+        thin = self.stream.read('?')
+        force_hugging = self.stream.read('?')
+        faces = self.stream.read_object()
+        geometry = self.stream.read_object()
+        actor_settings_type = self.stream.read_object()
+        actor_settings_face = self.stream.read_object()
+        surface_type = self.stream.read_object()
+        atlas_offset = self.vector2_reader.read()
+        return (name, cubemap_path, size, offset, immaterial, see_through, thin, force_hugging, faces, geometry,
+                actor_settings_type, actor_settings_face, surface_type, atlas_offset)

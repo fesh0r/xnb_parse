@@ -38,6 +38,22 @@ class ActorTypeReader(ValueTypeReader, TypeReaderPlugin):
         return self.stream.read('u4')
 
 
+class CollisionTypeReader(ValueTypeReader, TypeReaderPlugin):
+    target_type = 'FezEngine.CollisionType'
+    reader_name = 'FezEngine.Readers.CollisionTypeReader'
+
+    def read(self):
+        return self.stream.read('u4')
+
+
+class SurfaceTypeReader(ValueTypeReader, TypeReaderPlugin):
+    target_type = 'FezEngine.Structure.SurfaceType'
+    reader_name = 'FezEngine.Readers.SurfaceTypeReader'
+
+    def read(self):
+        return self.stream.read('u4')
+
+
 class SetReader(GenericTypeReader, TypeReaderPlugin):
     generic_target_type = 'Common.Set`1'
     generic_reader_name = 'FezEngine.SetReader`1'
