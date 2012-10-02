@@ -62,7 +62,7 @@ class TypeSpec(object):
         if self.nested:
             name += '+' + '+'.join(self.nested)
         if self.generic_params:
-            name += ','.join(['[' + part.full_name + ']' for part in self.generic_params])
+            name += '[' + ','.join([part.full_name for part in self.generic_params]) + ']'
         if self.array_spec:
             for cur_index in self.array_spec:
                 if cur_index.bound:
