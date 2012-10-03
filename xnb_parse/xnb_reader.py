@@ -30,7 +30,7 @@ class XNBReader(BinaryReader):
     _header = '3s c B B I'
 
     def __init__(self, data, file_platform=PLATFORM_WINDOWS, file_version=VERSION_40, graphics_profile=PROFILE_REACH,
-                 compressed=False, type_reader_manager=None, parse=True):
+                 compressed=False, type_reader_manager=None, parse=True, expected_type_reader=None):
         BinaryReader.__init__(self, data, big_endian=False)
         self.file_platform = file_platform
         self.file_version = file_version
@@ -40,6 +40,7 @@ class XNBReader(BinaryReader):
         self.type_readers = []
         self.shared_objects = []
         self.null_reader = None
+        self.expected_type_reader = expected_type_reader
         self.content = None
         self.parsed = False
         if parse:
@@ -55,15 +56,15 @@ class XNBReader(BinaryReader):
         if self.parsed:
             return self.content
 
-        self.null_reader = self.get_type_reader(NullReader.reader_name)
+        self.null_reader = self.get_type_reader(NullReader)
         self.null_reader.init_reader()
 
         if verbose:
             print 'Type readers:'
-        reader_count = self.read('7b')
+        reader_count = self.read_7bit_encoded_int()
         for reader_index in range(reader_count):
-            reader_name = self.read('str')
-            reader_version = self.read('s4')
+            reader_name = self.read_string()
+            reader_version = self.read_int32()
             reader = self.get_type_reader(reader_name, reader_version)
             self.type_readers.append(reader)
             if verbose:
@@ -75,9 +76,9 @@ class XNBReader(BinaryReader):
         for reader in self.type_readers:
             reader.init_reader()
 
-        shared_count = self.read('7b')
+        shared_count = self.read_7bit_encoded_int()
 
-        self.content = self.read_object()
+        self.content = self.read_object(self.expected_type_reader)
         if verbose:
             print 'Asset: %s' % str(self.content)
 
@@ -122,12 +123,12 @@ class XNBReader(BinaryReader):
             compressed = bool(attribs & cls._compress_mask)
             size -= stream.calc_size(cls._header)
         if compressed:
-            uncomp = stream.read('u4')
-            size -= stream.size('u4')
-            content_comp = stream.pull(size)
+            uncomp = stream.read_int32()
+            size -= 4
+            content_comp = stream.read_bytes(size)
             content = decompress(content_comp, uncomp)
         else:
-            content = stream.pull(size)
+            content = stream.read_bytes(size)
         return cls(content, platform, version, profile, compressed, type_reader_manager, parse)
 
     def save(self, compress=False):
@@ -152,7 +153,7 @@ class XNBReader(BinaryReader):
             data = self.data
             size = len(data) + stream.calc_size(self._header)
         stream.pack(self._header, XNB_SIGNATURE, self.file_platform, self.file_version, attribs, size)
-        stream.extend(data)
+        stream.write_bytes(data)
         return stream.serial()
 
     def read_object(self, expected_type_reader=None, type_params=None):
@@ -177,7 +178,7 @@ class XNBReader(BinaryReader):
             return self.read_object(type_reader)
 
     def read_type_id(self):
-        type_id = self.read('7b')
+        type_id = self.read_7bit_encoded_int()
         if type_id == 0:
             # null object
             return self.null_reader
@@ -186,44 +187,44 @@ class XNBReader(BinaryReader):
         return self.type_readers[type_id - 1]
 
     def read_color(self):
-        v_r = self.read('u1')
-        v_g = self.read('u1')
-        v_b = self.read('u1')
-        v_a = self.read('u1')
+        v_r = self.read_byte()
+        v_g = self.read_byte()
+        v_b = self.read_byte()
+        v_a = self.read_byte()
         return v_r, v_g, v_b, v_a
 
     def read_external_reference(self, expected_type=None):
-        filename = self.read('str')
-        return filename
+        filename = self.read_string()
+        return filename, expected_type
 
     def read_matrix(self):
         matrix = []
         for _ in range(16):
-            value = self.read('f')
+            value = self.read_single()
             matrix.append(value)
         return matrix
 
     def read_quaternion(self):
-        v_x = self.read('f')
-        v_y = self.read('f')
-        v_z = self.read('f')
-        v_w = self.read('f')
+        v_x = self.read_single()
+        v_y = self.read_single()
+        v_z = self.read_single()
+        v_w = self.read_single()
         return v_x, v_y, v_z, v_w
 
     def read_vector2(self):
-        v_x = self.read('f')
-        v_y = self.read('f')
+        v_x = self.read_single()
+        v_y = self.read_single()
         return v_x, v_y
 
     def read_vector3(self):
-        v_x = self.read('f')
-        v_y = self.read('f')
-        v_z = self.read('f')
+        v_x = self.read_single()
+        v_y = self.read_single()
+        v_z = self.read_single()
         return v_x, v_y, v_z
 
     def read_vector4(self):
-        v_x = self.read('f')
-        v_y = self.read('f')
-        v_z = self.read('f')
-        v_w = self.read('f')
+        v_x = self.read_single()
+        v_y = self.read_single()
+        v_z = self.read_single()
+        v_w = self.read_single()
         return v_x, v_y, v_z, v_w

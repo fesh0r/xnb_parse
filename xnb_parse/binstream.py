@@ -127,6 +127,9 @@ class BinaryWriter(BinaryStream):
         self.write_7bit_encoded_int(len(raw_value))
         self.stream.write(raw_value)
 
+    def write_bytes(self, value):
+        self.extend(value)
+
 
 class BinaryReader(BinaryStream):
     def __init__(self, data, big_endian=False):
@@ -245,3 +248,6 @@ class BinaryReader(BinaryStream):
         raw_value = self.pull(size)
         value = raw_value.decode('utf-8')
         return value
+
+    def read_bytes(self, count):
+        return self.pull(count)

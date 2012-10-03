@@ -7,205 +7,139 @@ from xnb_parse.type_reader import BaseTypeReader, ValueTypeReader
 
 
 class Vector2Reader(ValueTypeReader, TypeReaderPlugin):
-    target_type = 'Microsoft.Xna.Framework.Vector2'
-    reader_name = 'Microsoft.Xna.Framework.Content.Vector2Reader'
+    target_type = u'Microsoft.Xna.Framework.Vector2'
+    reader_name = u'Microsoft.Xna.Framework.Content.Vector2Reader'
 
     def read(self):
-        v_x = self.stream.read('f')
-        v_y = self.stream.read('f')
-        return v_x, v_y
+        return self.stream.read_vector2()
 
 
 class Vector3Reader(ValueTypeReader, TypeReaderPlugin):
-    target_type = 'Microsoft.Xna.Framework.Vector3'
-    reader_name = 'Microsoft.Xna.Framework.Content.Vector3Reader'
+    target_type = u'Microsoft.Xna.Framework.Vector3'
+    reader_name = u'Microsoft.Xna.Framework.Content.Vector3Reader'
 
     def read(self):
-        v_x = self.stream.read('f')
-        v_y = self.stream.read('f')
-        v_z = self.stream.read('f')
-        return v_x, v_y, v_z
+        return self.stream.read_vector3()
 
 
 class Vector4Reader(ValueTypeReader, TypeReaderPlugin):
-    target_type = 'Microsoft.Xna.Framework.Vector4'
-    reader_name = 'Microsoft.Xna.Framework.Content.Vector4Reader'
+    target_type = u'Microsoft.Xna.Framework.Vector4'
+    reader_name = u'Microsoft.Xna.Framework.Content.Vector4Reader'
 
     def read(self):
-        v_x = self.stream.read('f')
-        v_y = self.stream.read('f')
-        v_z = self.stream.read('f')
-        v_w = self.stream.read('f')
-        return v_x, v_y, v_z, v_w
+        return self.stream.read_vector4()
 
 
 class MatrixReader(ValueTypeReader, TypeReaderPlugin):
-    target_type = 'Microsoft.Xna.Framework.Matrix'
-    reader_name = 'Microsoft.Xna.Framework.Content.MatrixReader'
+    target_type = u'Microsoft.Xna.Framework.Matrix'
+    reader_name = u'Microsoft.Xna.Framework.Content.MatrixReader'
 
     def read(self):
-        matrix = []
-        for _ in range(16):
-            value = self.stream.read('f')
-            matrix.append(value)
-        return matrix
+        return self.stream.read_matrix()
 
 
 class QuaternionReader(ValueTypeReader, TypeReaderPlugin):
-    target_type = 'Microsoft.Xna.Framework.Quaternion'
-    reader_name = 'Microsoft.Xna.Framework.Content.QuaternionReader'
+    target_type = u'Microsoft.Xna.Framework.Quaternion'
+    reader_name = u'Microsoft.Xna.Framework.Content.QuaternionReader'
 
     def read(self):
-        v_x = self.stream.read('f')
-        v_y = self.stream.read('f')
-        v_z = self.stream.read('f')
-        v_w = self.stream.read('f')
-        return v_x, v_y, v_z, v_w
+        return self.stream.read_quaternion()
 
 
 class ColorReader(ValueTypeReader, TypeReaderPlugin):
-    target_type = 'Microsoft.Xna.Framework.Graphics.Color'
-    reader_name = 'Microsoft.Xna.Framework.Content.ColorReader'
+    target_type = u'Microsoft.Xna.Framework.Graphics.Color'
+    reader_name = u'Microsoft.Xna.Framework.Content.ColorReader'
 
     def read(self):
-        v_r = self.stream.read('u1')
-        v_g = self.stream.read('u1')
-        v_b = self.stream.read('u1')
-        v_a = self.stream.read('u1')
-        return v_r, v_g, v_b, v_a
+        return self.stream.read_color()
 
 
 class PlaneReader(ValueTypeReader, TypeReaderPlugin):
-    target_type = 'Microsoft.Xna.Framework.Plane'
-    reader_name = 'Microsoft.Xna.Framework.Content.PlaneReader'
-
-    def __init__(self, stream=None, version=None):
-        ValueTypeReader.__init__(self, stream=stream, version=version)
-        TypeReaderPlugin.__init__(self)
-        self.vector2_reader = self.stream.get_type_reader(Vector2Reader)
-
-    def init_reader(self):
-        ValueTypeReader.init_reader(self)
-        self.vector2_reader.init_reader()
+    target_type = u'Microsoft.Xna.Framework.Plane'
+    reader_name = u'Microsoft.Xna.Framework.Content.PlaneReader'
 
     def read(self):
-        plane_normal = self.vector2_reader.read()
-        plane_d = self.stream.read('f')
+        plane_normal = self.stream.read_vector3()
+        plane_d = self.stream.read_single()
         return plane_normal, plane_d
 
 
 class PointReader(ValueTypeReader, TypeReaderPlugin):
-    target_type = 'Microsoft.Xna.Framework.Point'
-    reader_name = 'Microsoft.Xna.Framework.Content.PointReader'
+    target_type = u'Microsoft.Xna.Framework.Point'
+    reader_name = u'Microsoft.Xna.Framework.Content.PointReader'
 
     def read(self):
-        v_x = self.stream.read('s4')
-        v_y = self.stream.read('s4')
+        v_x = self.stream.read_int32()
+        v_y = self.stream.read_int32()
         return v_x, v_y
 
 
 class RectangleReader(ValueTypeReader, TypeReaderPlugin):
-    target_type = 'Microsoft.Xna.Framework.Rectangle'
-    reader_name = 'Microsoft.Xna.Framework.Content.RectangleReader'
+    target_type = u'Microsoft.Xna.Framework.Rectangle'
+    reader_name = u'Microsoft.Xna.Framework.Content.RectangleReader'
 
     def read(self):
-        v_x = self.stream.read('s4')
-        v_y = self.stream.read('s4')
-        v_w = self.stream.read('s4')
-        v_h = self.stream.read('s4')
+        v_x = self.stream.read_int32()
+        v_y = self.stream.read_int32()
+        v_w = self.stream.read_int32()
+        v_h = self.stream.read_int32()
         return v_x, v_y, v_w, v_h
 
 
 class BoundingBoxReader(ValueTypeReader, TypeReaderPlugin):
-    target_type = 'Microsoft.Xna.Framework.BoundingBox'
-    reader_name = 'Microsoft.Xna.Framework.Content.BoundingBoxReader'
-
-    def __init__(self, stream=None, version=None):
-        ValueTypeReader.__init__(self, stream=stream, version=version)
-        TypeReaderPlugin.__init__(self)
-        self.vector3_reader = self.stream.get_type_reader(Vector3Reader)
-
-    def init_reader(self):
-        ValueTypeReader.init_reader(self)
-        self.vector3_reader.init_reader()
+    target_type = u'Microsoft.Xna.Framework.BoundingBox'
+    reader_name = u'Microsoft.Xna.Framework.Content.BoundingBoxReader'
 
     def read(self):
-        v_min = self.vector3_reader.read()
-        v_max = self.vector3_reader.read()
+        v_min = self.stream.read_vector3()
+        v_max = self.stream.read_vector3()
         return v_min, v_max
 
 
 class BoundingSphereReader(ValueTypeReader, TypeReaderPlugin):
-    target_type = 'Microsoft.Xna.Framework.BoundingSphere'
-    reader_name = 'Microsoft.Xna.Framework.Content.BoundingSphereReader'
-
-    def __init__(self, stream=None, version=None):
-        ValueTypeReader.__init__(self, stream=stream, version=version)
-        TypeReaderPlugin.__init__(self)
-        self.vector3_reader = self.stream.get_type_reader(Vector3Reader)
-
-    def init_reader(self):
-        ValueTypeReader.init_reader(self)
-        self.vector3_reader.init_reader()
+    target_type = u'Microsoft.Xna.Framework.BoundingSphere'
+    reader_name = u'Microsoft.Xna.Framework.Content.BoundingSphereReader'
 
     def read(self):
-        v_centre = self.vector3_reader.read()
-        v_radius = self.stream.read('f')
+        v_centre = self.stream.read_vector3()
+        v_radius = self.stream.read_single()
         return v_centre, v_radius
 
 
 class BoundingFrustumReader(BaseTypeReader, TypeReaderPlugin):
-    target_type = 'Microsoft.Xna.Framework.BoundingFrustum'
-    reader_name = 'Microsoft.Xna.Framework.Content.BoundingFrustumReader'
-
-    def __init__(self, stream=None, version=None):
-        BaseTypeReader.__init__(self, stream=stream, version=version)
-        TypeReaderPlugin.__init__(self)
-        self.matrix_reader = self.stream.get_type_reader(MatrixReader)
-
-    def init_reader(self):
-        BaseTypeReader.init_reader(self)
-        self.matrix_reader.init_reader()
+    target_type = u'Microsoft.Xna.Framework.BoundingFrustum'
+    reader_name = u'Microsoft.Xna.Framework.Content.BoundingFrustumReader'
 
     def read(self):
-        value = self.matrix_reader.read()
+        value = self.stream.read_matrix()
         return value
 
 
 class RayReader(ValueTypeReader, TypeReaderPlugin):
-    target_type = 'Microsoft.Xna.Framework.Ray'
-    reader_name = 'Microsoft.Xna.Framework.Content.RayReader'
-
-    def __init__(self, stream=None, version=None):
-        ValueTypeReader.__init__(self, stream=stream, version=version)
-        TypeReaderPlugin.__init__(self)
-        self.vector3_reader = self.stream.get_type_reader(Vector3Reader)
-
-    def init_reader(self):
-        ValueTypeReader.init_reader(self)
-        self.vector3_reader.init_reader()
+    target_type = u'Microsoft.Xna.Framework.Ray'
+    reader_name = u'Microsoft.Xna.Framework.Content.RayReader'
 
     def read(self):
-        v_pos = self.vector3_reader.read()
-        v_dir = self.vector3_reader.read()
+        v_pos = self.stream.read_vector3()
+        v_dir = self.stream.read_vector3()
         return v_pos, v_dir
 
 
 class CurveReader(BaseTypeReader, TypeReaderPlugin):
-    target_type = 'Microsoft.Xna.Framework.Curve'
-    reader_name = 'Microsoft.Xna.Framework.Content.CurveReader'
+    target_type = u'Microsoft.Xna.Framework.Curve'
+    reader_name = u'Microsoft.Xna.Framework.Content.CurveReader'
 
     def read(self):
-        pre_loop = self.stream.read('s4')
-        post_loop = self.stream.read('s4')
-        key_count = self.stream.read('u4')
+        pre_loop = self.stream.read_int32()
+        post_loop = self.stream.read_int32()
+        key_count = self.stream.read_int32()
         keys = []
         for _ in range(key_count):
-            pos = self.stream.read('f')
-            value = self.stream.read('f')
-            tangent_in = self.stream.read('f')
-            tangent_out = self.stream.read('f')
-            cont = self.stream.read('s4')
+            pos = self.stream.read_single()
+            value = self.stream.read_single()
+            tangent_in = self.stream.read_single()
+            tangent_out = self.stream.read_single()
+            cont = self.stream.read_int32()
             key = (pos, value, tangent_in, tangent_out, cont)
             keys.append(key)
         return pre_loop, post_loop, keys

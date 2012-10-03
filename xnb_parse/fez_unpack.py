@@ -13,11 +13,11 @@ def unpack(in_file, out_dir):
     with open(in_file, 'rb') as in_handle:
         in_data = in_handle.read()
     stream = BinaryReader(in_data)
-    capacity = stream.read('u4')
+    capacity = stream.read_int32()
     for _ in range(capacity):
-        filename = stream.read('str')
-        filesize = stream.read('u4')
-        filedata = stream.pull(filesize)
+        filename = stream.read_string()
+        filesize = stream.read_int32()
+        filedata = stream.read_bytes(filesize)
         print "'%s' %d" % (filename, filesize)
         filename = os.path.normpath(filename + '.xnb')
         filename = os.path.join(out_dir, filename)
