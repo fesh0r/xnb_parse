@@ -184,3 +184,46 @@ class XNBReader(BinaryReader):
         if type_id > len(self.type_readers):
             raise ReaderError("type id out of range: %d > %d" % (type_id, len(self.type_readers)))
         return self.type_readers[type_id - 1]
+
+    def read_color(self):
+        v_r = self.read('u1')
+        v_g = self.read('u1')
+        v_b = self.read('u1')
+        v_a = self.read('u1')
+        return v_r, v_g, v_b, v_a
+
+    def read_external_reference(self, expected_type=None):
+        filename = self.read('str')
+        return filename
+
+    def read_matrix(self):
+        matrix = []
+        for _ in range(16):
+            value = self.read('f')
+            matrix.append(value)
+        return matrix
+
+    def read_quaternion(self):
+        v_x = self.read('f')
+        v_y = self.read('f')
+        v_z = self.read('f')
+        v_w = self.read('f')
+        return v_x, v_y, v_z, v_w
+
+    def read_vector2(self):
+        v_x = self.read('f')
+        v_y = self.read('f')
+        return v_x, v_y
+
+    def read_vector3(self):
+        v_x = self.read('f')
+        v_y = self.read('f')
+        v_z = self.read('f')
+        return v_x, v_y, v_z
+
+    def read_vector4(self):
+        v_x = self.read('f')
+        v_y = self.read('f')
+        v_z = self.read('f')
+        v_w = self.read('f')
+        return v_x, v_y, v_z, v_w

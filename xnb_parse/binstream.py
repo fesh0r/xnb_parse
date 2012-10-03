@@ -48,24 +48,68 @@ class BinaryWriter(BinaryStream):
 
     def write(self, value, type_):
         try:
-            self.stream.write(self._types[type_].pack(value))
+            self.write_struct(value, self._types[type_])
         except KeyError:
             if type_ == 'c':
-                self.write_utf8_char(value)
+                self.write_char(value)
             elif type_ == 'str':
-                raw_value = value.encode('utf-8')
-                self.write_7bit_int(len(raw_value))
-                self.stream.write(raw_value)
+                self.write_string(value)
             elif type_ == '7b':
-                self.write_7bit_int(value)
+                self.write_7bit_encoded_int(value)
             else:
                 raise
+
+    def write_struct(self, value, struct_):
+        self.stream.write(struct_.pack(value))
 
     def pack(self, fmt, *values):
         local_struct = struct.Struct(self._fmt_end + fmt)
         self.stream.write(local_struct.pack(*values))
 
-    def write_7bit_int(self, value):
+    def extend(self, value):
+        self.stream.write(value)
+
+    def serial(self):
+        index = self.stream.tell()
+        self.stream.seek(0)
+        out = self.stream.read()
+        self.stream.seek(index)
+        return out
+
+    def write_byte(self, value):
+        return self.write_struct(value, self._types['u1'])
+
+    def write_sbyte(self, value):
+        return self.write_struct(value, self._types['s1'])
+
+    def write_int16(self, value):
+        return self.write_struct(value, self._types['s2'])
+
+    def write_uint16(self, value):
+        return self.write_struct(value, self._types['u2'])
+
+    def write_int32(self, value):
+        return self.write_struct(value, self._types['s4'])
+
+    def write_uint32(self, value):
+        return self.write_struct(value, self._types['u4'])
+
+    def write_int64(self, value):
+        return self.write_struct(value, self._types['s8'])
+
+    def write_uint64(self, value):
+        return self.write_struct(value, self._types['u8'])
+
+    def write_boolean(self, value):
+        return self.write_struct(value, self._types['?'])
+
+    def write_single(self, value):
+        return self.write_struct(value, self._types['f'])
+
+    def write_double(self, value):
+        return self.write_struct(value, self._types['d'])
+
+    def write_7bit_encoded_int(self, value):
         temp = value
         out = ''
         while temp >= 128:
@@ -74,16 +118,14 @@ class BinaryWriter(BinaryStream):
         out += chr(temp)
         self.stream.write(out)
 
-    def write_utf8_char(self, value):
+    def write_char(self, value):
         raw_value = value.encode('utf-8')
         self.stream.write(raw_value)
 
-    def extend(self, value):
-        self.stream.write(value)
-
-    def serial(self):
-        self.stream.seek(0)
-        return self.stream.read()
+    def write_string(self, value):
+        raw_value = value.encode('utf-8')
+        self.write_7bit_encoded_int(len(raw_value))
+        self.stream.write(raw_value)
 
 
 class BinaryReader(BinaryStream):
@@ -94,19 +136,21 @@ class BinaryReader(BinaryStream):
 
     def read(self, type_):
         try:
-            value, = self._types[type_].unpack_from(self.data, self._index)
-            self._index += self._types[type_].size
+            value = self.read_struct(self._types[type_])
         except KeyError:
             if type_ == 'c':
-                value = self.read_utf8_char()
+                value = self.read_char()
             elif type_ == 'str':
-                size = self.read_7bit_int()
-                raw_value = self.pull(size)
-                value = raw_value.decode('utf-8')
+                value = self.read_string()
             elif type_ == '7b':
-                value = self.read_7bit_int()
+                value = self.read_7bit_encoded_int()
             else:
                 raise
+        return value
+
+    def read_struct(self, struct_):
+        value, = struct_.unpack_from(self.data, self._index)
+        self._index += struct_.size
         return value
 
     def next(self, count):
@@ -137,7 +181,40 @@ class BinaryReader(BinaryStream):
         self._index += local_struct.size
         return values
 
-    def read_7bit_int(self):
+    def read_byte(self):
+        return self.read_struct(self._types['u1'])
+
+    def read_sbyte(self):
+        return self.read_struct(self._types['s1'])
+
+    def read_int16(self):
+        return self.read_struct(self._types['s2'])
+
+    def read_uint16(self):
+        return self.read_struct(self._types['u2'])
+
+    def read_int32(self):
+        return self.read_struct(self._types['s4'])
+
+    def read_uint32(self):
+        return self.read_struct(self._types['u4'])
+
+    def read_int64(self):
+        return self.read_struct(self._types['s8'])
+
+    def read_uint64(self):
+        return self.read_struct(self._types['u8'])
+
+    def read_boolean(self):
+        return self.read_struct(self._types['?'])
+
+    def read_single(self):
+        return self.read_struct(self._types['f'])
+
+    def read_double(self):
+        return self.read_struct(self._types['d'])
+
+    def read_7bit_encoded_int(self):
         value = 0
         shift = 0
         while shift < 32:
@@ -150,7 +227,7 @@ class BinaryReader(BinaryStream):
             raise ValueError("Shift out of range")
         return value
 
-    def read_utf8_char(self):
+    def read_char(self):
         raw_value = ord(self.pull(1))
         byte_count = 0
         while raw_value & (0x80 >> byte_count):
@@ -161,4 +238,10 @@ class BinaryReader(BinaryStream):
             raw_value |= ord(self.pull(1)) & 0x3f
             byte_count -= 1
         value = unichr(raw_value)
+        return value
+
+    def read_string(self):
+        size = self.read_7bit_encoded_int()
+        raw_value = self.pull(size)
+        value = raw_value.decode('utf-8')
         return value
