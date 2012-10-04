@@ -4,7 +4,7 @@ FEZ graphics type readers
 
 from xnb_parse.type_reader import BaseTypeReader, ValueTypeReader, GenericTypeReader, generic_reader_type
 from xnb_parse.type_reader_manager import TypeReaderPlugin
-from xnb_parse.type_readers.xna_system import ListReader, ArrayReader, TimeSpanReader, EnumReader, ReflectiveReader
+from xnb_parse.type_readers.xna_system import ListReader, ArrayReader, TimeSpanReader, ReflectiveReader
 from xnb_parse.type_readers.xna_math import ColorReader, MatrixReader
 from xnb_parse.type_readers.xna_graphics import PrimitiveTypeReader
 from xnb_parse.type_readers.xna_primitive import StringReader, UInt16Reader
@@ -21,7 +21,7 @@ class ArtObjectReader(BaseTypeReader, TypeReaderPlugin):
         size = self.stream.read_vector3()
         geometry = self.stream.read_object(ShaderInstancedIndexedPrimitivesReader,
                                            [VertexPositionNormalTextureInstanceReader, MatrixReader])
-        actor_type = self.stream.read_object(EnumReader, [ActorTypeReader])
+        actor_type = self.stream.read_object(ActorTypeReader)
         no_silhouette = self.stream.read_boolean()
         laser_outlets = self.stream.read_object(ReflectiveReader, [generic_reader_type(SetReader,
                                                                                        [FaceOrientationReader])])
@@ -33,7 +33,7 @@ class ShaderInstancedIndexedPrimitivesReader(GenericTypeReader, TypeReaderPlugin
     generic_reader_name = u'FezEngine.Readers.ShaderInstancedIndexedPrimitivesReader`2'
 
     def read(self):
-        primitive_type = self.stream.read_object(EnumReader, [PrimitiveTypeReader])
+        primitive_type = self.stream.read_object(PrimitiveTypeReader)
         vertices = self.stream.read_object(ArrayReader, [self.readers[0]])
         indices = self.stream.read_object(ArrayReader, [UInt16Reader])
         return primitive_type, vertices, indices

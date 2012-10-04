@@ -6,7 +6,7 @@ from xnb_parse.type_reader import BaseTypeReader, ValueTypeReader
 from xnb_parse.type_reader_manager import TypeReaderPlugin
 from xnb_parse.type_readers.xna_graphics import Texture2DReader
 from xnb_parse.type_readers.xna_math import Vector4Reader
-from xnb_parse.type_readers.xna_system import ListReader, EnumReader, DictionaryReader, ArrayReader, TimeSpanReader
+from xnb_parse.type_readers.xna_system import ListReader, DictionaryReader, ArrayReader, TimeSpanReader
 from xnb_parse.type_readers.xna_primitive import Int32Reader, StringReader, BooleanReader
 from xnb_parse.type_readers.fez.fez_basic import LevelNodeTypeReader, FaceOrientationReader, CollisionTypeReader, \
     LiquidTypeReader, CodeInputReader, ViewpointReader, ActorTypeReader, SurfaceTypeReader, PathEndBehaviorReader, \
@@ -31,7 +31,7 @@ class MapNodeReader(BaseTypeReader, TypeReaderPlugin):
     def read(self):
         level_name = self.stream.read_string()
         connections = self.stream.read_object(ListReader, [MapNodeConnectionReader])
-        node_type = self.stream.read_object(EnumReader, [LevelNodeTypeReader])
+        node_type = self.stream.read_object(LevelNodeTypeReader)
         conditions = self.stream.read_object(WinConditionsReader)
         has_lesser_gate = self.stream.read_boolean()
         has_warp_gate = self.stream.read_boolean()
@@ -43,7 +43,7 @@ class MapNodeConnectionReader(BaseTypeReader, TypeReaderPlugin):
     reader_name = u'FezEngine.Readers.MapNodeConnectionReader'
 
     def read(self):
-        face = self.stream.read_object(EnumReader, [FaceOrientationReader])
+        face = self.stream.read_object(FaceOrientationReader)
         node = self.stream.read_object(MapNodeReader)
         branch_oversize = self.stream.read_single()
         return face, node, branch_oversize
@@ -142,9 +142,9 @@ class TrileReader(BaseTypeReader, TypeReaderPlugin):
         faces = self.stream.read_object(DictionaryReader, [FaceOrientationReader, CollisionTypeReader])
         geometry = self.stream.read_object(ShaderInstancedIndexedPrimitivesReader,
                                            [VertexPositionNormalTextureInstanceReader, Vector4Reader])
-        actor_settings_type = self.stream.read_object(EnumReader, [ActorTypeReader])
-        actor_settings_face = self.stream.read_object(EnumReader, [FaceOrientationReader])
-        surface_type = self.stream.read_object(EnumReader, [SurfaceTypeReader])
+        actor_settings_type = self.stream.read_object(ActorTypeReader)
+        actor_settings_face = self.stream.read_object(FaceOrientationReader)
+        surface_type = self.stream.read_object(SurfaceTypeReader)
         atlas_offset = self.stream.read_vector2()
         return (name, cubemap_path, size, offset, immaterial, see_through, thin, force_hugging, faces, geometry,
                 actor_settings_type, actor_settings_face, surface_type, atlas_offset)
@@ -167,7 +167,7 @@ class LevelReader(BaseTypeReader, TypeReaderPlugin):
         halo_filtering = self.stream.read_boolean()
         blinking_alpha = self.stream.read_boolean()
         loops = self.stream.read_boolean()
-        water_type = self.stream.read_object(EnumReader, [LiquidTypeReader])
+        water_type = self.stream.read_object(LiquidTypeReader)
         water_height = self.stream.read_single()
         sky_name = self.stream.read_string()
         trile_set_name = self.stream.read_object(StringReader)
@@ -187,7 +187,7 @@ class LevelReader(BaseTypeReader, TypeReaderPlugin):
         low_pass = self.stream.read_boolean()
         muted_loops = self.stream.read_object(ListReader, [StringReader])
         ambience_tracks = self.stream.read_object(ListReader, [AmbienceTrackReader])
-        node_type = self.stream.read_object(EnumReader, [LevelNodeTypeReader])
+        node_type = self.stream.read_object(LevelNodeTypeReader)
         quantum = self.stream.read_boolean()
         return (name, size, starting_position, sequence_samples_path, flat, skip_postprocess, base_diffuse,
                 base_ambient, gomez_halo_name, halo_filtering, blinking_alpha, loops, water_type, water_height,
@@ -275,7 +275,7 @@ class BackgroundPlaneReader(BaseTypeReader, TypeReaderPlugin):
         x_texture_repeat = self.stream.read_boolean()
         y_texture_repeat = self.stream.read_boolean()
         clamp_texture = self.stream.read_boolean()
-        actor_type = self.stream.read_object(EnumReader, [ActorTypeReader])
+        actor_type = self.stream.read_object(ActorTypeReader)
         attached_plane = self.stream.read_object(Int32Reader)
         parallax_factor = self.stream.read_single()
         return (position, rotation, scale, size, texture_name, light_map, allow_overbrightness, filter_, animated,
@@ -292,7 +292,7 @@ class TrileGroupReader(BaseTypeReader, TypeReaderPlugin):
         triles = self.stream.read_object(ListReader, [TrileInstanceReader])
         path = self.stream.read_object(MovementPathReader)
         heavy = self.stream.read_boolean()
-        actor_type = self.stream.read_object(EnumReader, [ActorTypeReader])
+        actor_type = self.stream.read_object(ActorTypeReader)
         geyser_offset = self.stream.read_single()
         geyser_pause_for = self.stream.read_single()
         geyser_lift_for = self.stream.read_single()
@@ -316,7 +316,7 @@ class TrileFaceReader(BaseTypeReader, TypeReaderPlugin):
 
     def read(self):
         trile_id = self.stream.read_object(TrileEmplacementReader)
-        face = self.stream.read_object(EnumReader, [FaceOrientationReader])
+        face = self.stream.read_object(FaceOrientationReader)
         return trile_id, face
 
 
@@ -332,7 +332,7 @@ class NpcInstanceReader(BaseTypeReader, TypeReaderPlugin):
         randomize_speech = self.stream.read_boolean()
         say_first_speed_line_once = self.stream.read_boolean()
         avoids_gomez = self.stream.read_boolean()
-        actor_type = self.stream.read_object(EnumReader, [ActorTypeReader])
+        actor_type = self.stream.read_object(ActorTypeReader)
         speech = self.stream.read_object(ListReader, [SpeechLineReader])
         actions = self.stream.read_object(DictionaryReader, [NpcActionReader, NpcActionContentReader])
         return (name, position, destination_offset, walk_speed, randomize_speech, say_first_speed_line_once,
@@ -346,7 +346,7 @@ class MovementPathReader(BaseTypeReader, TypeReaderPlugin):
     def read(self):
         segments = self.stream.read_object(ListReader, [PathSegmentReader])
         needs_trigger = self.stream.read_boolean()
-        end_behavior = self.stream.read_object(EnumReader, [PathEndBehaviorReader])
+        end_behavior = self.stream.read_object(PathEndBehaviorReader)
         sound_name = self.stream.read_object(StringReader)
         is_spline = self.stream.read_boolean()
         offset_seconds = self.stream.read_single()
@@ -443,7 +443,7 @@ class ScriptConditionReader(BaseTypeReader, TypeReaderPlugin):
 
     def read(self):
         entity = self.stream.read_object(EntityReader)
-        operator = self.stream.read_object(EnumReader, [ComparisonOperatorReader])
+        operator = self.stream.read_object(ComparisonOperatorReader)
         property_ = self.stream.read_string()
         value = self.stream.read_string()
         return entity, operator, property_, value
@@ -479,9 +479,9 @@ class ArtObjectActorSettingsReader(BaseTypeReader, TypeReaderPlugin):
 
     def read(self):
         inactive = self.stream.read_boolean()
-        contained_trile = self.stream.read_object(EnumReader, [ActorTypeReader])
+        contained_trile = self.stream.read_object(ActorTypeReader)
         attached_group = self.stream.read_object(Int32Reader)
-        spin_view = self.stream.read_object(EnumReader, [ViewpointReader])
+        spin_view = self.stream.read_object(ViewpointReader)
         spin_every = self.stream.read_single()
         spin_offset = self.stream.read_single()
         off_center = self.stream.read_boolean()

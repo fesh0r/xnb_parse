@@ -5,6 +5,7 @@ XNB parser
 from xnb_parse.binstream import BinaryReader, BinaryWriter
 from xnb_parse.xna_native import decompress
 from xnb_parse.type_reader import ReaderError, generic_reader_type
+from xnb_parse.type_readers.xna_system import EnumReader
 
 
 XNB_SIGNATURE = 'XNB'
@@ -159,6 +160,8 @@ class XNBReader(BinaryReader):
             try:
                 if expected_type_reader.is_generic_type and expected_type_reader.target_type is None:
                     expected_type = generic_reader_type(expected_type_reader, type_params)
+                elif expected_type_reader.is_enum_type:
+                    expected_type = generic_reader_type(EnumReader, [expected_type_reader.target_type])
                 else:
                     expected_type = expected_type_reader.target_type
             except AttributeError:
