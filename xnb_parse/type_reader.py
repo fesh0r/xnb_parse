@@ -20,7 +20,8 @@ class BaseTypeReader(object):
     reader_name = None
     is_value_type = False
     is_generic_type = False
-    is_null = False
+    is_null_type = False
+    is_enum_type = False
 
     def __init__(self, stream=None, version=None):
         self.stream = stream
@@ -68,6 +69,13 @@ class GenericTypeReader(BaseTypeReader):
 
 class GenericValueTypeReader(GenericTypeReader):
     is_value_type = True
+
+
+class EnumTypeReader(ValueTypeReader):
+    is_enum_type = True
+
+    def read(self):
+        return self.stream.read_int32()
 
 
 def generic_reader_name(main_type, args=None):

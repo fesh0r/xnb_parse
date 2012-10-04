@@ -9,7 +9,7 @@ from xnb_parse.type_reader import BaseTypeReader, ValueTypeReader, ReaderError
 class NullReader(ValueTypeReader, TypeReaderPlugin):
     target_type = u'null'
     reader_name = u'NullReader'
-    is_null = True
+    is_null_type = True
 
     def read(self):
         return None

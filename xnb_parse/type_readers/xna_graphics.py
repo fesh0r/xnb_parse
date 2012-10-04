@@ -2,7 +2,7 @@
 graphics type readers
 """
 
-from xnb_parse.type_reader import BaseTypeReader, ValueTypeReader, ReaderError
+from xnb_parse.type_reader import BaseTypeReader, ReaderError, EnumTypeReader
 from xnb_parse.type_reader_manager import TypeReaderPlugin
 from xnb_parse.xna_types.xna_graphics import Texture2D, Texture3D, TextureCube, CUBE_SIDES, IndexBuffer, Effect
 from xnb_parse.type_readers.xna_system import ListReader, DictionaryReader
@@ -171,7 +171,7 @@ class ModelReader(BaseTypeReader, TypeReaderPlugin):
     reader_name = u'Microsoft.Xna.Framework.Content.ModelReader'
 
 
-class PrimitiveTypeReader(ValueTypeReader, TypeReaderPlugin):
+class PrimitiveTypeReader(EnumTypeReader, TypeReaderPlugin):
     target_type = u'Microsoft.Xna.Framework.Graphics.PrimitiveType'
     reader_name = u'Microsoft.Xna.Framework.Content.PrimitiveTypeReader'
 

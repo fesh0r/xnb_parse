@@ -158,7 +158,7 @@ class XNBReader(BinaryReader):
 
     def read_object(self, expected_type_reader=None, type_params=None):
         type_reader = self.read_type_id()
-        if expected_type_reader is not None and not type_reader.is_null:
+        if expected_type_reader is not None and not type_reader.is_null_type:
             try:
                 if expected_type_reader.is_generic_type and expected_type_reader.target_type is None:
                     expected_type = generic_reader_type(expected_type_reader, type_params)
@@ -166,6 +166,7 @@ class XNBReader(BinaryReader):
                     expected_type = expected_type_reader.target_type
             except AttributeError:
                 expected_type = expected_type_reader
+#                raise ReaderError("expected_type_reader is string: %s" % expected_type_reader)
 #            print "Expected: '%s' Actual: '%s'" % (expected_type, type_reader.target_type)
             if type_reader.target_type != expected_type:
                 raise ReaderError("Unexpected type: %s != %s" % (type_reader.target_type, expected_type))
