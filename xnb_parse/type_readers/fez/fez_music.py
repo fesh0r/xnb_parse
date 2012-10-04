@@ -2,7 +2,7 @@
 FEZ music type readers
 """
 
-from xnb_parse.type_reader import BaseTypeReader, ValueTypeReader
+from xnb_parse.type_reader import BaseTypeReader, EnumTypeReader
 from xnb_parse.type_reader_manager import TypeReaderPlugin
 from xnb_parse.type_readers.xna_system import ListReader, ArrayReader, EnumReader
 from xnb_parse.type_readers.xna_primitive import Int32Reader
@@ -47,17 +47,11 @@ class LoopReader(BaseTypeReader, TypeReaderPlugin):
                 dawn, fractional_time, one_at_a_time, cut_off_tail)
 
 
-class ShardNotesReader(ValueTypeReader, TypeReaderPlugin):
+class ShardNotesReader(EnumTypeReader, TypeReaderPlugin):
     target_type = u'FezEngine.Structure.ShardNotes'
     reader_name = u'FezEngine.Readers.ShardNotesReader'
 
-    def read(self):
-        return self.stream.read_int32()
 
-
-class AssembleChordsReader(ValueTypeReader, TypeReaderPlugin):
+class AssembleChordsReader(EnumTypeReader, TypeReaderPlugin):
     target_type = u'FezEngine.Structure.AssembleChords'
     reader_name = u'FezEngine.Readers.AssembleChordsReader'
-
-    def read(self):
-        return self.stream.read_int32()
