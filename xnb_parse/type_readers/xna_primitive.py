@@ -6,15 +6,6 @@ from xnb_parse.type_reader_manager import TypeReaderPlugin
 from xnb_parse.type_reader import BaseTypeReader, ValueTypeReader, ReaderError
 
 
-class NullReader(ValueTypeReader, TypeReaderPlugin):
-    target_type = u'null'
-    reader_name = u'NullReader'
-    is_null_type = True
-
-    def read(self):
-        return None
-
-
 class ByteReader(ValueTypeReader, TypeReaderPlugin):
     target_type = u'System.Byte'
     reader_name = u'Microsoft.Xna.Framework.Content.ByteReader'

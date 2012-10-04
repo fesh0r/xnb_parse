@@ -5,7 +5,6 @@ XNB parser
 from xnb_parse.binstream import BinaryReader, BinaryWriter
 from xnb_parse.xna_native import decompress
 from xnb_parse.type_reader import ReaderError, generic_reader_type
-from xnb_parse.type_readers.xna_primitive import NullReader
 
 
 XNB_SIGNATURE = 'XNB'
@@ -39,7 +38,6 @@ class XNBReader(BinaryReader):
         self.type_reader_manager = type_reader_manager
         self.type_readers = []
         self.shared_objects = []
-        self.null_reader = None
         self.expected_type_reader = expected_type_reader
         self.content = None
         self.parsed = False
@@ -55,9 +53,6 @@ class XNBReader(BinaryReader):
             raise ValueError('No type reader manager')
         if self.parsed:
             return self.content
-
-        self.null_reader = self.get_type_reader(NullReader)
-        self.null_reader.init_reader()
 
         if verbose:
             print 'Type readers:'
@@ -158,16 +153,17 @@ class XNBReader(BinaryReader):
 
     def read_object(self, expected_type_reader=None, type_params=None):
         type_reader = self.read_type_id()
-        if expected_type_reader is not None and not type_reader.is_null_type:
+        if type_reader is None:
+            return None
+        if expected_type_reader is not None:
             try:
                 if expected_type_reader.is_generic_type and expected_type_reader.target_type is None:
                     expected_type = generic_reader_type(expected_type_reader, type_params)
                 else:
                     expected_type = expected_type_reader.target_type
             except AttributeError:
-                expected_type = expected_type_reader
-#                raise ReaderError("expected_type_reader is string: %s" % expected_type_reader)
-#            print "Expected: '%s' Actual: '%s'" % (expected_type, type_reader.target_type)
+#                expected_type = expected_type_reader
+                raise ReaderError("bad expected_type_reader: %s" % expected_type_reader)
             if type_reader.target_type != expected_type:
                 raise ReaderError("Unexpected type: %s != %s" % (type_reader.target_type, expected_type))
         return type_reader.read()
@@ -182,7 +178,7 @@ class XNBReader(BinaryReader):
         type_id = self.read_7bit_encoded_int()
         if type_id == 0:
             # null object
-            return self.null_reader
+            return None
         if type_id > len(self.type_readers):
             raise ReaderError("type id out of range: %d > %d" % (type_id, len(self.type_readers)))
         return self.type_readers[type_id - 1]

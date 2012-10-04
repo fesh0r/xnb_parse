@@ -20,7 +20,6 @@ class BaseTypeReader(object):
     reader_name = None
     is_value_type = False
     is_generic_type = False
-    is_null_type = False
     is_enum_type = False
 
     def __init__(self, stream=None, version=None):
