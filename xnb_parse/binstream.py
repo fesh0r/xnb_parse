@@ -2,8 +2,9 @@
 .NET BinaryStream reader
 """
 
-import struct
+from struct import Struct, calcsize
 from io import BytesIO
+from array import array
 
 
 class BinaryStream(object):
@@ -29,10 +30,10 @@ class BinaryStream(object):
             self._fmt_end = '<'
         self._types = {}
         for name, type_ in self._type_fmt.items():
-            self._types[name] = struct.Struct(self._fmt_end + type_)
+            self._types[name] = Struct(self._fmt_end + type_)
 
     def calc_size(self, fmt):
-        return struct.calcsize(self._fmt_end + fmt)
+        return calcsize(self._fmt_end + fmt)
 
     def size(self, type_):
         return self._types[type_].size
@@ -63,7 +64,7 @@ class BinaryWriter(BinaryStream):
         self.stream.write(struct_.pack(value))
 
     def pack(self, fmt, *values):
-        local_struct = struct.Struct(self._fmt_end + fmt)
+        local_struct = Struct(self._fmt_end + fmt)
         self.stream.write(local_struct.pack(*values))
 
     def extend(self, value):
@@ -179,7 +180,7 @@ class BinaryReader(BinaryStream):
         return len(self.data) - self._index
 
     def unpack(self, fmt):
-        local_struct = struct.Struct(self._fmt_end + fmt)
+        local_struct = Struct(self._fmt_end + fmt)
         values = local_struct.unpack_from(self.data, self._index)
         self._index += local_struct.size
         return values
@@ -251,3 +252,30 @@ class BinaryReader(BinaryStream):
 
     def read_bytes(self, count):
         return self.pull(count)
+
+
+class ByteSwapper(object):
+    _TYPECODES = ['b', 'h', 'l']
+
+    def __init__(self):
+        # try and figure out a
+        self.size_types = {}
+        for size in [2, 4]:
+            cur_type = None
+            for typecode in self._TYPECODES:
+                test_array = array(typecode)
+                if test_array.itemsize == size:
+                    cur_type = typecode
+                    break
+            if cur_type is None:
+                raise ValueError("array typecode not found for %d bytes" % size)
+            self.size_types[size] = cur_type
+
+    def swap(self, swap_size, data):
+        try:
+            swap_array = array(self.size_types[swap_size], data)
+            swap_array.byteswap()
+            data = swap_array.tostring()
+        except KeyError:
+            raise ValueError("unknown byteswap size: %d", swap_size)
+        return data
