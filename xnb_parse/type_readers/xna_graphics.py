@@ -2,10 +2,10 @@
 graphics type readers
 """
 
-from xnb_parse.type_reader import BaseTypeReader, ValueTypeReader, ReaderError, generic_reader_name
+from xnb_parse.type_reader import BaseTypeReader, ValueTypeReader, ReaderError
 from xnb_parse.type_reader_manager import TypeReaderPlugin
 from xnb_parse.xna_types.xna_graphics import Texture2D, Texture3D, TextureCube, CUBE_SIDES, IndexBuffer, Effect
-from xnb_parse.type_readers.xna_system import NullableReader, ListReader, DictionaryReader
+from xnb_parse.type_readers.xna_system import ListReader, DictionaryReader
 from xnb_parse.type_readers.xna_math import Vector3Reader, RectangleReader
 from xnb_parse.type_readers.xna_primitive import CharReader, StringReader, ObjectReader
 
@@ -29,8 +29,8 @@ class Texture2DReader(BaseTypeReader, TypeReaderPlugin):
         mip_count = self.stream.read_int32()
         mip_levels = []
         for _ in range(mip_count):
-            data_size = self.stream.read_int32()
-            data = self.stream.read_bytes(data_size)
+            size = self.stream.read_int32()
+            data = self.stream.read_bytes(size)
             mip_levels.append(data)
         return Texture2D(texture_format, width, height, mip_levels)
 
@@ -47,8 +47,8 @@ class Texture3DReader(BaseTypeReader, TypeReaderPlugin):
         mip_count = self.stream.read_int32()
         mip_levels = []
         for _ in range(mip_count):
-            data_size = self.stream.read_int32()
-            data = self.stream.read_bytes(data_size)
+            size = self.stream.read_int32()
+            data = self.stream.read_bytes(size)
             mip_levels.append(data)
         return Texture3D(texture_format, width, height, depth, mip_levels)
 
@@ -65,8 +65,8 @@ class TextureCubeReader(BaseTypeReader, TypeReaderPlugin):
         for side in CUBE_SIDES:
             mip_levels = []
             for _ in range(mip_count):
-                data_size = self.stream.read_int32()
-                data = self.stream.read_bytes(data_size)
+                size = self.stream.read_int32()
+                data = self.stream.read_bytes(size)
                 mip_levels.append(data)
             sides[side] = mip_levels
         return TextureCube(texture_format, texture_size, sides)
@@ -78,9 +78,9 @@ class IndexBufferReader(BaseTypeReader, TypeReaderPlugin):
 
     def read(self):
         index_16 = self.stream.read_boolean()
-        index_size = self.stream.read_int32()
-        index_data = self.stream.read_bytes(index_size)
-        return IndexBuffer(index_16, index_data)
+        size = self.stream.read_int32()
+        data = self.stream.read_bytes(size)
+        return IndexBuffer(index_16, data)
 
 
 class VertexBufferReader(BaseTypeReader, TypeReaderPlugin):
@@ -88,9 +88,9 @@ class VertexBufferReader(BaseTypeReader, TypeReaderPlugin):
     reader_name = u'Microsoft.Xna.Framework.Content.VertexBufferReader'
 
     def read(self):
-        vertex_size = self.stream.read_int32()
-        vertex_data = self.stream.read_bytes(vertex_size)
-        return vertex_data
+        size = self.stream.read_int32()
+        data = self.stream.read_bytes(size)
+        return data
 
 
 class VertexDeclarationReader(BaseTypeReader, TypeReaderPlugin):
@@ -117,9 +117,9 @@ class EffectReader(BaseTypeReader, TypeReaderPlugin):
     reader_name = u'Microsoft.Xna.Framework.Content.EffectReader'
 
     def read(self):
-        effect_size = self.stream.read_int32()
-        effect_data = self.stream.read_bytes(effect_size)
-        return Effect(effect_data)
+        size = self.stream.read_int32()
+        data = self.stream.read_bytes(size)
+        return Effect(data)
 
 
 class EffectMaterialReader(BaseTypeReader, TypeReaderPlugin):
@@ -151,16 +151,6 @@ class SpriteFontReader(BaseTypeReader, TypeReaderPlugin):
     target_type = u'Microsoft.Xna.Framework.Graphics.SpriteFont'
     reader_name = u'Microsoft.Xna.Framework.Content.SpriteFontReader'
 
-    def __init__(self, stream=None, version=None):
-        BaseTypeReader.__init__(self, stream=stream, version=version)
-        TypeReaderPlugin.__init__(self)
-        self.nullable_char_reader = self.stream.get_type_reader(generic_reader_name(NullableReader, [CharReader]))
-
-    def init_reader(self):
-        BaseTypeReader.init_reader(self)
-        self.nullable_char_reader.init_reader()
-        self.nullable_char_reader.readers[0].init_reader()
-
     def read(self):
         texture = self.stream.read_object(Texture2DReader)
         glyphs = self.stream.read_object(ListReader, [RectangleReader])
@@ -169,7 +159,10 @@ class SpriteFontReader(BaseTypeReader, TypeReaderPlugin):
         v_space = self.stream.read_int32()
         h_space = self.stream.read_single()
         kerning = self.stream.read_object(ListReader, [Vector3Reader])
-        default_char = self.nullable_char_reader.read()
+        default_char = None
+        has_default_char = self.stream.read_boolean()
+        if has_default_char:
+            default_char = self.stream.read_char()
         return texture, glyphs, cropping, char_map, v_space, h_space, kerning, default_char
 
 

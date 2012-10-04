@@ -16,9 +16,9 @@ def unpack(in_file, out_dir):
     capacity = stream.read_int32()
     for _ in range(capacity):
         filename = stream.read_string()
-        filesize = stream.read_int32()
-        filedata = stream.read_bytes(filesize)
-        print "'%s' %d" % (filename, filesize)
+        size = stream.read_int32()
+        data = stream.read_bytes(size)
+        print "'%s' %d" % (filename, size)
         filename = os.path.normpath(filename + '.xnb')
         filename = os.path.join(out_dir, filename)
         filedir = os.path.dirname(filename)
@@ -26,7 +26,7 @@ def unpack(in_file, out_dir):
             if not os.path.isdir(filedir):
                 os.makedirs(filedir)
         with open(filename, 'wb') as out_file:
-            out_file.write(filedata)
+            out_file.write(data)
 
 
 def main():
