@@ -23,7 +23,8 @@ def read_xnb(in_dir, type_reader_manager=None):
                 in_data = in_handle.read()
             xnb = XNBReader.load(in_data, type_reader_manager, parse=False)
             try:
-                xnb.parse(verbose=False)
+                content = xnb.parse()
+#                print '%s: %s' % (in_file, str(content))
             except ReaderError as ex:
                 print "Error in '%s'" % in_file
                 print ex

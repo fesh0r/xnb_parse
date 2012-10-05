@@ -6,6 +6,7 @@ from xnb_parse.binstream import BinaryReader, BinaryWriter, ByteSwapper
 from xnb_parse.xna_native import decompress
 from xnb_parse.type_reader import ReaderError, generic_reader_type
 from xnb_parse.type_readers.xna_system import EnumReader
+from xnb_parse.xna_types.xna_math import Color
 
 
 XNB_SIGNATURE = 'XNB'
@@ -36,6 +37,7 @@ class XNBReader(BinaryReader):
         self.file_version = file_version
         self.graphics_profile = graphics_profile
         self.compressed = compressed
+        self.needs_swap = self.file_platform == PLATFORM_XBOX
         self.byte_swapper = ByteSwapper()
         self.type_reader_manager = type_reader_manager
         self.type_readers = []
@@ -50,25 +52,25 @@ class XNBReader(BinaryReader):
         return 'XNB %s%s%s s:%d' % (self.platforms[self.file_platform], self.versions[self.file_version],
                                     self.profiles[self.graphics_profile], len(self.data))
 
-    def parse(self, verbose=True):
+    def parse(self, verbose=False):
         if self.type_reader_manager is None:
             raise ValueError('No type reader manager')
         if self.parsed:
             return self.content
 
-        if verbose:
-            print 'Type readers:'
+#        if verbose:
+#            print 'Type readers:'
         reader_count = self.read_7bit_encoded_int()
         for reader_index in range(reader_count):
             reader_name = self.read_string()
             reader_version = self.read_int32()
             reader = self.get_type_reader(reader_name, reader_version)
             self.type_readers.append(reader)
-            if verbose:
-                print reader_index, reader
+#            if verbose:
+#                print '%d: %s' % (reader_index, str(reader))
 
-#        if not verbose:
-#            print 'Type:', self.type_readers[0]
+        if verbose:
+            print 'Type: %s' % str(self.type_readers[0])
 
         for reader in self.type_readers:
             reader.init_reader()
@@ -80,10 +82,10 @@ class XNBReader(BinaryReader):
             print 'Asset: %s' % str(self.content)
 
         for i in range(shared_count):
-            if verbose:
-                print 'Shared resource %d:' % i
             obj = self.read_object()
             self.shared_objects.append(obj)
+            if verbose:
+                print 'Shared resource %d: %s' % (i, str(obj))
 
         if self.remaining():
             raise ReaderError('remaining: %d' % self.remaining())
@@ -192,7 +194,7 @@ class XNBReader(BinaryReader):
         v_g = self.read_byte()
         v_b = self.read_byte()
         v_a = self.read_byte()
-        return v_r, v_g, v_b, v_a
+        return Color(r=v_r, g=v_g, b=v_b, a=v_a)
 
     def read_external_reference(self, expected_type=None):
         filename = self.read_string()
@@ -232,6 +234,6 @@ class XNBReader(BinaryReader):
 
     def read_and_swap_bytes(self, count, swap_size):
         data = self.read_bytes(count)
-        if self.file_platform == PLATFORM_XBOX:
+        if self.needs_swap:
             data = self.byte_swapper.swap(swap_size, data)
         return data
