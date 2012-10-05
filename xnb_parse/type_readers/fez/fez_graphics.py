@@ -9,6 +9,7 @@ from xnb_parse.type_readers.xna_math import ColorReader, MatrixReader
 from xnb_parse.type_readers.xna_graphics import PrimitiveTypeReader
 from xnb_parse.type_readers.xna_primitive import StringReader, UInt16Reader
 from xnb_parse.type_readers.fez.fez_basic import NpcActionReader, ActorTypeReader, SetReader, FaceOrientationReader
+from xnb_parse.xna_types.fez.fez_graphics import AnimatedTexture, Frame
 
 
 class ArtObjectReader(BaseTypeReader, TypeReaderPlugin):
@@ -72,7 +73,7 @@ class AnimatedTextureReader(BaseTypeReader, TypeReaderPlugin):
         actual_width = self.stream.read_int32()
         actual_height = self.stream.read_int32()
         frames = self.stream.read_object(ListReader, [FrameReader])
-        return width, height, actual_width, actual_height, frames
+        return AnimatedTexture(width, height, actual_width, actual_height, frames)
 
 
 class FrameReader(BaseTypeReader, TypeReaderPlugin):
@@ -82,4 +83,4 @@ class FrameReader(BaseTypeReader, TypeReaderPlugin):
     def read(self):
         duration = self.stream.read_object(TimeSpanReader)
         data = self.stream.read_object(ArrayReader, [ColorReader])
-        return duration, data
+        return Frame(duration, data)
