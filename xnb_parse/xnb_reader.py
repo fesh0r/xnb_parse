@@ -58,16 +58,12 @@ class XNBReader(BinaryReader):
         if self.parsed:
             return self.content
 
-#        if verbose:
-#            print 'Type readers:'
         reader_count = self.read_7bit_encoded_int()
-        for reader_index in range(reader_count):
+        for _ in range(reader_count):
             reader_name = self.read_string()
             reader_version = self.read_int32()
             reader = self.get_type_reader(reader_name, reader_version)
             self.type_readers.append(reader)
-#            if verbose:
-#                print '%d: %s' % (reader_index, str(reader))
 
         if verbose:
             print 'Type: %s' % str(self.type_readers[0])
@@ -168,7 +164,6 @@ class XNBReader(BinaryReader):
                 else:
                     expected_type = expected_type_reader.target_type
             except AttributeError:
-#                expected_type = expected_type_reader
                 raise ReaderError("bad expected_type_reader: %s" % expected_type_reader)
             if type_reader.target_type != expected_type:
                 raise ReaderError("Unexpected type: %s != %s" % (type_reader.target_type, expected_type))

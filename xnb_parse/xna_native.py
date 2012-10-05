@@ -16,6 +16,7 @@ def _find_native():
     if not sys.platform == 'win32' or not platform.architecture()[0] == '32bit':
         raise IOError('win32 required for decompression')
     import _winreg
+
     native_path = None
     for ver in _XNA_VERSIONS:
         try:

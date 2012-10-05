@@ -18,13 +18,11 @@ def read_xnb(in_dir, type_reader_manager=None):
         for cur_file in fnmatch.filter(filelist, '*.xnb'):
             in_file = os.path.normpath(os.path.join(in_dir, sub_dir, cur_file))
 
-#            print "Reading '%s'" % in_file
             with open(in_file, 'rb') as in_handle:
                 in_data = in_handle.read()
             xnb = XNBReader.load(in_data, type_reader_manager, parse=False)
             try:
-                content = xnb.parse()
-#                print '%s: %s' % (in_file, str(content))
+                xnb.parse()
             except ReaderError as ex:
                 print "Error in '%s'" % in_file
                 print ex

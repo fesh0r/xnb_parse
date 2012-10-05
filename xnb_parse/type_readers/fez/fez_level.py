@@ -8,9 +8,10 @@ from xnb_parse.type_readers.xna_graphics import Texture2DReader
 from xnb_parse.type_readers.xna_math import Vector4Reader
 from xnb_parse.type_readers.xna_system import ListReader, DictionaryReader, ArrayReader, TimeSpanReader
 from xnb_parse.type_readers.xna_primitive import Int32Reader, StringReader, BooleanReader
-from xnb_parse.type_readers.fez.fez_basic import LevelNodeTypeReader, FaceOrientationReader, CollisionTypeReader, \
-    LiquidTypeReader, CodeInputReader, ViewpointReader, ActorTypeReader, SurfaceTypeReader, PathEndBehaviorReader, \
-    NpcActionReader, ComparisonOperatorReader, VibrationMotorReader
+from xnb_parse.type_readers.fez.fez_basic import (LevelNodeTypeReader, FaceOrientationReader, CollisionTypeReader,
+                                                  LiquidTypeReader, CodeInputReader, ViewpointReader,
+                                                  ActorTypeReader, SurfaceTypeReader, PathEndBehaviorReader,
+                                                  NpcActionReader, ComparisonOperatorReader, VibrationMotorReader)
 from xnb_parse.type_readers.fez.fez_graphics import ShaderInstancedIndexedPrimitivesReader
 from xnb_parse.type_readers.fez.fez_graphics import VertexPositionNormalTextureInstanceReader
 
