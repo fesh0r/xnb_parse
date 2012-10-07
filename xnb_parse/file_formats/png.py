@@ -5,6 +5,7 @@ PNG encoder
 from array import array
 import struct
 import zlib
+import itertools
 
 
 # The PNG signature.
@@ -47,7 +48,9 @@ class Writer(object):
         data = array('B')
         for row in rows:
             data.append(0)
-            data.extend(row)
+            fixed_row = fix_color_order(row)
+            for pixel in fixed_row:
+                data.fromstring(''.join(pixel))
             if len(data) > self.chunk_limit:
                 compressed = compressor.compress(data.tostring())
                 if len(compressed):
@@ -63,6 +66,14 @@ class Writer(object):
 
         # http://www.w3.org/TR/PNG/#11IEND
         write_chunk(outfile, 'IEND')
+
+
+def fix_color_order(data):
+    r = itertools.islice(data, 0, None, 4)
+    g = itertools.islice(data, 1, None, 4)
+    b = itertools.islice(data, 2, None, 4)
+    a = itertools.islice(data, 3, None, 4)
+    return itertools.izip(b, g, r, a)
 
 
 def write_chunk(outfile, tag, data=''):

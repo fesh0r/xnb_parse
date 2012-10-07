@@ -184,6 +184,11 @@ class XNBReader(BinaryReader):
             raise ReaderError("type id out of range: %d > %d" % (type_id, len(self.type_readers)))
         return self.type_readers[type_id - 1]
 
+    def export(self, filename):
+        if self.parsed:
+            if hasattr(self.content, 'export'):
+                self.content.export(filename)
+
     def read_color(self):
         v_r = self.read_byte()
         v_g = self.read_byte()

@@ -17,6 +17,7 @@ def read_xnb(in_file, type_reader_manager=None):
     xnb = XNBReader.load(in_data, type_reader_manager, parse=False)
     print xnb
     print xnb.parse()
+    xnb.export(os.path.join('../export', in_file.replace('.xnb', '')))
 
 
 def main():

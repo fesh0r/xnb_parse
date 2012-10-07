@@ -23,6 +23,7 @@ def read_xnb(in_dir, type_reader_manager=None):
             xnb = XNBReader.load(in_data, type_reader_manager, parse=False)
             try:
                 xnb.parse()
+                xnb.export(os.path.join('../export', in_file.replace('.xnb', '')))
             except ReaderError as ex:
                 print "Error in '%s'" % in_file
                 print ex

@@ -1,15 +1,26 @@
 """
 graphics types
 """
+from itertools import izip_longest
+
+import os
 
 from xnb_parse.xnb_reader import VERSION_40, XNBReader
 from xnb_parse.type_reader import ReaderError
+from xnb_parse.file_formats import png
+
+
+def decode_color(data, width, height):
+    stride = width * 4
+    if len(data) != stride * height:
+        raise ReaderError("Texture data length incorrect for Color: %d != %d", (len(data), width * 4 * height))
+    return chunk(data, stride)
 
 
 CUBE_SIDES = ['+x', '-x', '+y', '-y', '+z', '-z']
 FORMAT_COLOR = 1
 TEXTURE_FORMAT = {
-    1: ('Color', None),
+    1: ('Color', decode_color),
     2: ('Bgr32', None),
     3: ('Bgra1010102', None),
     4: ('Rgba32', None),
@@ -66,7 +77,7 @@ TEXTURE_FORMAT = {
 }
 FORMAT4_COLOR = 0
 TEXTURE_FORMAT4 = {
-    0: ('Color', None),
+    0: ('Color', decode_color),
     1: ('Bgr565', None),
     2: ('Bgra5551', None),
     3: ('Bgra4444', None),
@@ -87,6 +98,15 @@ TEXTURE_FORMAT4 = {
     18: ('HalfVector4', None),
     19: ('HdrBlendable', None),
 }
+
+
+def chunk(data, size):
+    args = [iter(data)] * size
+    return izip_longest(*args)
+
+
+#def chunk(data, size):
+#    return (data[pos:pos + size] for pos in xrange(0, len(data), size))
 
 
 def _get_texture_format(xna_version, texture_format):
@@ -111,6 +131,16 @@ class Texture2D(object):
     def __str__(self):
         return "Texture2D f:%s d:%dx%d m:%d s:%d" % (self.format_name, self.width, self.height,
                                                      len(self.mip_levels), len(self.mip_levels[0]))
+
+    def export(self, filename):
+        if self.texture_reader:
+            out_png = png.Writer(width=self.width, height=self.height, alpha=True)
+            out_dir = os.path.dirname(filename)
+            if not os.path.isdir(out_dir):
+                os.makedirs(out_dir)
+            with open(filename + '.png', 'wb') as out_handle:
+                data = self.texture_reader(self.mip_levels[0], self.width, self.height)
+                out_png.write_packed(out_handle, data)
 
 
 class Texture3D(object):

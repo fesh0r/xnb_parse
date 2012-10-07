@@ -23,6 +23,10 @@ class AnimatedTexture(object):
         return "AnimatedTexture d:%dx%d a:%dx%d f:%d" % (self.width, self.height, self.actual_width,
                                                          self.actual_height, len(self.frames))
 
+    def export(self, filename):
+        for i, cur_frame in enumerate(self.frames):
+            cur_frame[1].export("%s\\%04d" % (filename, i))
+
 
 class Frame(object):
     def __init__(self, duration, data):
