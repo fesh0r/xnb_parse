@@ -4,7 +4,8 @@ graphics type readers
 
 from xnb_parse.type_reader import BaseTypeReader, ReaderError, EnumTypeReader
 from xnb_parse.type_reader_manager import TypeReaderPlugin
-from xnb_parse.xna_types.xna_graphics import Texture2D, Texture3D, TextureCube, CUBE_SIDES, IndexBuffer, Effect
+from xnb_parse.xna_types.xna_graphics import (Texture2D, Texture3D, TextureCube, CUBE_SIDES, IndexBuffer, Effect,
+                                              get_texture_format)
 from xnb_parse.type_readers.xna_system import ListReader, DictionaryReader
 from xnb_parse.type_readers.xna_math import Vector3Reader, RectangleReader
 from xnb_parse.type_readers.xna_primitive import CharReader, StringReader, ObjectReader
@@ -23,7 +24,7 @@ class Texture2DReader(BaseTypeReader, TypeReaderPlugin):
     reader_name = u'Microsoft.Xna.Framework.Content.Texture2DReader'
 
     def read(self):
-        texture_format = self.stream.read_int32()
+        texture_format_raw = self.stream.read_int32()
         width = self.stream.read_int32()
         height = self.stream.read_int32()
         mip_count = self.stream.read_int32()
@@ -32,7 +33,8 @@ class Texture2DReader(BaseTypeReader, TypeReaderPlugin):
             size = self.stream.read_int32()
             data = self.stream.read_and_swap_bytes(size, 4)
             mip_levels.append(data)
-        return Texture2D(self.stream.file_version, texture_format, width, height, mip_levels)
+        texture_format = get_texture_format(self.stream.file_version, texture_format_raw)
+        return Texture2D(texture_format, width, height, mip_levels)
 
 
 class Texture3DReader(BaseTypeReader, TypeReaderPlugin):
@@ -40,7 +42,7 @@ class Texture3DReader(BaseTypeReader, TypeReaderPlugin):
     reader_name = u'Microsoft.Xna.Framework.Content.Texture3DReader'
 
     def read(self):
-        texture_format = self.stream.read_int32()
+        texture_format_raw = self.stream.read_int32()
         width = self.stream.read_int32()
         height = self.stream.read_int32()
         depth = self.stream.read_int32()
@@ -50,7 +52,8 @@ class Texture3DReader(BaseTypeReader, TypeReaderPlugin):
             size = self.stream.read_int32()
             data = self.stream.read_and_swap_bytes(size, 4)
             mip_levels.append(data)
-        return Texture3D(self.stream.file_version, texture_format, width, height, depth, mip_levels)
+        texture_format = get_texture_format(self.stream.file_version, texture_format_raw)
+        return Texture3D(texture_format, width, height, depth, mip_levels)
 
 
 class TextureCubeReader(BaseTypeReader, TypeReaderPlugin):
@@ -58,7 +61,7 @@ class TextureCubeReader(BaseTypeReader, TypeReaderPlugin):
     reader_name = u'Microsoft.Xna.Framework.Content.TextureCubeReader'
 
     def read(self):
-        texture_format = self.stream.read_int32()
+        texture_format_raw = self.stream.read_int32()
         texture_size = self.stream.read_int32()
         mip_count = self.stream.read_int32()
         sides = {}
@@ -69,7 +72,8 @@ class TextureCubeReader(BaseTypeReader, TypeReaderPlugin):
                 data = self.stream.read_and_swap_bytes(size, 4)
                 mip_levels.append(data)
             sides[side] = mip_levels
-        return TextureCube(self.stream.file_version, texture_format, texture_size, sides)
+        texture_format = get_texture_format(self.stream.file_version, texture_format_raw)
+        return TextureCube(texture_format, texture_size, sides)
 
 
 class IndexBufferReader(BaseTypeReader, TypeReaderPlugin):

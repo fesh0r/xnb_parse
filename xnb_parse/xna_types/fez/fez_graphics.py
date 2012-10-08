@@ -4,7 +4,7 @@ FEZ graphics types
 
 from xnb_parse.binstream import BinaryWriter
 from xnb_parse.xnb_reader import VERSION_31
-from xnb_parse.xna_types.xna_graphics import Texture2D, FORMAT_COLOR
+from xnb_parse.xna_types.xna_graphics import Texture2D, FORMAT_COLOR, get_texture_format
 
 
 class AnimatedTexture(object):
@@ -13,9 +13,10 @@ class AnimatedTexture(object):
         self.height = height
         self.actual_width = actual_width
         self.actual_height = actual_height
+        texture_format = get_texture_format(VERSION_31, FORMAT_COLOR)
         self.frames = []
         for cur_frame in frames:
-            texture = Texture2D(VERSION_31, FORMAT_COLOR, self.width, self.height, [cur_frame.data])
+            texture = Texture2D(texture_format, self.width, self.height, [cur_frame.data])
             new_frame = (cur_frame.duration, texture)
             self.frames.append(new_frame)
 
