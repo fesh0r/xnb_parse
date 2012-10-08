@@ -69,11 +69,11 @@ class Writer(object):
 
 
 def fix_color_order(data):
-    r = itertools.islice(data, 0, None, 4)
-    g = itertools.islice(data, 1, None, 4)
-    b = itertools.islice(data, 2, None, 4)
-    a = itertools.islice(data, 3, None, 4)
-    return itertools.izip(b, g, r, a)
+    r_iter = itertools.islice(data, 0, None, 4)
+    g_iter = itertools.islice(data, 1, None, 4)
+    b_iter = itertools.islice(data, 2, None, 4)
+    a_iter = itertools.islice(data, 3, None, 4)
+    return itertools.izip(b_iter, g_iter, r_iter, a_iter)
 
 
 def write_chunk(outfile, tag, data=''):
