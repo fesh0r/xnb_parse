@@ -3,7 +3,6 @@ graphics types
 """
 
 import os
-from itertools import izip_longest
 
 from xnb_parse.xnb_reader import VERSION_40, XNBReader
 from xnb_parse.type_reader import ReaderError
@@ -14,8 +13,12 @@ from xnb_parse.file_formats import png
 def decode_color(data, width, height):
     stride = width * 4
     if len(data) != stride * height:
-        raise ReaderError("Texture data length incorrect for Color: %d != %d", (len(data), width * 4 * height))
-    return chunk(data, stride)
+        raise ReaderError("Texture data length incorrect for Color: %d != %d", (len(data), stride * height))
+    return chunk_data(data, stride)
+
+
+def chunk_data(data, size):
+    return (data[pos:pos + size] for pos in xrange(0, len(data), size))
 
 
 CUBE_SIDES = ['+x', '-x', '+y', '-y', '+z', '-z']
@@ -117,15 +120,6 @@ class SurfaceFormat4(Enum):
         return SURFACE_FORMAT4[self.value][1]
 
 
-def chunk(data, size):
-    args = [iter(data)] * size
-    return izip_longest(*args)  # pylint: disable-msg=W0142
-
-
-#def chunk(data, size):
-#    return (data[pos:pos + size] for pos in xrange(0, len(data), size))
-
-
 def get_texture_format(xna_version, texture_format):
     try:
         if xna_version >= VERSION_40:
@@ -149,13 +143,13 @@ class Texture2D(object):
 
     def export(self, filename):
         if self.texture_format.reader:
-            out_png = png.Writer(width=self.width, height=self.height, alpha=True)
+            out_png = png.Writer(width=self.width, height=self.height)
             out_dir = os.path.dirname(filename)
             if not os.path.isdir(out_dir):
                 os.makedirs(out_dir)
             with open(filename + '.png', 'wb') as out_handle:
-                data = self.texture_format.reader(self.mip_levels[0], self.width, self.height)
-                out_png.write_packed(out_handle, data)
+                rows = self.texture_format.reader(self.mip_levels[0], self.width, self.height)
+                out_png.write_packed(out_handle, rows)
 
 
 class Texture3D(object):
