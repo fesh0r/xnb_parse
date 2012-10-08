@@ -2,10 +2,8 @@
 PNG encoder
 """
 
-from array import array
 import struct
 import zlib
-import itertools
 
 
 # The PNG signature.
@@ -14,7 +12,7 @@ _SIGNATURE = struct.pack('8B', 137, 80, 78, 71, 13, 10, 26, 10)
 
 
 class Writer(object):
-    def __init__(self, width=None, height=None, greyscale=False, alpha=False, compression=None, chunk_limit=2 ** 20):
+    def __init__(self, width=None, height=None):
         if width <= 0 or height <= 0:
             raise ValueError("width and height must be greater than zero")
 
@@ -24,13 +22,11 @@ class Writer(object):
 
         self.width = width
         self.height = height
-        self.greyscale = bool(greyscale)
-        self.alpha = bool(alpha)
-        self.compression = compression
-        self.chunk_limit = chunk_limit
+        self.chunk_limit = 2 ** 20
 
-        self.color_type = 4 * self.alpha + 2 * (not self.greyscale)
-        assert self.color_type in (0, 2, 4, 6)
+        self.color_type = 6
+        self.planes = 4
+        self.stride = self.width * self.planes
 
     def write_packed(self, outfile, rows):
         # http://www.w3.org/TR/PNG/#5PNG-file-signature
@@ -40,40 +36,33 @@ class Writer(object):
         write_chunk(outfile, 'IHDR', struct.pack("!2I5B", self.width, self.height, 8, self.color_type, 0, 0, 0))
 
         # http://www.w3.org/TR/PNG/#11IDAT
-        if self.compression is not None:
-            compressor = zlib.compressobj(self.compression)
-        else:
-            compressor = zlib.compressobj()
+        compressor = zlib.compressobj()
 
-        data = array('B')
+        data = bytearray()
         for row in rows:
             data.append(0)
-            fixed_row = fix_color_order(row)
-            for pixel in fixed_row:
-                data.fromstring(''.join(pixel))
+            data.extend(rgba_to_bgra(row))
             if len(data) > self.chunk_limit:
-                compressed = compressor.compress(data.tostring())
+                compressed = compressor.compress(str(data))
                 if len(compressed):
                     write_chunk(outfile, 'IDAT', compressed)
-                data = array('B')
+                data = bytearray()
         if len(data):
-            compressed = compressor.compress(data.tostring())
+            compressed = compressor.compress(str(data))
         else:
-            compressed = ''
+            compressed = bytearray()
         flushed = compressor.flush()
         if len(compressed) or len(flushed):
-            write_chunk(outfile, 'IDAT', compressed + flushed)
+            write_chunk(outfile, 'IDAT', str(compressed + flushed))
 
         # http://www.w3.org/TR/PNG/#11IEND
         write_chunk(outfile, 'IEND')
 
 
-def fix_color_order(data):
-    r_iter = itertools.islice(data, 0, None, 4)
-    g_iter = itertools.islice(data, 1, None, 4)
-    b_iter = itertools.islice(data, 2, None, 4)
-    a_iter = itertools.islice(data, 3, None, 4)
-    return itertools.izip(b_iter, g_iter, r_iter, a_iter)
+def rgba_to_bgra(data):
+    fixed_data = bytearray(data)
+    fixed_data[0::4], fixed_data[2::4] = fixed_data[2::4], fixed_data[0::4]
+    return fixed_data
 
 
 def write_chunk(outfile, tag, data=''):
