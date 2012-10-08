@@ -5,7 +5,7 @@ graphics type readers
 from xnb_parse.type_reader import BaseTypeReader, ReaderError, EnumTypeReader
 from xnb_parse.type_reader_manager import TypeReaderPlugin
 from xnb_parse.xna_types.xna_graphics import (Texture2D, Texture3D, TextureCube, CUBE_SIDES, IndexBuffer, Effect,
-                                              get_texture_format, PrimitiveType)
+                                              get_texture_format, PrimitiveType, SpriteFont)
 from xnb_parse.type_readers.xna_system import ListReader, DictionaryReader
 from xnb_parse.type_readers.xna_math import Vector3Reader, RectangleReader
 from xnb_parse.type_readers.xna_primitive import CharReader, StringReader, ObjectReader
@@ -167,7 +167,7 @@ class SpriteFontReader(BaseTypeReader, TypeReaderPlugin):
         has_default_char = self.stream.read_boolean()
         if has_default_char:
             default_char = self.stream.read_char()
-        return texture, glyphs, cropping, char_map, v_space, h_space, kerning, default_char
+        return SpriteFont(texture, glyphs, cropping, char_map, v_space, h_space, kerning, default_char)
 
 
 class ModelReader(BaseTypeReader, TypeReaderPlugin):

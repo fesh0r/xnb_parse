@@ -8,6 +8,7 @@ from xnb_parse.xnb_reader import VERSION_40, XNBReader
 from xnb_parse.type_reader import ReaderError
 from xnb_parse.xna_types.xna_primitive import Enum
 from xnb_parse.file_formats import png
+from xnb_parse.file_formats.xml_utils import E
 
 
 def decode_color(data, width, height):
@@ -203,3 +204,45 @@ class Effect(object):
 class PrimitiveType(Enum):
     enum_values = {1: 'PointList', 2: 'LineList', 3: 'LineStrip', 4: 'TriangleList', 5: 'TriangleStrip',
                    6: 'TriangleFan'}
+
+
+class SpriteFont(object):
+    def __init__(self, texture, glyphs, cropping, char_map, v_space, h_space, kerning, default_char):
+        self.texture = texture
+        self.glyphs = glyphs
+        self.cropping = cropping
+        self.char_map = char_map
+        self.v_space = v_space
+        self.h_space = h_space
+        self.kerning = kerning
+        self.default_char = default_char
+
+    def __str__(self):
+        return 'SpriteFont c:%d d:%dx%d' % (len(self.glyphs), self.texture.width, self.texture.height)
+
+    def xml(self):
+        root = E.SpriteFont(width=str(self.texture.width), height=str(self.texture.height), hSpace=str(self.h_space),
+                            vSpace=str(self.v_space))
+        if self.default_char is not None:
+            root.set('defaultChar', self.default_char)
+        glyphs = E.Glyphs()
+        root.append(glyphs)
+        for cur_glyph in self.glyphs:
+            glyphs.append(cur_glyph.xml())
+        cropping = E.Cropping()
+        root.append(cropping)
+        for cur_crop in self.cropping:
+            cropping.append(cur_crop.xml())
+        kerning = E.Kerning()
+        for cur_kerning in self.kerning:
+            kerning.append(cur_kerning.xml())
+        root.append(kerning)
+        chars = E.CharMap()
+        root.append(chars)
+        for cur_char in self.char_map:
+            chars.append(E.Char(c=cur_char))
+        return root
+
+    def export(self, filename):
+        self.texture.export(filename)
+        return self.xml()

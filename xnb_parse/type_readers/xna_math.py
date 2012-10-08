@@ -4,6 +4,7 @@ math type readers
 
 from xnb_parse.type_reader_manager import TypeReaderPlugin
 from xnb_parse.type_reader import BaseTypeReader, ValueTypeReader
+from xnb_parse.xna_types.xna_math import Rectangle, Point, Plane, BoundingBox, BoundingSphere, Ray, BoundingFrustum
 
 
 class Vector2Reader(ValueTypeReader, TypeReaderPlugin):
@@ -61,7 +62,7 @@ class PlaneReader(ValueTypeReader, TypeReaderPlugin):
     def read(self):
         plane_normal = self.stream.read_vector3()
         plane_d = self.stream.read_single()
-        return plane_normal, plane_d
+        return Plane(plane_normal, plane_d)
 
 
 class PointReader(ValueTypeReader, TypeReaderPlugin):
@@ -71,7 +72,7 @@ class PointReader(ValueTypeReader, TypeReaderPlugin):
     def read(self):
         v_x = self.stream.read_int32()
         v_y = self.stream.read_int32()
-        return v_x, v_y
+        return Point(v_x, v_y)
 
 
 class RectangleReader(ValueTypeReader, TypeReaderPlugin):
@@ -83,7 +84,7 @@ class RectangleReader(ValueTypeReader, TypeReaderPlugin):
         v_y = self.stream.read_int32()
         v_w = self.stream.read_int32()
         v_h = self.stream.read_int32()
-        return v_x, v_y, v_w, v_h
+        return Rectangle(v_x, v_y, v_w, v_h)
 
 
 class BoundingBoxReader(ValueTypeReader, TypeReaderPlugin):
@@ -93,7 +94,7 @@ class BoundingBoxReader(ValueTypeReader, TypeReaderPlugin):
     def read(self):
         v_min = self.stream.read_vector3()
         v_max = self.stream.read_vector3()
-        return v_min, v_max
+        return BoundingBox(v_min, v_max)
 
 
 class BoundingSphereReader(ValueTypeReader, TypeReaderPlugin):
@@ -103,7 +104,7 @@ class BoundingSphereReader(ValueTypeReader, TypeReaderPlugin):
     def read(self):
         v_centre = self.stream.read_vector3()
         v_radius = self.stream.read_single()
-        return v_centre, v_radius
+        return BoundingSphere(v_centre, v_radius)
 
 
 class BoundingFrustumReader(BaseTypeReader, TypeReaderPlugin):
@@ -112,7 +113,7 @@ class BoundingFrustumReader(BaseTypeReader, TypeReaderPlugin):
 
     def read(self):
         value = self.stream.read_matrix()
-        return value
+        return BoundingFrustum(value)
 
 
 class RayReader(ValueTypeReader, TypeReaderPlugin):
@@ -122,7 +123,7 @@ class RayReader(ValueTypeReader, TypeReaderPlugin):
     def read(self):
         v_pos = self.stream.read_vector3()
         v_dir = self.stream.read_vector3()
-        return v_pos, v_dir
+        return Ray(v_pos, v_dir)
 
 
 class CurveReader(BaseTypeReader, TypeReaderPlugin):
