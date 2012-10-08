@@ -3,7 +3,7 @@ FEZ graphics types
 """
 
 from xnb_parse.binstream import BinaryWriter
-from xnb_parse.xnb_reader import VERSION_31
+from xnb_parse.xnb_reader import VERSION_31, E
 from xnb_parse.xna_types.xna_graphics import Texture2D, FORMAT_COLOR, get_texture_format
 
 
@@ -21,9 +21,17 @@ class AnimatedTexture(object):
         return "AnimatedTexture d:%dx%d a:%dx%d f:%d" % (self.width, self.height, self.actual_width,
                                                          self.actual_height, len(self.frames))
 
+    def xml(self):
+        root = E.AnimatedTexture(width=str(self.width), height=str(self.height), actualWidth=str(self.actual_width),
+                                 actualHeight=str(self.actual_height))
+        for cur_frame in self.frames:
+            root.append(cur_frame.xml())
+        return root
+
     def export(self, filename):
 #        self.export_each(filename)
         self.export_single(filename)
+        return self.xml()
 
     def export_each(self, filename):
         for i, cur_frame in enumerate(self.frames):
@@ -49,3 +57,6 @@ class Frame(object):
 
     def __str__(self):
         return "Frame d:%d s:%d" % (self.duration, len(self.data))
+
+    def xml(self):
+        return E.Frame(duration=str(self.duration))

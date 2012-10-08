@@ -2,6 +2,11 @@
 XNB parser
 """
 
+import os
+import functools
+import xml.etree.cElementTree as ET
+from xml.dom import minidom
+
 from xnb_parse.binstream import BinaryReader, BinaryWriter, ByteSwapper
 from xnb_parse.xna_native import decompress
 from xnb_parse.type_reader import ReaderError, generic_reader_type
@@ -187,7 +192,17 @@ class XNBReader(BinaryReader):
     def export(self, filename):
         if self.parsed:
             if hasattr(self.content, 'export'):
-                self.content.export(filename)
+                xml = self.content.export(filename)
+                if xml is not None:
+                    dirname = os.path.dirname(filename)
+                    if not os.path.isdir(dirname):
+                        os.makedirs(dirname)
+#                    ET.ElementTree(xml).write(filename + '.xml', encoding='utf-8')
+                    out_xml = ET.tostring(xml, encoding='utf-8')
+                    reparsed = minidom.parseString(out_xml)
+                    out_xml = reparsed.toprettyxml()
+                    with open(filename + '.xml', 'w') as out_handle:
+                        out_handle.write(out_xml)
 
     def read_color(self):
         v_r = self.read_byte()
@@ -237,3 +252,27 @@ class XNBReader(BinaryReader):
         if self.needs_swap:
             data = self.byte_swapper.swap(swap_size, data)
         return data
+
+
+class _E(object):
+    def __call__(self, tag, *children, **attrib):
+        elem = ET.Element(tag, attrib)
+        for item in children:
+            if isinstance(item, dict):
+                elem.attrib.update(item)
+            elif isinstance(item, basestring):
+                if len(elem):
+                    elem[-1].tail = (elem[-1].tail or "") + item
+                else:
+                    elem.text = (elem.text or "") + item
+            elif ET.iselement(item):
+                elem.append(item)
+            else:
+                raise TypeError("bad argument: %r" % item)
+        return elem
+
+    def __getattr__(self, tag):
+        return functools.partial(self, tag)
+
+# create factory object
+E = _E()
