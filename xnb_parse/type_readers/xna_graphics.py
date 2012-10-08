@@ -5,7 +5,7 @@ graphics type readers
 from xnb_parse.type_reader import BaseTypeReader, ReaderError, EnumTypeReader
 from xnb_parse.type_reader_manager import TypeReaderPlugin
 from xnb_parse.xna_types.xna_graphics import (Texture2D, Texture3D, TextureCube, CUBE_SIDES, IndexBuffer, Effect,
-                                              get_texture_format)
+                                              get_texture_format, PrimitiveType)
 from xnb_parse.type_readers.xna_system import ListReader, DictionaryReader
 from xnb_parse.type_readers.xna_math import Vector3Reader, RectangleReader
 from xnb_parse.type_readers.xna_primitive import CharReader, StringReader, ObjectReader
@@ -178,6 +178,4 @@ class ModelReader(BaseTypeReader, TypeReaderPlugin):
 class PrimitiveTypeReader(EnumTypeReader, TypeReaderPlugin):
     target_type = u'Microsoft.Xna.Framework.Graphics.PrimitiveType'
     reader_name = u'Microsoft.Xna.Framework.Content.PrimitiveTypeReader'
-
-    def read(self):
-        return self.stream.read_int32()
+    enum_type = PrimitiveType

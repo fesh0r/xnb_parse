@@ -6,6 +6,7 @@ from xnb_parse.type_reader import BaseTypeReader, EnumTypeReader
 from xnb_parse.type_reader_manager import TypeReaderPlugin
 from xnb_parse.type_readers.xna_system import ListReader, ArrayReader
 from xnb_parse.type_readers.xna_primitive import Int32Reader
+from xnb_parse.xna_types.fez.fez_music import ShardNotes, AssembleChords
 
 
 class TrackedSongReader(BaseTypeReader, TypeReaderPlugin):
@@ -50,8 +51,10 @@ class LoopReader(BaseTypeReader, TypeReaderPlugin):
 class ShardNotesReader(EnumTypeReader, TypeReaderPlugin):
     target_type = u'FezEngine.Structure.ShardNotes'
     reader_name = u'FezEngine.Readers.ShardNotesReader'
+    enum_type = ShardNotes
 
 
 class AssembleChordsReader(EnumTypeReader, TypeReaderPlugin):
     target_type = u'FezEngine.Structure.AssembleChords'
     reader_name = u'FezEngine.Readers.AssembleChordsReader'
+    enum_type = AssembleChords

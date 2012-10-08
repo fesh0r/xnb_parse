@@ -72,9 +72,14 @@ class GenericValueTypeReader(GenericTypeReader):
 
 class EnumTypeReader(ValueTypeReader):
     is_enum_type = True
+    enum_type = None
 
     def read(self):
-        return self.stream.read_int32()
+        value = self.stream.read_int32()
+        if self.enum_type:
+            return self.enum_type(value)
+        else:
+            return value
 
 
 def generic_reader_name(main_type, args=None):

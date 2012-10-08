@@ -105,7 +105,7 @@ SURFACE_FORMAT4 = {
 
 
 class SurfaceFormat(Enum):
-    enum_values = dict((k, v[0]) for (k, v) in SURFACE_FORMAT.iteritems())
+    enum_values = {k: v[0] for (k, v) in SURFACE_FORMAT.iteritems()}
 
     @property
     def reader(self):
@@ -113,7 +113,7 @@ class SurfaceFormat(Enum):
 
 
 class SurfaceFormat4(Enum):
-    enum_values = dict((k, v[0]) for (k, v) in SURFACE_FORMAT4.iteritems())
+    enum_values = {k: v[0] for (k, v) in SURFACE_FORMAT4.iteritems()}
 
     @property
     def reader(self):
@@ -191,3 +191,15 @@ class Effect(object):
 
     def __str__(self):
         return "Effect s:%d" % len(self.effect_data)
+
+    def export(self, filename):
+        out_dir = os.path.dirname(filename)
+        if not os.path.isdir(out_dir):
+            os.makedirs(out_dir)
+        with open(filename + '.fxo', 'wb') as out_handle:
+            out_handle.write(self.effect_data)
+
+
+class PrimitiveType(Enum):
+    enum_values = {1: 'PointList', 2: 'LineList', 3: 'LineStrip', 4: 'TriangleList', 5: 'TriangleStrip',
+                   6: 'TriangleFan'}
