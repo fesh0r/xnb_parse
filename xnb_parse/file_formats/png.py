@@ -62,6 +62,8 @@ class Writer(object):
 def rgba_to_bgra(data):
     fixed_data = bytearray(data)
     fixed_data[0::4], fixed_data[2::4] = fixed_data[2::4], fixed_data[0::4]
+#    # kill alpha channel
+#    fixed_data[3::4] = [0xff] * (len(data) >> 2)
     return fixed_data
 
 
