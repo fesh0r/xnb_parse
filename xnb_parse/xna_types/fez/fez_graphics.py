@@ -27,7 +27,7 @@ class AnimatedTexture(object):
 
     def export(self, filename):
         for i, cur_frame in enumerate(self.frames):
-            cur_frame[1].export("%s\\%04d" % (filename, i))
+            cur_frame[1].export("%s_ani\\%d" % (filename, i))
 
 
 class Frame(object):
