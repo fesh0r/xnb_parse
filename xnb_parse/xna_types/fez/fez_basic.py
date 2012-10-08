@@ -10,10 +10,6 @@ class FaceOrientation(Enum):
 
 
 class LevelNodeType(Enum):
-    enum_values = dict(enumerate(['']))
-
-
-class LevelNodeType(Enum):
     enum_values = dict(enumerate(['Node', 'Hub', 'Lesser']))
 
 

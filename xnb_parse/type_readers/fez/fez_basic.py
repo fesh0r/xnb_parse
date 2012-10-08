@@ -4,7 +4,9 @@ FEZ basic type readers
 
 from xnb_parse.type_reader import GenericTypeReader, EnumTypeReader
 from xnb_parse.type_reader_manager import TypeReaderPlugin
-from xnb_parse.xna_types.fez.fez_basic import FaceOrientation, LevelNodeType, CollisionType, Viewpoint, NpcAction, ActorType, SurfaceType, LiquidType, PathEndBehavior, ComparisonOperator, CodeInput, VibrationMotor
+from xnb_parse.xna_types.fez.fez_basic import (FaceOrientation, LevelNodeType, CollisionType, Viewpoint, NpcAction,
+                                               ActorType, SurfaceType, LiquidType, PathEndBehavior, ComparisonOperator,
+                                               CodeInput, VibrationMotor)
 
 
 class FaceOrientationReader(EnumTypeReader, TypeReaderPlugin):

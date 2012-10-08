@@ -15,8 +15,8 @@ class Color(namedtuple('Color', ['r', 'g', 'b', 'a'])):
 
     @staticmethod
     def from_packed(data):
-        r = (data >> 0) & 0xff
-        g = (data >> 8) & 0xff
-        b = (data >> 16) & 0xff
-        a = (data >> 24)
-        return Color(r, g, b, a)
+        v_r = (data >> 0) & 0xff
+        v_g = (data >> 8) & 0xff
+        v_b = (data >> 16) & 0xff
+        v_a = (data >> 24)
+        return Color(v_r, v_g, v_b, v_a)

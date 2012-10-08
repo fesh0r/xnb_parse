@@ -144,9 +144,9 @@ class Texture2D(object):
     def export(self, filename):
         if self.texture_format.reader:
             out_png = png.Writer(width=self.width, height=self.height)
-            out_dir = os.path.dirname(filename)
-            if not os.path.isdir(out_dir):
-                os.makedirs(out_dir)
+            dirname = os.path.dirname(filename)
+            if not os.path.isdir(dirname):
+                os.makedirs(dirname)
             with open(filename + '.png', 'wb') as out_handle:
                 rows = self.texture_format.reader(self.mip_levels[0], self.width, self.height)
                 out_png.write_packed(out_handle, rows)

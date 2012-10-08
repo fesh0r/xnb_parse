@@ -76,8 +76,8 @@ class EnumTypeReader(ValueTypeReader):
 
     def read(self):
         value = self.stream.read_int32()
-        if self.enum_type:
-            return self.enum_type(value)
+        if self.enum_type is not None:
+            return self.enum_type(value)  # pylint: disable-msg=E1102
         else:
             return value
 
