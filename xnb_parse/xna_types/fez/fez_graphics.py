@@ -15,19 +15,28 @@ class AnimatedTexture(object):
         self.height = height
         self.actual_width = actual_width
         self.actual_height = actual_height
-        self.frames = []
-        for cur_frame in frames:
-            texture = Texture2D(self.texture_format, self.width, self.height, [cur_frame.data])
-            new_frame = (cur_frame.duration, texture)
-            self.frames.append(new_frame)
+        self.frames = frames
 
     def __str__(self):
         return "AnimatedTexture d:%dx%d a:%dx%d f:%d" % (self.width, self.height, self.actual_width,
                                                          self.actual_height, len(self.frames))
 
     def export(self, filename):
+#        self.export_each(filename)
+        self.export_single(filename)
+
+    def export_each(self, filename):
         for i, cur_frame in enumerate(self.frames):
-            cur_frame[1].export("%s_ani\\%d" % (filename, i))
+            texture = Texture2D(self.texture_format, self.width, self.height, [cur_frame.data])
+            cur_filename = "%s_ani\\%d" % (filename, i)
+            texture.export(cur_filename)
+
+    def export_single(self, filename):
+        texture_data = bytearray()
+        for cur_frame in self.frames:
+            texture_data.extend(cur_frame.data)
+        texture = Texture2D(self.texture_format, self.width, self.height * len(self.frames), [texture_data])
+        texture.export(filename + '.ani')
 
 
 class Frame(object):
