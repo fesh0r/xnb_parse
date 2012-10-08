@@ -121,59 +121,59 @@ class SurfaceFormat4(Enum):
         return SURFACE_FORMAT4[self.value][1]
 
 
-def get_texture_format(xna_version, texture_format):
+def get_surface_format(xna_version, surface_format):
     try:
         if xna_version >= VERSION_40:
-            return SurfaceFormat4(texture_format)
+            return SurfaceFormat4(surface_format)
         else:
-            return SurfaceFormat(texture_format)
+            return SurfaceFormat(surface_format)
     except KeyError:
-        raise ReaderError("Invalid texture format for V%s: %d" % (XNBReader.versions[xna_version], texture_format))
+        raise ReaderError("Invalid surface format for V%s: %d" % (XNBReader.versions[xna_version], surface_format))
 
 
 class Texture2D(object):
-    def __init__(self, texture_format, width, height, mip_levels):
-        self.texture_format = texture_format
+    def __init__(self, surface_format, width, height, mip_levels):
+        self.surface_format = surface_format
         self.width = width
         self.height = height
         self.mip_levels = mip_levels
 
     def __str__(self):
-        return "Texture2D f:%s d:%dx%d m:%d s:%d" % (self.texture_format.name, self.width, self.height,
+        return "Texture2D f:%s d:%dx%d m:%d s:%d" % (self.surface_format, self.width, self.height,
                                                      len(self.mip_levels), len(self.mip_levels[0]))
 
     def export(self, filename):
-        if self.texture_format.reader:
+        if self.surface_format.reader:
             out_png = png.Writer(width=self.width, height=self.height)
             dirname = os.path.dirname(filename)
             if not os.path.isdir(dirname):
                 os.makedirs(dirname)
             with open(filename + '.png', 'wb') as out_handle:
-                rows = self.texture_format.reader(self.mip_levels[0], self.width, self.height)
+                rows = self.surface_format.reader(self.mip_levels[0], self.width, self.height)
                 out_png.write_packed(out_handle, rows)
 
 
 class Texture3D(object):
-    def __init__(self, texture_format, width, height, depth, mip_levels):
-        self.texture_format = texture_format
+    def __init__(self, surface_format, width, height, depth, mip_levels):
+        self.surface_format = surface_format
         self.width = width
         self.height = height
         self.depth = depth
         self.mip_levels = mip_levels
 
     def __str__(self):
-        return "Texture3D f:%s d:%dx%dx%d m:%d s:%d" % (self.texture_format.name, self.width, self.height, self.depth,
+        return "Texture3D f:%s d:%dx%dx%d m:%d s:%d" % (self.surface_format, self.width, self.height, self.depth,
                                                         len(self.mip_levels), len(self.mip_levels[0]))
 
 
 class TextureCube(object):
-    def __init__(self, texture_format, texture_size, sides):
-        self.texture_format = texture_format
+    def __init__(self, surface_format, texture_size, sides):
+        self.surface_format = surface_format
         self.texture_size = texture_size
         self.sides = sides
 
     def __str__(self):
-        return "TextureCube f:%s d:%d m:%d s:%d" % (self.texture_format.name, self.texture_size, len(self.sides['+x']),
+        return "TextureCube f:%s d:%d m:%d s:%d" % (self.surface_format, self.texture_size, len(self.sides['+x']),
                                                     len(self.sides['+x'][0]))
 
 

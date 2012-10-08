@@ -5,7 +5,7 @@ media type readers
 from xnb_parse.type_reader import BaseTypeReader
 from xnb_parse.type_reader_manager import TypeReaderPlugin
 from xnb_parse.type_readers.xna_primitive import StringReader, Int32Reader, SingleReader
-from xnb_parse.xna_types.xna_media import SoundEffect, Song, Video
+from xnb_parse.xna_types.xna_media import SoundEffect, Song, Video, VideoSoundtrackType
 
 
 class SoundEffectReader(BaseTypeReader, TypeReaderPlugin):
@@ -43,5 +43,5 @@ class VideoReader(BaseTypeReader, TypeReaderPlugin):
         width = self.stream.read_object(Int32Reader)
         height = self.stream.read_object(Int32Reader)
         fps = self.stream.read_object(SingleReader)
-        video_type = self.stream.read_object(Int32Reader)
-        return Video(filename, duration, width, height, fps, video_type)
+        video_soundtrack_type = VideoSoundtrackType(self.stream.read_object(Int32Reader))
+        return Video(filename, duration, width, height, fps, video_soundtrack_type)

@@ -5,11 +5,11 @@ FEZ graphics types
 from xnb_parse.binstream import BinaryWriter
 from xnb_parse.xnb_reader import VERSION_31
 from xnb_parse.file_formats.xml_utils import E
-from xnb_parse.xna_types.xna_graphics import Texture2D, FORMAT_COLOR, get_texture_format
+from xnb_parse.xna_types.xna_graphics import Texture2D, FORMAT_COLOR, get_surface_format
 
 
 class AnimatedTexture(object):
-    texture_format = get_texture_format(VERSION_31, FORMAT_COLOR)
+    surface_format = get_surface_format(VERSION_31, FORMAT_COLOR)
 
     def __init__(self, width, height, actual_width, actual_height, frames):
         self.width = width
@@ -36,7 +36,7 @@ class AnimatedTexture(object):
 
     def export_each(self, filename):
         for i, cur_frame in enumerate(self.frames):
-            texture = Texture2D(self.texture_format, self.width, self.height, [cur_frame.data])
+            texture = Texture2D(self.surface_format, self.width, self.height, [cur_frame.data])
             cur_filename = "%s_ani\\%d" % (filename, i)
             texture.export(cur_filename)
 
@@ -44,7 +44,7 @@ class AnimatedTexture(object):
         texture_data = bytearray()
         for cur_frame in self.frames:
             texture_data.extend(cur_frame.data)
-        texture = Texture2D(self.texture_format, self.width, self.height * len(self.frames), [texture_data])
+        texture = Texture2D(self.surface_format, self.width, self.height * len(self.frames), [texture_data])
         texture.export(filename + '.ani')
 
 
