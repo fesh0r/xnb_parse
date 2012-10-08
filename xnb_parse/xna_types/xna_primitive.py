@@ -9,7 +9,7 @@ class Enum(object):
 
     def __init__(self, value):
         self._value = value
-        _ = self.enum_values[value]
+        self._name = self.enum_values[value]
 
     @property
     def value(self):
@@ -17,10 +17,10 @@ class Enum(object):
 
     @property
     def name(self):
-        return self.enum_values[self._value]
+        return self._name
 
     def __str__(self):
-        return self.name
+        return self._name
 
     def __repr__(self):
         return '%s(%d)' % (self.__class__.__name__, self._value)
