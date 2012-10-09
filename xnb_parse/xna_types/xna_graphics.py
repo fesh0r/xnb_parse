@@ -106,7 +106,7 @@ SURFACE_FORMAT4 = {
 
 
 class SurfaceFormat(Enum):
-    enum_values = {k: v[0] for (k, v) in SURFACE_FORMAT.iteritems()}
+    enum_values = dict((k, v[0]) for (k, v) in SURFACE_FORMAT.iteritems())
 
     @property
     def reader(self):
@@ -114,7 +114,7 @@ class SurfaceFormat(Enum):
 
 
 class SurfaceFormat4(Enum):
-    enum_values = {k: v[0] for (k, v) in SURFACE_FORMAT4.iteritems()}
+    enum_values = dict((k, v[0]) for (k, v) in SURFACE_FORMAT4.iteritems())
 
     @property
     def reader(self):
