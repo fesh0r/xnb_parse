@@ -6,12 +6,11 @@ import struct
 import zlib
 
 
-# The PNG signature.
-# http://www.w3.org/TR/PNG/#5PNG-file-signature
-_SIGNATURE = struct.pack('8B', 137, 80, 78, 71, 13, 10, 26, 10)
+class PyPngWriter(object):
+    # The PNG signature.
+    # http://www.w3.org/TR/PNG/#5PNG-file-signature
+    _SIGNATURE = struct.pack('8B', 137, 80, 78, 71, 13, 10, 26, 10)
 
-
-class Writer(object):
     def __init__(self, width=None, height=None):
         if width <= 0 or height <= 0:
             raise ValueError("width and height must be greater than zero")
@@ -28,12 +27,22 @@ class Writer(object):
         self.planes = 4
         self.stride = self.width * self.planes
 
-    def write_packed(self, outfile, rows):
+    def write_bytearray(self, outfile, rows, alpha='yes'):
+        if alpha == 'yes':
+            conv_row = PyPngWriter._conf_bgra
+        elif alpha == 'no':
+            conv_row = PyPngWriter._conf_bgrx
+        elif alpha == 'only':
+            conv_row = PyPngWriter._conf_xxxa
+        else:
+            raise ValueError("Invalid alpha parameter: '%s'", alpha)
+
         # http://www.w3.org/TR/PNG/#5PNG-file-signature
-        outfile.write(_SIGNATURE)
+        outfile.write(PyPngWriter._SIGNATURE)
 
         # http://www.w3.org/TR/PNG/#11IHDR
-        write_chunk(outfile, 'IHDR', struct.pack("!2I5B", self.width, self.height, 8, self.color_type, 0, 0, 0))
+        PyPngWriter._write_chunk(outfile, 'IHDR', struct.pack("!2I5B", self.width, self.height, 8, self.color_type, 0,
+                                                              0, 0))
 
         # http://www.w3.org/TR/PNG/#11IDAT
         compressor = zlib.compressobj()
@@ -41,11 +50,12 @@ class Writer(object):
         data = bytearray()
         for row in rows:
             data.append(0)
-            data.extend(rgba_to_bgra(row))
+            conv_row(row)
+            data.extend(row)
             if len(data) > self.chunk_limit:
                 compressed = compressor.compress(str(data))
                 if len(compressed):
-                    write_chunk(outfile, 'IDAT', compressed)
+                    PyPngWriter._write_chunk(outfile, 'IDAT', compressed)
                 data = bytearray()
         if len(data):
             compressed = compressor.compress(str(data))
@@ -53,26 +63,41 @@ class Writer(object):
             compressed = bytearray()
         flushed = compressor.flush()
         if len(compressed) or len(flushed):
-            write_chunk(outfile, 'IDAT', str(compressed + flushed))
+            PyPngWriter._write_chunk(outfile, 'IDAT', str(compressed + flushed))
 
         # http://www.w3.org/TR/PNG/#11IEND
-        write_chunk(outfile, 'IEND')
+        PyPngWriter._write_chunk(outfile, 'IEND')
+
+    @staticmethod
+    def _conf_bgra(row):
+        row[0::4], row[2::4] = row[2::4], row[0::4]
+
+    @staticmethod
+    def _conf_bgrx(row):
+        row[0::4], row[2::4] = row[2::4], row[0::4]
+        full_row_ff = [0xff] * (len(row) >> 2)
+        row[3::4] = full_row_ff
+
+    @staticmethod
+    def _conf_xxxa(row):
+        full_row_ff = [0xff] * (len(row) >> 2)
+        row[0::4] = full_row_ff
+        row[1::4] = full_row_ff
+        row[2::4] = full_row_ff
+
+    @staticmethod
+    def _write_chunk(outfile, tag, data=''):
+        # http://www.w3.org/TR/PNG/#5Chunk-layout
+        outfile.write(struct.pack("!I", len(data)))
+        outfile.write(tag)
+        outfile.write(data)
+        checksum = zlib.crc32(tag)
+        checksum = zlib.crc32(data, checksum)
+        checksum &= 2 ** 32 - 1
+        outfile.write(struct.pack("!I", checksum))
 
 
-def rgba_to_bgra(data):
-    fixed_data = bytearray(data)
-    fixed_data[0::4], fixed_data[2::4] = fixed_data[2::4], fixed_data[0::4]
-#    # kill alpha channel
-#    fixed_data[3::4] = [0xff] * (len(data) >> 2)
-    return fixed_data
-
-
-def write_chunk(outfile, tag, data=''):
-    # http://www.w3.org/TR/PNG/#5Chunk-layout
-    outfile.write(struct.pack("!I", len(data)))
-    outfile.write(tag)
-    outfile.write(data)
-    checksum = zlib.crc32(tag)
-    checksum = zlib.crc32(data, checksum)
-    checksum &= 2 ** 32 - 1
-    outfile.write(struct.pack("!I", checksum))
+def write_png(filename, width, height, rows, alpha='yes'):
+    out_png = PyPngWriter(width=width, height=height)
+    with open(filename, 'wb') as out_handle:
+        out_png.write_bytearray(out_handle, rows, alpha)

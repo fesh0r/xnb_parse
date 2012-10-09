@@ -7,7 +7,7 @@ import os
 from xnb_parse.xnb_reader import VERSION_40, XNBReader
 from xnb_parse.type_reader import ReaderError
 from xnb_parse.xna_types.xna_primitive import Enum
-from xnb_parse.file_formats import png
+from xnb_parse.file_formats.png import write_png
 from xnb_parse.file_formats.xml_utils import E
 
 
@@ -19,7 +19,7 @@ def decode_color(data, width, height):
 
 
 def chunk_data(data, size):
-    return (data[pos:pos + size] for pos in xrange(0, len(data), size))
+    return (bytearray(data[pos:pos + size]) for pos in xrange(0, len(data), size))
 
 
 CUBE_SIDES = ['+x', '-x', '+y', '-y', '+z', '-z']
@@ -144,13 +144,11 @@ class Texture2D(object):
 
     def export(self, filename):
         if self.surface_format.reader:
-            out_png = png.Writer(width=self.width, height=self.height)
             dirname = os.path.dirname(filename)
             if not os.path.isdir(dirname):
                 os.makedirs(dirname)
-            with open(filename + '.png', 'wb') as out_handle:
-                rows = self.surface_format.reader(self.mip_levels[0], self.width, self.height)
-                out_png.write_packed(out_handle, rows)
+            rows = self.surface_format.reader(self.mip_levels[0], self.width, self.height)
+            write_png(filename + '.png', self.width, self.height, rows)
 
 
 class Texture3D(object):
