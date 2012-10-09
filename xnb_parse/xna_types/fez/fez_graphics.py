@@ -30,7 +30,6 @@ class AnimatedTexture(object):
         return root
 
     def export(self, filename):
-#        self.export_each(filename)
         self.export_single(filename)
         return self.xml()
 
