@@ -6,7 +6,7 @@ from xnb_parse.type_reader import BaseTypeReader, EnumTypeReader
 from xnb_parse.type_reader_manager import TypeReaderPlugin
 from xnb_parse.type_readers.xna_system import ListReader, ArrayReader
 from xnb_parse.type_readers.xna_primitive import Int32Reader
-from xnb_parse.xna_types.fez.fez_music import ShardNotes, AssembleChords
+from xnb_parse.xna_types.fez.fez_music import ShardNotes, AssembleChords, TrackedSong, Loop
 
 
 class TrackedSongReader(BaseTypeReader, TypeReaderPlugin):
@@ -22,7 +22,7 @@ class TrackedSongReader(BaseTypeReader, TypeReaderPlugin):
         assemble_chord = self.stream.read_object(AssembleChordsReader)
         random_ordering = self.stream.read_boolean()
         custom_ordering = self.stream.read_object(ArrayReader, [Int32Reader])
-        return loops, name, tempo, time_signature, notes, assemble_chord, random_ordering, custom_ordering
+        return TrackedSong(loops, name, tempo, time_signature, notes, assemble_chord, random_ordering, custom_ordering)
 
 
 class LoopReader(BaseTypeReader, TypeReaderPlugin):
@@ -44,7 +44,7 @@ class LoopReader(BaseTypeReader, TypeReaderPlugin):
         fractional_time = self.stream.read_boolean()
         one_at_a_time = self.stream.read_boolean()
         cut_off_tail = self.stream.read_boolean()
-        return (duration, loop_times_from, loop_times_to, name, trigger_from, trigger_to, delay, night, day, dusk,
+        return Loop(duration, loop_times_from, loop_times_to, name, trigger_from, trigger_to, delay, night, day, dusk,
                 dawn, fractional_time, one_at_a_time, cut_off_tail)
 
 
