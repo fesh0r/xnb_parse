@@ -11,6 +11,7 @@ class FaceOrientation(Enum):
 
 class LevelNodeType(Enum):
     enum_values = dict(enumerate(['Node', 'Hub', 'Lesser']))
+    xml_tag = 'NodeType'
 
 
 class CollisionType(Enum):

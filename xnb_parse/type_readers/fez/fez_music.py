@@ -45,7 +45,7 @@ class LoopReader(BaseTypeReader, TypeReaderPlugin):
         one_at_a_time = self.stream.read_boolean()
         cut_off_tail = self.stream.read_boolean()
         return Loop(duration, loop_times_from, loop_times_to, name, trigger_from, trigger_to, delay, night, day, dusk,
-                dawn, fractional_time, one_at_a_time, cut_off_tail)
+                    dawn, fractional_time, one_at_a_time, cut_off_tail)
 
 
 class ShardNotesReader(EnumTypeReader, TypeReaderPlugin):

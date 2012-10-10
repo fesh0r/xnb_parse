@@ -53,13 +53,13 @@ class TrackedSong(object):
                 custom_ordering.append(E.Order(str(cur_order)))
         return root
 
-    def export(self, filename):
+    def export(self, _):
         return self.xml()
 
 
 class Loop(object):
-    def __init__(self, duration, loop_times_from, loop_times_to, name, trigger_from, trigger_to, delay, night, day, dusk,
-                 dawn, fractional_time, one_at_a_time, cut_off_tail):
+    def __init__(self, duration, loop_times_from, loop_times_to, name, trigger_from, trigger_to, delay, night, day,
+                 dusk, dawn, fractional_time, one_at_a_time, cut_off_tail):
         self.duration = duration
         self.loop_times_from = loop_times_from
         self.loop_times_to = loop_times_to
@@ -71,7 +71,7 @@ class Loop(object):
         self.day = day
         self.dusk = dusk
         self.dawn = dawn
-        self.fractional_time= fractional_time
+        self.fractional_time = fractional_time
         self.one_at_a_time = one_at_a_time
         self.cut_off_tail = cut_off_tail
 

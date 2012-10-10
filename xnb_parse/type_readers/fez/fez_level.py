@@ -14,6 +14,7 @@ from xnb_parse.type_readers.fez.fez_basic import (LevelNodeTypeReader, FaceOrien
                                                   NpcActionReader, ComparisonOperatorReader, VibrationMotorReader)
 from xnb_parse.type_readers.fez.fez_graphics import ShaderInstancedIndexedPrimitivesReader
 from xnb_parse.type_readers.fez.fez_graphics import VertexPositionNormalTextureInstanceReader
+from xnb_parse.xna_types.fez.fez_level import MapTree, MapNode, MapNodeConnection, WinConditions
 
 
 class MapTreeReader(BaseTypeReader, TypeReaderPlugin):
@@ -22,7 +23,7 @@ class MapTreeReader(BaseTypeReader, TypeReaderPlugin):
 
     def read(self):
         root = self.stream.read_object(MapNodeReader)
-        return root
+        return MapTree(root)
 
 
 class MapNodeReader(BaseTypeReader, TypeReaderPlugin):
@@ -36,7 +37,7 @@ class MapNodeReader(BaseTypeReader, TypeReaderPlugin):
         conditions = self.stream.read_object(WinConditionsReader)
         has_lesser_gate = self.stream.read_boolean()
         has_warp_gate = self.stream.read_boolean()
-        return level_name, connections, node_type, conditions, has_lesser_gate, has_warp_gate
+        return MapNode(level_name, connections, node_type, conditions, has_lesser_gate, has_warp_gate)
 
 
 class MapNodeConnectionReader(BaseTypeReader, TypeReaderPlugin):
@@ -47,7 +48,7 @@ class MapNodeConnectionReader(BaseTypeReader, TypeReaderPlugin):
         face = self.stream.read_object(FaceOrientationReader)
         node = self.stream.read_object(MapNodeReader)
         branch_oversize = self.stream.read_single()
-        return face, node, branch_oversize
+        return MapNodeConnection(face, node, branch_oversize)
 
 
 class WinConditionsReader(BaseTypeReader, TypeReaderPlugin):
@@ -63,8 +64,8 @@ class WinConditionsReader(BaseTypeReader, TypeReaderPlugin):
         other_collectible_count = self.stream.read_int32()
         split_up_count = self.stream.read_int32()
         secret_count = self.stream.read_int32()
-        return (chest_count, locked_door_count, unlocked_door_count, script_ids, cube_shard_count,
-                other_collectible_count, split_up_count, secret_count)
+        return WinConditions(chest_count, locked_door_count, unlocked_door_count, script_ids, cube_shard_count,
+                             other_collectible_count, split_up_count, secret_count)
 
 
 class SkyReader(BaseTypeReader, TypeReaderPlugin):
