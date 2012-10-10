@@ -10,11 +10,13 @@ class ShardNotes(Enum):
     enum_values = dict(enumerate(['C2', 'Csharp2', 'D2', 'Dsharp2', 'E2', 'F2', 'Fsharp2', 'G2', 'Gsharp2', 'A2',
                                   'Asharp2', 'B2', 'C3', 'Csharp3', 'D3', 'Dsharp3', 'E3', 'F3', 'Fsharp3', 'G3',
                                   'Gsharp3', 'A3', 'Asharp3', 'B3', 'C4']))
+    xml_tag = 'Note'
 
 
 class AssembleChords(Enum):
     enum_values = dict(enumerate(['C_maj', 'Csharp_maj', 'D_maj', 'Dsharp_maj', 'E_maj', 'F_maj', 'Fsharp_maj', 'G_maj',
                                   'Gsharp_maj', 'A_maj', 'Asharp_maj', 'B_maj']))
+    xml_tag = 'Chord'
 
 
 class TrackedSong(object):
@@ -33,14 +35,15 @@ class TrackedSong(object):
 
     def xml(self):
         root = E.TrackedSong(name=self.name, tempo=str(self.tempo), timeSignature=str(self.time_signature))
+        root.append(self.assemble_chord.xml())
+        notes = E.Notes()
+        root.append(notes)
+        for cur_note in self.notes:
+            notes.append(cur_note.xml())
         loops = E.Loops()
         root.append(loops)
         for cur_loop in self.loops:
             loops.append(cur_loop.xml())
-        notes = E.Notes()
-        root.append(notes)
-        for cur_note in self.notes:
-            notes.append(E.Note(str(cur_note)))
         if self.random_ordering:
             root.append(E.RandomOrdering())
         if self.custom_ordering:

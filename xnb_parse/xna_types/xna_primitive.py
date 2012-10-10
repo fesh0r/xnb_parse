@@ -2,10 +2,13 @@
 primitive types
 """
 
+from xnb_parse.file_formats.xml_utils import E
+
 
 class Enum(object):
     __slots__ = ('_value', '_name')
     enum_values = None
+    xml_tag = None
 
     def __init__(self, value):
         self._value = value
@@ -24,3 +27,7 @@ class Enum(object):
 
     def __repr__(self):
         return '%s(%d)' % (self.__class__.__name__, self._value)
+
+    def xml(self):
+        xml_tag = self.xml_tag if self.xml_tag else self.__class__.__name__
+        return E(xml_tag, self._name)
