@@ -9,17 +9,7 @@ from xnb_parse.type_reader import ReaderError
 from xnb_parse.xna_types.xna_primitive import Enum
 from xnb_parse.file_formats.png import write_png
 from xnb_parse.file_formats.xml_utils import E
-
-
-def decode_color(data, width, height):
-    stride = width * 4
-    if len(data) != stride * height:
-        raise ReaderError("Texture data length incorrect for Color: %d != %d", (len(data), stride * height))
-    return chunk_data(data, stride)
-
-
-def chunk_data(data, size):
-    return (bytearray(data[pos:pos + size]) for pos in xrange(0, len(data), size))
+from xnb_parse.file_formats.img_decode import decode_color, decode_dxt1, decode_dxt3, decode_dxt5
 
 
 CUBE_SIDES = ['+x', '-x', '+y', '-y', '+z', '-z']
@@ -52,11 +42,11 @@ SURFACE_FORMAT = {
     25: ('HalfSingle', None),
     26: ('HalfVector2', None),
     27: ('HalfVector4', None),
-    28: ('Dxt1', None),
+    28: ('Dxt1', decode_dxt1),
     29: ('Dxt2', None),
-    30: ('Dxt3', None),
+    30: ('Dxt3', decode_dxt3),
     31: ('Dxt4', None),
-    32: ('Dxt5', None),
+    32: ('Dxt5', decode_dxt5),
     33: ('Luminance8', None),
     34: ('Luminance16', None),
     35: ('LuminanceAlpha8', None),
@@ -86,9 +76,9 @@ SURFACE_FORMAT4 = {
     1: ('Bgr565', None),
     2: ('Bgra5551', None),
     3: ('Bgra4444', None),
-    4: ('Dxt1', None),
-    5: ('Dxt3', None),
-    6: ('Dxt5', None),
+    4: ('Dxt1', decode_dxt1),
+    5: ('Dxt3', decode_dxt3),
+    6: ('Dxt5', decode_dxt5),
     7: ('NormalizedByte2', None),
     8: ('NormalizedByte4', None),
     9: ('Rgba1010102', None),
