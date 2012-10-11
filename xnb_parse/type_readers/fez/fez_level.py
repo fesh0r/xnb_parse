@@ -14,7 +14,7 @@ from xnb_parse.type_readers.fez.fez_basic import (LevelNodeTypeReader, FaceOrien
                                                   NpcActionReader, ComparisonOperatorReader, VibrationMotorReader)
 from xnb_parse.type_readers.fez.fez_graphics import ShaderInstancedIndexedPrimitivesReader
 from xnb_parse.type_readers.fez.fez_graphics import VertexPositionNormalTextureInstanceReader
-from xnb_parse.xna_types.fez.fez_level import MapTree, MapNode, MapNodeConnection, WinConditions
+from xnb_parse.xna_types.fez.fez_level import MapTree, MapNode, MapNodeConnection, WinConditions, Sky, SkyLayer
 
 
 class MapTreeReader(BaseTypeReader, TypeReaderPlugin):
@@ -98,11 +98,11 @@ class SkyReader(BaseTypeReader, TypeReaderPlugin):
         foliage_shadows = self.stream.read_boolean()
         no_per_face_layer_x_offset = self.stream.read_boolean()
         layer_base_x_offset = self.stream.read_single()
-        return (name, background, wind_speed, density, fog_density, layers, clouds, shadows, stars, cloud_tint,
-                vertical_tiling, horizontal_scrolling, layer_base_height, inter_layer_vertical_distance,
-                inter_layer_horizontal_distance, horizontal_distance, vertical_distance, layer_base_spacing,
-                wind_parallax, wind_distance, clouds_parallax, shadow_opacity, foliage_shadows,
-                no_per_face_layer_x_offset, layer_base_x_offset)
+        return Sky(name, background, wind_speed, density, fog_density, layers, clouds, shadows, stars, cloud_tint,
+                   vertical_tiling, horizontal_scrolling, layer_base_height, inter_layer_vertical_distance,
+                   inter_layer_horizontal_distance, horizontal_distance, vertical_distance, layer_base_spacing,
+                   wind_parallax, wind_distance, clouds_parallax, shadow_opacity, foliage_shadows,
+                   no_per_face_layer_x_offset, layer_base_x_offset)
 
 
 class SkyLayerReader(BaseTypeReader, TypeReaderPlugin):
@@ -114,7 +114,7 @@ class SkyLayerReader(BaseTypeReader, TypeReaderPlugin):
         in_front = self.stream.read_boolean()
         opacity = self.stream.read_single()
         fog_tint = self.stream.read_single()
-        return name, in_front, opacity, fog_tint
+        return SkyLayer(name, in_front, opacity, fog_tint)
 
 
 class TrileSetReader(BaseTypeReader, TypeReaderPlugin):

@@ -10,7 +10,7 @@ from xnb_parse.type_readers.xna_graphics import PrimitiveTypeReader
 from xnb_parse.type_readers.xna_primitive import StringReader, UInt16Reader
 from xnb_parse.type_readers.fez.fez_basic import NpcActionReader, ActorTypeReader, SetReader, FaceOrientationReader
 from xnb_parse.xna_types.fez.fez_graphics import (AnimatedTexture, Frame, ArtObject, ShaderInstancedIndexedPrimitives,
-                                                  VertexPositionNormalTextureInstance)
+                                                  VertexPositionNormalTextureInstance, NpcMetadata)
 
 
 class ArtObjectReader(BaseTypeReader, TypeReaderPlugin):
@@ -61,7 +61,7 @@ class NpcMetadataReader(BaseTypeReader, TypeReaderPlugin):
         avoids_gomez = self.stream.read_boolean()
         sound_path = self.stream.read_object(StringReader)
         sound_actions = self.stream.read_object(ListReader, [NpcActionReader])
-        return walk_speed, avoids_gomez, sound_path, sound_actions
+        return NpcMetadata(walk_speed, avoids_gomez, sound_path, sound_actions)
 
 
 class AnimatedTextureReader(BaseTypeReader, TypeReaderPlugin):

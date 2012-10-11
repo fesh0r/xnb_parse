@@ -79,3 +79,80 @@ class WinConditions(object):
         if self.script_ids:
             root.append(self.script_ids.xml('Scripts', 'Script'))
         return root
+
+
+class Sky(object):
+    def __init__(self, name, background, wind_speed, density, fog_density, layers, clouds, shadows, stars, cloud_tint,
+                 vertical_tiling, horizontal_scrolling, layer_base_height, inter_layer_vertical_distance,
+                 inter_layer_horizontal_distance, horizontal_distance, vertical_distance, layer_base_spacing,
+                 wind_parallax, wind_distance, clouds_parallax, shadow_opacity, foliage_shadows,
+                 no_per_face_layer_x_offset, layer_base_x_offset):
+        self.name = name
+        self.background = background
+        self.wind_speed = wind_speed
+        self.density = density
+        self.fog_density = fog_density
+        self.layers = layers
+        self.clouds = clouds
+        self.shadows = shadows
+        self.stars = stars
+        self.cloud_tint = cloud_tint
+        self.vertical_tiling = vertical_tiling
+        self.horizontal_scrolling = horizontal_scrolling
+        self.layer_base_height = layer_base_height
+        self.inter_layer_vertical_distance = inter_layer_vertical_distance
+        self.inter_layer_horizontal_distance = inter_layer_horizontal_distance
+        self.horizontal_distance = horizontal_distance
+        self.vertical_distance = vertical_distance
+        self.layer_base_spacing = layer_base_spacing
+        self.wind_parallax = wind_parallax
+        self.wind_distance = wind_distance
+        self.clouds_parallax = clouds_parallax
+        self.shadow_opacity = shadow_opacity
+        self.foliage_shadows = foliage_shadows
+        self.no_per_face_layer_x_offset = no_per_face_layer_x_offset
+        self.layer_base_x_offset = layer_base_x_offset
+
+    def __str__(self):
+        return "Sky '%s' b:'%s' l:%d" % (self.name, self.background, len(self.layers))
+
+    def xml(self):
+        root = E.Sky(name=self.name, background=self.background, windSpeed=str(self.wind_speed),
+                     density=str(self.density), fogDensity=str(self.fog_density),
+                     verticalTiling=str(self.vertical_tiling), horizontalScrolling=str(self.horizontal_scrolling),
+                     layerBaseHeight=str(self.layer_base_height),
+                     interLayerVerticalDistance=str(self.inter_layer_vertical_distance),
+                     interLayerHorizontalDistance=str(self.inter_layer_horizontal_distance),
+                     horizontalDistance=str(self.horizontal_distance), verticalDistance=str(self.vertical_distance),
+                     layerBaseSpacing=str(self.layer_base_spacing), windParallax=str(self.wind_parallax),
+                     windDistance=str(self.wind_distance), cloudsParallax=str(self.clouds_parallax),
+                     shadowOpacity=str(self.shadow_opacity), foliageShadows=str(self.foliage_shadows),
+                     noPerFaceLayerXOffset=str(self.no_per_face_layer_x_offset),
+                     layerBaseXOffset=str(self.layer_base_x_offset))
+        if self.shadows:
+            root.set('shadows', self.shadows)
+        if self.stars:
+            root.set('stars', self.stars)
+        if self.cloud_tint:
+            root.set('cloudTint', self.cloud_tint)
+        root.append(self.layers.xml('Layers'))
+        root.append(self.clouds.xml('Clouds', 'Cloud'))
+        return root
+
+    def export(self, _):
+        return self.xml()
+
+
+class SkyLayer(object):
+    def __init__(self, name, in_front, opacity, fog_tint):
+        self.name = name
+        self.in_front = in_front
+        self.opacity = opacity
+        self.fog_tint = fog_tint
+
+    def __str__(self):
+        return "SkyLayer '%s' o:%f" % (self.name, self.opacity)
+
+    def xml(self):
+        return E.SkyLayer(name=self.name, opacity=str(self.opacity), fogTint=str(self.fog_tint),
+                          inFront=str(self.in_front))
