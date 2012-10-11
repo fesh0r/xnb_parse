@@ -32,7 +32,23 @@ except ImportError:
         def __getattr__(self, tag):
             return functools.partial(self, tag)
 
+    def indent(elem, level=0):
+        i = "\n" + "  " * level
+        if len(elem):
+            if not elem.text or not elem.text.strip():
+                elem.text = i + "  "
+            if not elem.tail or not elem.tail.strip():
+                elem.tail = i
+            for elem in elem:
+                indent(elem, level + 1)
+            if not elem.tail or not elem.tail.strip():
+                elem.tail = i
+        else:
+            if level and (not elem.tail or not elem.tail.strip()):
+                elem.tail = i
+
     def output_xml(xml, filename):
+        indent(xml)
         ET.ElementTree(xml).write(filename, encoding='utf-8', xml_declaration=True)
 
 
