@@ -14,7 +14,8 @@ from xnb_parse.type_readers.fez.fez_basic import (LevelNodeTypeReader, FaceOrien
                                                   NpcActionReader, ComparisonOperatorReader, VibrationMotorReader)
 from xnb_parse.type_readers.fez.fez_graphics import ShaderInstancedIndexedPrimitivesReader
 from xnb_parse.type_readers.fez.fez_graphics import VertexPositionNormalTextureInstanceReader
-from xnb_parse.xna_types.fez.fez_level import MapTree, MapNode, MapNodeConnection, WinConditions, Sky, SkyLayer
+from xnb_parse.xna_types.fez.fez_level import (MapTree, MapNode, MapNodeConnection, WinConditions, Sky, SkyLayer, Trile,
+                                               TrileSet)
 
 
 class MapTreeReader(BaseTypeReader, TypeReaderPlugin):
@@ -125,7 +126,7 @@ class TrileSetReader(BaseTypeReader, TypeReaderPlugin):
         name = self.stream.read_string()
         triles = self.stream.read_object(DictionaryReader, [Int32Reader, TrileReader])
         texture_atlas = self.stream.read_object(Texture2DReader)
-        return name, triles, texture_atlas
+        return TrileSet(name, triles, texture_atlas)
 
 
 class TrileReader(BaseTypeReader, TypeReaderPlugin):
@@ -148,8 +149,8 @@ class TrileReader(BaseTypeReader, TypeReaderPlugin):
         actor_settings_face = self.stream.read_object(FaceOrientationReader)
         surface_type = self.stream.read_object(SurfaceTypeReader)
         atlas_offset = self.stream.read_vector2()
-        return (name, cubemap_path, size, offset, immaterial, see_through, thin, force_hugging, faces, geometry,
-                actor_settings_type, actor_settings_face, surface_type, atlas_offset)
+        return Trile(name, cubemap_path, size, offset, immaterial, see_through, thin, force_hugging, faces, geometry,
+                     actor_settings_type, actor_settings_face, surface_type, atlas_offset)
 
 
 class LevelReader(BaseTypeReader, TypeReaderPlugin):

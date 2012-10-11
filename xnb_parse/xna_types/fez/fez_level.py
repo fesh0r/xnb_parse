@@ -156,3 +156,56 @@ class SkyLayer(object):
     def xml(self):
         return E.SkyLayer(name=self.name, opacity=str(self.opacity), fogTint=str(self.fog_tint),
                           inFront=str(self.in_front))
+
+
+class TrileSet(object):
+    def __init__(self, name, triles, texture_atlas):
+        self.name = name
+        self.triles = triles
+        self.texture_atlas = texture_atlas
+
+    def __str__(self):
+        return "TrileSet '%s' c:%d" % (self.name, len(self.triles))
+
+    def xml(self):
+        root = E.TrileSet(name=self.name)
+        root.append(self.triles.xml('Triles', 'TrileEntry'))
+        return root
+
+    def export(self, filename):
+        self.texture_atlas.export(filename)
+        return self.xml()
+
+
+class Trile(object):
+    def __init__(self, name, cubemap_path, size, offset, immaterial, see_through, thin, force_hugging, faces, geometry,
+                 actor_settings_type, actor_settings_face, surface_type, atlas_offset):
+        self.name = name
+        self.cubemap_path = cubemap_path
+        self.size = size
+        self.offset = offset
+        self.immaterial = immaterial
+        self.see_through = see_through
+        self.thin = thin
+        self.force_hugging = force_hugging
+        self.faces = faces
+        self.geometry = geometry
+        self.actor_settings_type = actor_settings_type
+        self.actor_settings_face = actor_settings_face
+        self.surface_type = surface_type
+        self.atlas_offset = atlas_offset
+
+    def __str__(self):
+        return "Trile '%s' c:'%s' s:%d" % (self.name, self.cubemap_path, self.size)
+
+    def xml(self):
+        root = E.Trile(name=self.name, cubemapPath=self.cubemap_path, immaterial=str(self.immaterial),
+                       seeThrough=str(self.see_through), thin=str(self.thin), forceHugging=str(self.force_hugging),
+                       surfaceType=str(self.surface_type))
+        root.append(E.ActorSettings(type=str(self.actor_settings_type), face=str(self.actor_settings_face)))
+        root.append(E.Size(self.size.xml()))
+        root.append(E.Offset(self.offset.xml()))
+        root.append(E.AtlasOffset(self.atlas_offset.xml()))
+        root.append(self.faces.xml('Faces', 'Face'))
+        root.append(E.Geometry(self.geometry.xml()))
+        return root
