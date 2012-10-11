@@ -138,7 +138,12 @@ class Texture2D(object):
             if not os.path.isdir(dirname):
                 os.makedirs(dirname)
             rows = self.surface_format.reader(self.mip_levels[0], self.width, self.height)
-            write_png(filename + '.png', self.width, self.height, rows)
+            # hack for ArtObject alpha channel
+            if 'art objects' in filename:
+                write_png(filename + '.png', self.width, self.height, rows, alpha='no')
+                write_png(filename + '_alpha.png', self.width, self.height, rows, alpha='only')
+            else:
+                write_png(filename + '.png', self.width, self.height, rows)
 
 
 class Texture3D(object):
