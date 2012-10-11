@@ -9,7 +9,8 @@ from xnb_parse.type_readers.xna_math import ColorReader, MatrixReader
 from xnb_parse.type_readers.xna_graphics import PrimitiveTypeReader
 from xnb_parse.type_readers.xna_primitive import StringReader, UInt16Reader
 from xnb_parse.type_readers.fez.fez_basic import NpcActionReader, ActorTypeReader, SetReader, FaceOrientationReader
-from xnb_parse.xna_types.fez.fez_graphics import AnimatedTexture, Frame
+from xnb_parse.xna_types.fez.fez_graphics import (AnimatedTexture, Frame, ArtObject, ShaderInstancedIndexedPrimitives,
+                                                  VertexPositionNormalTextureInstance)
 
 
 class ArtObjectReader(BaseTypeReader, TypeReaderPlugin):
@@ -26,7 +27,7 @@ class ArtObjectReader(BaseTypeReader, TypeReaderPlugin):
         no_silhouette = self.stream.read_boolean()
         laser_outlets = self.stream.read_object(ReflectiveReader, [generic_reader_type(SetReader,
                                                                                        [FaceOrientationReader])])
-        return name, cubemap_path, size, geometry, actor_type, no_silhouette, laser_outlets
+        return ArtObject(name, cubemap_path, size, geometry, actor_type, no_silhouette, laser_outlets)
 
 
 class ShaderInstancedIndexedPrimitivesReader(GenericTypeReader, TypeReaderPlugin):
@@ -37,7 +38,7 @@ class ShaderInstancedIndexedPrimitivesReader(GenericTypeReader, TypeReaderPlugin
         primitive_type = self.stream.read_object(PrimitiveTypeReader)
         vertices = self.stream.read_object(ArrayReader, [self.readers[0]])
         indices = self.stream.read_object(ArrayReader, [UInt16Reader])
-        return primitive_type, vertices, indices
+        return ShaderInstancedIndexedPrimitives(primitive_type, vertices, indices)
 
 
 class VertexPositionNormalTextureInstanceReader(ValueTypeReader, TypeReaderPlugin):
@@ -48,7 +49,7 @@ class VertexPositionNormalTextureInstanceReader(ValueTypeReader, TypeReaderPlugi
         position = self.stream.read_vector3()
         normal = self.stream.read_byte()
         texture_coord = self.stream.read_vector2()
-        return position, normal, texture_coord
+        return VertexPositionNormalTextureInstance(position, normal, texture_coord)
 
 
 class NpcMetadataReader(BaseTypeReader, TypeReaderPlugin):

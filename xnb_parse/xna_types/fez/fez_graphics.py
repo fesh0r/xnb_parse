@@ -59,3 +59,64 @@ class Frame(object):
 
     def xml(self):
         return E.Frame(duration=str(self.duration))
+
+
+class ArtObject(object):
+    def __init__(self, name, cubemap_path, size, geometry, actor_type, no_silhouette, laser_outlets):
+        self.name = name
+        self.cubemap_path = cubemap_path
+        self.size = size
+        self.geometry = geometry
+        self.actor_type = actor_type
+        self.no_silhouette = no_silhouette
+        self.laser_outlets = laser_outlets
+
+    def __str__(self):
+        return "ArtObject '%s' t:'%s' s:%s g:%d" % (self.name, self.cubemap_path, self.size,
+                                                    len(self.geometry.vertices))
+
+    def xml(self):
+        root = E.ArtObject(name=self.name, cubemapPath=self.cubemap_path, actorType=str(self.actor_type),
+                           noSilhouette=str(self.no_silhouette))
+        root.append(E.Size(self.size.xml()))
+        root.append(self.geometry.xml())
+        if self.laser_outlets:
+            root.append(self.laser_outlets.xml())
+        return root
+
+    def export(self, _):
+        return self.xml()
+
+
+class ShaderInstancedIndexedPrimitives(object):
+    def __init__(self, primitive_type, vertices, indices):
+        self.primitive_type = primitive_type
+        self.vertices = vertices
+        self.indices = indices
+
+    def __str__(self):
+        return "ShaderInstancedIndexedPrimitives t:%s v:%d i:%d" % (self.primitive_type, len(self.vertices),
+                                                                    len(self.indices))
+
+    def xml(self):
+        root = E.ShaderInstancedIndexedPrimitives(type=str(self.primitive_type))
+        root.append(self.vertices.xml('Vertices'))
+        root.append(self.indices.xml('Indices', 'Index'))
+        return root
+
+
+class VertexPositionNormalTextureInstance(object):
+    def __init__(self, position, normal, texture_coord):
+        self.position = position
+        self.normal = normal
+        self.texture_coord = texture_coord
+
+    def __str__(self):
+        return "VertexPositionNormalTextureInstance p:%s n:%d c:%s" % (self.position, self.normal, self.texture_coord)
+
+    def xml(self):
+        root = E.VertexPositionNormalTextureInstance()
+        root.append(E.Position(self.position.xml()))
+        root.append(E.Normal(str(self.normal)))
+        root.append(E.TextureCoord(self.texture_coord.xml()))
+        return root

@@ -10,7 +10,7 @@ class MapTree(object):
         self.map_node = map_node
 
     def __str__(self):
-        return "MapTree: %s" % self.map_node
+        return "MapTree %s" % self.map_node
 
     def xml(self):
         return E.MapTree(self.map_node.xml())
@@ -29,7 +29,7 @@ class MapNode(object):
         self.has_warp_gate = has_warp_gate
 
     def __str__(self):
-        return "MapNode: '%s' t:%s c:%d" % (self.level_name, self.node_type, len(self.connections))
+        return "MapNode '%s' t:%s c:%d" % (self.level_name, self.node_type, len(self.connections))
 
     def xml(self):
         root = E.Node(name=self.level_name, hasLesserGate=str(self.has_lesser_gate),
@@ -48,7 +48,7 @@ class MapNodeConnection(object):
         self.branch_oversize = branch_oversize
 
     def __str__(self):
-        return "MapNodeConnection: f:%s" % self.face
+        return "MapNodeConnection f:%s" % self.face
 
     def xml(self):
         root = E.Connection(face=str(self.face), branchOversize=str(self.branch_oversize))

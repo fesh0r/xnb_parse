@@ -43,3 +43,8 @@ class XNADict(dict):
 
     def export(self, _):
         return self.xml()
+
+
+class XNASet(XNAList):
+    def xml(self, xml_tag='Set', xml_entry='Entry', attrib=None):
+        return XNAList.xml(self, xml_tag=xml_tag, xml_entry=xml_entry, attrib=attrib)

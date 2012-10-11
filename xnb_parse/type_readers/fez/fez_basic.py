@@ -4,6 +4,7 @@ FEZ basic type readers
 
 from xnb_parse.type_reader import GenericTypeReader, EnumTypeReader
 from xnb_parse.type_reader_manager import TypeReaderPlugin
+from xnb_parse.xna_types.xna_system import XNASet
 from xnb_parse.xna_types.fez.fez_basic import (FaceOrientation, LevelNodeType, CollisionType, Viewpoint, NpcAction,
                                                ActorType, SurfaceType, LiquidType, PathEndBehavior, ComparisonOperator,
                                                CodeInput, VibrationMotor)
@@ -86,7 +87,7 @@ class SetReader(GenericTypeReader, TypeReaderPlugin):
     generic_reader_name = u'FezEngine.SetReader`1'
 
     def read(self):
-        return None
+        return XNASet()
 
 
 class IEqualityComparerReader(GenericTypeReader, TypeReaderPlugin):
