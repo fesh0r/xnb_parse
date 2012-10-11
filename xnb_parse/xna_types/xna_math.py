@@ -147,10 +147,7 @@ class Matrix(object):
         return 'Matrix(' + ','.join([str(v) for v in self.value]) + ')'
 
     def xml(self):
-        root = E.Matrix()
-        for cell in self.value:
-            root.append(E.Cell(str(cell)))
-        return root
+        return self.value.xml('Matrix', 'Cell')
 
 
 # pylint: disable-msg=E1001,W0232,E1101

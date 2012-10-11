@@ -25,8 +25,7 @@ class AnimatedTexture(object):
     def xml(self):
         root = E.AnimatedTexture(width=str(self.width), height=str(self.height), actualWidth=str(self.actual_width),
                                  actualHeight=str(self.actual_height))
-        for cur_frame in self.frames:
-            root.append(cur_frame.xml())
+        root.append(self.frames.xml('Frames'))
         return root
 
     def export(self, filename):

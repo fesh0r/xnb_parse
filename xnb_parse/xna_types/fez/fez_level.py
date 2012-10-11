@@ -37,10 +37,7 @@ class MapNode(object):
         if self.conditions:
             root.append(self.conditions.xml())
         if self.connections:
-            connections = E.Connections()
-            root.append(connections)
-            for cur_connection in self.connections:
-                connections.append(cur_connection.xml())
+            root.append(self.connections.xml('Connections'))
         return root
 
 
@@ -80,8 +77,5 @@ class WinConditions(object):
                                splitUp=str(self.split_up_count), secrets=str(self.secret_count),
                                others=str(self.other_collectible_count))
         if self.script_ids:
-            scripts = E.Scripts()
-            root.append(scripts)
-            for cur_script_id in self.script_ids:
-                scripts.append(E.Script(str(cur_script_id)))
+            root.append(self.script_ids.xml('Scripts', 'Script'))
         return root

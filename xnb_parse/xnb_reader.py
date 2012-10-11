@@ -9,6 +9,7 @@ from xnb_parse.xna_native import decompress
 from xnb_parse.type_reader import ReaderError, generic_reader_type
 from xnb_parse.type_readers.xna_system import EnumReader
 from xnb_parse.xna_types.xna_math import Color, Vector2, Vector3, Vector4, Quaternion, Matrix
+from xnb_parse.xna_types.xna_system import XNAList
 from xnb_parse.file_formats.xml_utils import output_xml
 
 
@@ -209,7 +210,7 @@ class XNBReader(BinaryReader):
         return filename, expected_type
 
     def read_matrix(self):
-        matrix = []
+        matrix = XNAList()
         for _ in range(16):
             value = self.read_single()
             matrix.append(value)

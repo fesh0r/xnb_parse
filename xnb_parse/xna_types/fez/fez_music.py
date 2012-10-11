@@ -36,21 +36,12 @@ class TrackedSong(object):
     def xml(self):
         root = E.TrackedSong(name=self.name, tempo=str(self.tempo), timeSignature=str(self.time_signature))
         root.append(self.assemble_chord.xml())
-        notes = E.Notes()
-        root.append(notes)
-        for cur_note in self.notes:
-            notes.append(cur_note.xml())
-        loops = E.Loops()
-        root.append(loops)
-        for cur_loop in self.loops:
-            loops.append(cur_loop.xml())
+        root.append(self.notes.xml('Notes'))
+        root.append(self.loops.xml('Loops'))
         if self.random_ordering:
             root.append(E.RandomOrdering())
         if self.custom_ordering:
-            custom_ordering = E.CustomOrdering()
-            root.append(custom_ordering)
-            for cur_order in self.custom_ordering:
-                custom_ordering.append(E.Order(str(cur_order)))
+            root.append(self.custom_ordering.xml('CustomOrdering', 'Order'))
         return root
 
     def export(self, _):

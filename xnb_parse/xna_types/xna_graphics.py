@@ -213,22 +213,10 @@ class SpriteFont(object):
                             vSpace=str(self.v_space))
         if self.default_char is not None:
             root.set('defaultChar', self.default_char)
-        glyphs = E.Glyphs()
-        root.append(glyphs)
-        for cur_glyph in self.glyphs:
-            glyphs.append(cur_glyph.xml())
-        cropping = E.Cropping()
-        root.append(cropping)
-        for cur_crop in self.cropping:
-            cropping.append(cur_crop.xml())
-        kerning = E.Kerning()
-        for cur_kerning in self.kerning:
-            kerning.append(cur_kerning.xml())
-        root.append(kerning)
-        chars = E.CharMap()
-        root.append(chars)
-        for cur_char in self.char_map:
-            chars.append(E.Char(c=cur_char))
+        root.append(self.glyphs.xml('Glyphs'))
+        root.append(self.cropping.xml('Cropping'))
+        root.append(self.kerning.xml('Kerning'))
+        root.append(self.char_map.xml('CharMap', 'Char', 'c'))
         return root
 
     def export(self, filename):
