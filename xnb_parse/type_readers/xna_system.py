@@ -4,6 +4,7 @@ system type readers
 
 from xnb_parse.type_reader_manager import TypeReaderPlugin
 from xnb_parse.type_reader import ValueTypeReader, GenericTypeReader, GenericValueTypeReader, ReaderError
+from xnb_parse.xna_types.xna_system import XNAList, XNADict
 
 
 class EnumReader(GenericValueTypeReader, TypeReaderPlugin):
@@ -37,7 +38,7 @@ class ArrayReader(GenericTypeReader, TypeReaderPlugin):
 
     def read(self):
         elements = self.stream.read_int32()
-        values = []
+        values = XNAList()
         for _ in range(elements):
             element = self.stream.read_value_or_object(self.readers[0])
             values.append(element)
@@ -50,7 +51,7 @@ class ListReader(GenericTypeReader, TypeReaderPlugin):
 
     def read(self):
         elements = self.stream.read_int32()
-        values = []
+        values = XNAList()
         for _ in range(elements):
             element = self.stream.read_value_or_object(self.readers[0])
             values.append(element)
@@ -63,7 +64,7 @@ class DictionaryReader(GenericTypeReader, TypeReaderPlugin):
 
     def read(self):
         elements = self.stream.read_int32()
-        values = {}
+        values = XNADict()
         for _ in range(elements):
             key = self.stream.read_value_or_object(self.readers[0])
             value = self.stream.read_value_or_object(self.readers[1])
