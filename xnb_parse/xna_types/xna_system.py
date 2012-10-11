@@ -3,6 +3,7 @@ system types
 """
 
 from xnb_parse.file_formats.xml_utils import E
+from xnb_parse.xna_types.xna_primitive import Enum
 
 
 class XNAList(list):
@@ -28,7 +29,7 @@ class XNADict(dict):
         root = E(xml_tag)
         for cur_key, cur_value in self.items():
             cur_tag = E(xml_entry)
-            if hasattr(cur_key, 'xml'):
+            if hasattr(cur_key, 'xml') and not isinstance(cur_key, Enum):
                 raise ValueError("XNADict key is xml")
             else:
                 cur_tag.set('key', unicode(cur_key))

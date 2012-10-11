@@ -137,13 +137,14 @@ class Texture2D(object):
             dirname = os.path.dirname(filename)
             if not os.path.isdir(dirname):
                 os.makedirs(dirname)
-            rows = self.surface_format.reader(self.mip_levels[0], self.width, self.height)
-            # hack for ArtObject alpha channel
-            if 'art objects' in filename:
-                write_png(filename + '.png', self.width, self.height, rows, alpha='no')
+            # hack for ArtObject/TrileSet alpha channel
+            alpha = 'yes'
+            if 'art objects' in filename or 'trile sets' in filename:
+                alpha = 'no'
+                rows = self.surface_format.reader(self.mip_levels[0], self.width, self.height)
                 write_png(filename + '_alpha.png', self.width, self.height, rows, alpha='only')
-            else:
-                write_png(filename + '.png', self.width, self.height, rows)
+            rows = self.surface_format.reader(self.mip_levels[0], self.width, self.height)
+            write_png(filename + '.png', self.width, self.height, rows, alpha=alpha)
 
 
 class Texture3D(object):
