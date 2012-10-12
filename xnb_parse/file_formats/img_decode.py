@@ -5,35 +5,33 @@ Decode DXT/other textures to RGBA
 import struct
 
 from xnb_parse.type_reader import ReaderError
-from xnb_parse.xna_types.xna_math import Color, Bgr565
+#from xnb_parse.xna_types.xna_math import Color, Bgr565
 
 
-def chunk_data_bytearray(data, size):
-    return (bytearray(data[pos:pos + size]) for pos in xrange(0, len(data), size))
-
-
-def chunk_data_str(data, size):
-    return (data[pos:pos + size] for pos in xrange(0, len(data), size))
-
-
-def decode_color(data, width, height):
+def decode_color(data, width, height, needs_swap):
     stride = width * 4
     expected_len = stride * height
     if len(data) != expected_len:
         raise ReaderError("Invalid data size for Color: %d != %d", (len(data), expected_len))
-    return chunk_data_bytearray(data, stride)
+    for pos in xrange(0, len(data), stride):
+        row = bytearray(data[pos:pos + stride])
+        if needs_swap:
+            row[2::4], row[1::4], row[0::4], row[3::4] = row[3::4], row[2::4], row[1::4], row[0::4]
+        else:
+            row[0::4], row[2::4] = row[2::4], row[0::4]
+        yield row
 
 
-def decode_dxt1(data, width, height):
-    return DxtDecoder(width, height, 'DXT1', data).decode()
+def decode_dxt1(data, width, height, needs_swap):
+    return DxtDecoder(width, height, 'DXT1', data, needs_swap).decode()
 
 
-def decode_dxt3(data, width, height):
-    return DxtDecoder(width, height, 'DXT3', data).decode()
+def decode_dxt3(data, width, height, needs_swap):
+    return DxtDecoder(width, height, 'DXT3', data, needs_swap).decode()
 
 
-def decode_dxt5(data, width, height):
-    return DxtDecoder(width, height, 'DXT5', data).decode()
+def decode_dxt5(data, width, height, needs_swap):
+    return DxtDecoder(width, height, 'DXT5', data, needs_swap).decode()
 
 
 class DxtDecoder(object):
@@ -41,7 +39,7 @@ class DxtDecoder(object):
     _RGB_S = struct.Struct('<HHI')
     _EA_S = struct.Struct('<Q')
 
-    def __init__(self, width, height, surface_format, data):
+    def __init__(self, width, height, surface_format, data, needs_swap=False):
         if surface_format not in self._FORMATS:
             raise ReaderError("Unknown DXT format: '%s'", surface_format)
         if (width | height) & 3:
@@ -50,6 +48,7 @@ class DxtDecoder(object):
         self.height = height
         self.surface_format = surface_format
         self.data = data
+        self.needs_swap = needs_swap
         self.block_size = self._FORMATS[self.surface_format]
         stride = (self.width >> 2) * self.block_size
         expected_len = stride * (self.height >> 2)

@@ -4,7 +4,7 @@ XNB parser
 
 import os
 
-from xnb_parse.binstream import BinaryReader, BinaryWriter, ByteSwapper
+from xnb_parse.binstream import BinaryReader, BinaryWriter
 from xnb_parse.xna_native import decompress
 from xnb_parse.type_reader import ReaderError, generic_reader_type
 from xnb_parse.type_readers.xna_system import EnumReader
@@ -42,7 +42,6 @@ class XNBReader(BinaryReader):
         self.graphics_profile = graphics_profile
         self.compressed = compressed
         self.needs_swap = self.file_platform == PLATFORM_XBOX
-        self.byte_swapper = ByteSwapper()
         self.type_reader_manager = type_reader_manager
         self.type_readers = []
         self.shared_objects = []
@@ -248,9 +247,3 @@ class XNBReader(BinaryReader):
         v_z = self.read_single()
         v_w = self.read_single()
         return Vector4(v_x, v_y, v_z, v_w)
-
-    def read_and_swap_bytes(self, count, swap_size):
-        data = self.read_bytes(count)
-        if self.needs_swap:
-            data = self.byte_swapper.swap(swap_size, data)
-        return data

@@ -28,13 +28,7 @@ class PyPngWriter(object):
         self.stride = self.width * self.planes
 
     def write_bytearray(self, outfile, rows, alpha='yes'):
-        if alpha == 'yes':
-            conv_row = PyPngWriter._conf_bgra
-        elif alpha == 'no':
-            conv_row = PyPngWriter._conf_bgrx
-        elif alpha == 'only':
-            conv_row = PyPngWriter._conf_xxxa
-        else:
+        if alpha not in ('yes', 'no', 'only'):
             raise ValueError("Invalid alpha parameter: '%s'", alpha)
 
         # http://www.w3.org/TR/PNG/#5PNG-file-signature
@@ -47,10 +41,16 @@ class PyPngWriter(object):
         # http://www.w3.org/TR/PNG/#11IDAT
         compressor = zlib.compressobj()
 
+        full_row_ff = [0xff] * self.width
         data = bytearray()
         for row in rows:
             data.append(0)
-            conv_row(row)
+            if alpha == 'no':
+                row[3::4] = full_row_ff
+            elif alpha == 'only':
+                row[0::4] = full_row_ff
+                row[1::4] = full_row_ff
+                row[2::4] = full_row_ff
             data.extend(row)
             if len(data) > self.chunk_limit:
                 compressed = compressor.compress(str(data))
@@ -67,23 +67,6 @@ class PyPngWriter(object):
 
         # http://www.w3.org/TR/PNG/#11IEND
         PyPngWriter._write_chunk(outfile, 'IEND')
-
-    @staticmethod
-    def _conf_bgra(row):
-        row[0::4], row[2::4] = row[2::4], row[0::4]
-
-    @staticmethod
-    def _conf_bgrx(row):
-        row[0::4], row[2::4] = row[2::4], row[0::4]
-        full_row_ff = [0xff] * (len(row) >> 2)
-        row[3::4] = full_row_ff
-
-    @staticmethod
-    def _conf_xxxa(row):
-        full_row_ff = [0xff] * (len(row) >> 2)
-        row[0::4] = full_row_ff
-        row[1::4] = full_row_ff
-        row[2::4] = full_row_ff
 
     @staticmethod
     def _write_chunk(outfile, tag, data=''):

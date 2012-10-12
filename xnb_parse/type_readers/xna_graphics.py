@@ -34,7 +34,7 @@ class Texture2DReader(BaseTypeReader, TypeReaderPlugin):
             size = self.stream.read_int32()
             data = self.stream.read_bytes(size)
             mip_levels.append(data)
-        return Texture2D(surface_format, width, height, mip_levels)
+        return Texture2D(surface_format, width, height, mip_levels, self.stream.needs_swap)
 
 
 class Texture3DReader(BaseTypeReader, TypeReaderPlugin):
@@ -53,7 +53,7 @@ class Texture3DReader(BaseTypeReader, TypeReaderPlugin):
             size = self.stream.read_int32()
             data = self.stream.read_bytes(size)
             mip_levels.append(data)
-        return Texture3D(surface_format, width, height, depth, mip_levels)
+        return Texture3D(surface_format, width, height, depth, mip_levels, self.stream.needs_swap)
 
 
 class TextureCubeReader(BaseTypeReader, TypeReaderPlugin):
@@ -73,7 +73,7 @@ class TextureCubeReader(BaseTypeReader, TypeReaderPlugin):
                 data = self.stream.read_bytes(size)
                 mip_levels.append(data)
             sides[side] = mip_levels
-        return TextureCube(surface_format, texture_size, sides)
+        return TextureCube(surface_format, texture_size, sides, self.stream.needs_swap)
 
 
 class IndexBufferReader(BaseTypeReader, TypeReaderPlugin):
