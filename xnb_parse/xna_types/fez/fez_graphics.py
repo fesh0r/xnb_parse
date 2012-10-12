@@ -137,8 +137,9 @@ class NpcMetadata(object):
         return "NpcMetadata s:%s a:%d" % (self.sound_path, len(self.sound_actions))
 
     def xml(self):
-        root = E.NpcMetadata(soundPath=self.sound_path, avoidsGomez=str(self.avoids_gomez),
-                             walkSpeed=str(self.walk_speed))
+        root = E.NpcMetadata(avoidsGomez=str(self.avoids_gomez), walkSpeed=str(self.walk_speed))
+        if self.sound_path:
+            root.set('soundPath', self.sound_path)
         root.append(self.sound_actions.xml('SoundActions'))
         return root
 
