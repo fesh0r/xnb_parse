@@ -96,6 +96,7 @@ SURFACE_FORMAT4 = {
 
 
 class SurfaceFormat(Enum):
+    __slots__ = ()
     enum_values = dict((k, v[0]) for (k, v) in SURFACE_FORMAT.iteritems())
 
     @property
@@ -104,6 +105,7 @@ class SurfaceFormat(Enum):
 
 
 class SurfaceFormat4(Enum):
+    __slots__ = ()
     enum_values = dict((k, v[0]) for (k, v) in SURFACE_FORMAT4.iteritems())
 
     @property
@@ -197,6 +199,7 @@ class Effect(object):
 
 
 class PrimitiveType(Enum):
+    __slots__ = ()
     enum_values = {1: 'PointList', 2: 'LineList', 3: 'LineStrip', 4: 'TriangleList', 5: 'TriangleStrip',
                    6: 'TriangleFan'}
 

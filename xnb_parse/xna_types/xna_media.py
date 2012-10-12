@@ -63,4 +63,5 @@ class Video(object):
 
 
 class VideoSoundtrackType(Enum):
+    __slots__ = ()
     enum_values = dict(enumerate(['Music', 'Dialog', 'MusicAndDialog']))

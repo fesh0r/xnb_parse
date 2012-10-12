@@ -106,6 +106,8 @@ class ShaderInstancedIndexedPrimitives(object):
 
 
 class VertexPositionNormalTextureInstance(object):
+    __slots__ = ('position', 'normal', 'texture_coord')
+
     def __init__(self, position, normal, texture_coord):
         self.position = position
         self.normal = normal
