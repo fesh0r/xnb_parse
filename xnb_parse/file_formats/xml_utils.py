@@ -49,7 +49,7 @@ except ImportError:
 
     def output_xml(xml, filename):
         indent(xml)
-        ET.ElementTree(xml).write(filename, encoding='utf-8', xml_declaration=True)
+        ET.ElementTree(xml).write(filename, encoding='utf-8')
 
 
 # create factory object
