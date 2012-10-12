@@ -178,6 +178,9 @@ class TrileSet(object):
 
 
 class Trile(object):
+    __slots__ = ('name', 'cubemap_path', 'size', 'offset', 'immaterial', 'see_through', 'thin', 'force_hugging',
+                 'faces', 'geometry', 'actor_settings_type', 'actor_settings_face', 'surface_type', 'atlas_offset')
+
     def __init__(self, name, cubemap_path, size, offset, immaterial, see_through, thin, force_hugging, faces, geometry,
                  actor_settings_type, actor_settings_face, surface_type, atlas_offset):
         self.name = name

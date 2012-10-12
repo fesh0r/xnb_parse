@@ -89,6 +89,8 @@ class ArtObject(object):
 
 
 class ShaderInstancedIndexedPrimitives(object):
+    __slots__ = ('primitive_type', 'vertices', 'indices')
+
     def __init__(self, primitive_type, vertices, indices):
         self.primitive_type = primitive_type
         self.vertices = vertices

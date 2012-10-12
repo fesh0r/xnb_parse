@@ -7,6 +7,8 @@ from xnb_parse.xna_types.xna_primitive import Enum
 
 
 class XNAList(list):
+    __slots__ = ()
+
     def xml(self, xml_tag='List', xml_entry='Entry', attrib=None):
         root = E(xml_tag)
         for cur_value in self:
@@ -25,6 +27,8 @@ class XNAList(list):
 
 
 class XNADict(dict):
+    __slots__ = ()
+
     def xml(self, xml_tag='Dict', xml_entry='Entry', attrib=None):
         root = E(xml_tag)
         for cur_key, cur_value in self.items():
@@ -47,5 +51,7 @@ class XNADict(dict):
 
 
 class XNASet(XNAList):
+    __slots__ = ()
+
     def xml(self, xml_tag='Set', xml_entry='Entry', attrib=None):
         return XNAList.xml(self, xml_tag=xml_tag, xml_entry=xml_entry, attrib=attrib)
