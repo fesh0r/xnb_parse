@@ -77,6 +77,9 @@ class XNBReader(BinaryReader):
 
         shared_count = self.read_7bit_encoded_int()
 
+        if shared_count:
+            raise ReaderError('Shared resources present')
+
         self.content = self.read_object(self.expected_type_reader)
         if verbose:
             print 'Asset: %s' % str(self.content)
@@ -89,6 +92,7 @@ class XNBReader(BinaryReader):
 
         if self.remaining():
             raise ReaderError('remaining: %d' % self.remaining())
+        del self.data
         return self.content
 
     def get_type_reader(self, type_reader, version=None):
