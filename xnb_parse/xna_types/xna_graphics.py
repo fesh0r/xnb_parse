@@ -137,6 +137,7 @@ class Texture2D(object):
             dirname = os.path.dirname(filename)
             if not os.path.isdir(dirname):
                 os.makedirs(dirname)
+
             # hack for ArtObject/TrileSet alpha channel
             alpha = 'yes'
             if 'art objects' in filename or 'trile sets' in filename:

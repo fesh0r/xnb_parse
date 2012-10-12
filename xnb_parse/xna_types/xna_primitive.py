@@ -6,7 +6,6 @@ from xnb_parse.file_formats.xml_utils import E
 
 
 class Enum(object):
-    __slots__ = ('_value', '_name')
     enum_values = None
     xml_tag = None
 
