@@ -212,7 +212,8 @@ class SpriteFont(object):
         self.default_char = default_char
 
     def __str__(self):
-        return 'SpriteFont c:%d d:%dx%d' % (len(self.glyphs), self.texture.width, self.texture.height)
+        return 'SpriteFont c:%d f:%s d:%dx%d' % (len(self.glyphs), self.texture.surface_format, self.texture.width,
+                                                 self.texture.height)
 
     def xml(self):
         root = E.SpriteFont(width=str(self.texture.width), height=str(self.texture.height), hSpace=str(self.h_space),
