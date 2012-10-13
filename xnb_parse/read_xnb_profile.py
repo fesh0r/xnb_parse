@@ -6,24 +6,25 @@ import sys
 import os
 import time
 
-from guppy import hpy
+#noinspection PyUnresolvedReferences
+from guppy import hpy  # pylint: disable-msg=F0401
 
 from xnb_parse.xnb_reader import XNBReader
 from xnb_parse.type_reader_manager import TypeReaderManager
 
 
 def read_xnb(in_file, type_reader_manager=None):
-    hp = hpy()
+    heapy = hpy()
     print in_file,
     with open(in_file, 'rb') as in_handle:
         in_data = in_handle.read()
-    hp.setrelheap()
+    heapy.setrelheap()
     xnb = XNBReader.load(in_data, type_reader_manager, parse=False)
     print xnb,
     print xnb.parse(),
     xnb.export(os.path.join('../export', in_file.replace('.xnb', '')))
     print 'done'
-    print hp.heap()
+    print heapy.heap()
 
 
 def main():

@@ -42,7 +42,8 @@ def decode32(data, width, height, conv):
         yield row
 
 
-def decode_a(data, width, height, needs_swap):
+#noinspection PyUnusedLocal
+def decode_a(data, width, height, needs_swap):  # pylint: disable-msg=W0613
     return decode8(data, width, height, 'a_xxxa')
 
 
@@ -99,7 +100,7 @@ class DxtDecoder(object):
 
     def decode(self):
         source_offset = 0
-        for cur_y in xrange(0, self.height, 4):
+        for _ in xrange(0, self.height, 4):
             for cur_x in xrange(0, self.width, 4):
                 if self.surface_format == 'DXT3':
                     self.decode_rgb_block(source_offset + 8, cur_x)
@@ -127,39 +128,39 @@ class DxtDecoder(object):
 #        else:
 #            colors.append(Color.lerp(color0, color1, 1./2.).to_bytearray())
 #            colors.append(Color(0, 0, 0, 0).to_bytearray())
-        r0 = (color0_raw >> 11 & 0x1f) << 3
-        g0 = (color0_raw >> 5 & 0x3f) << 2
-        b0 = (color0_raw & 0x1f) << 3
-        r1 = (color1_raw >> 11 & 0x1f) << 3
-        g1 = (color1_raw >> 5 & 0x3f) << 2
-        b1 = (color1_raw & 0x1f) << 3
-        colors = [[r0, g0, b0, 255], [r1, g1, b1, 255]]
+        c0_r = (color0_raw >> 11 & 0x1f) << 3
+        c0_g = (color0_raw >> 5 & 0x3f) << 2
+        c0_b = (color0_raw & 0x1f) << 3
+        c1_r = (color1_raw >> 11 & 0x1f) << 3
+        c1_g = (color1_raw >> 5 & 0x3f) << 2
+        c1_b = (color1_raw & 0x1f) << 3
+        colors = [[c0_r, c0_g, c0_b, 255], [c1_r, c1_g, c1_b, 255]]
         if color0_raw > color1_raw or not dxt1:
-            r2 = int((2 * r0 + r1) / 3)
-            g2 = int((2 * g0 + g1) / 3)
-            b2 = int((2 * b0 + b1) / 3)
-            r3 = int((r0 + 2 * r1) / 3)
-            g3 = int((g0 + 2 * g1) / 3)
-            b3 = int((b0 + 2 * b1) / 3)
-            colors.append([r2, g2, b2, 255])
-            colors.append([r3, g3, b3, 255])
+            c2_r = int((2 * c0_r + c1_r) / 3)
+            c2_g = int((2 * c0_g + c1_g) / 3)
+            c2_b = int((2 * c0_b + c1_b) / 3)
+            c3_r = int((c0_r + 2 * c1_r) / 3)
+            c3_g = int((c0_g + 2 * c1_g) / 3)
+            c3_b = int((c0_b + 2 * c1_b) / 3)
+            colors.append([c2_r, c2_g, c2_b, 255])
+            colors.append([c3_r, c3_g, c3_b, 255])
         else:
-            r2 = int((r0 + r1) / 2)
-            g2 = int((g0 + g1) / 2)
-            b2 = int((b0 + b1) / 2)
-            colors.append([r2, g2, b2, 255])
+            c2_r = int((c0_r + c1_r) / 2)
+            c2_g = int((c0_g + c1_g) / 2)
+            c2_b = int((c0_b + c1_b) / 2)
+            colors.append([c2_r, c2_g, c2_b, 255])
             colors.append([0, 0, 0, 255])
-        for y in range(4):
-            for x in range(cur_x << 2, (cur_x + 4) << 2, 4):
-                self.out_rows[y][x:x + 4] = colors[bits & 3]
+        for b_y in range(4):
+            for b_x in range(cur_x << 2, (cur_x + 4) << 2, 4):
+                self.out_rows[b_y][b_x:b_x + 4] = colors[bits & 3]
                 bits >>= 2
 
     def decode_explicit_alpha_block(self, offset, cur_x):
         bits0, bits1, bits2, bits3 = self.ae_struct.unpack_from(self.data, offset)
         bits = bits0 | bits1 << 16 | bits2 << 32 | bits3 << 48
-        for y in range(4):
-            for x in range(cur_x << 2, (cur_x + 4) << 2, 4):
-                self.out_rows[y][x + 3] = (bits & 0xf) * 17
+        for b_y in range(4):
+            for b_x in range(cur_x << 2, (cur_x + 4) << 2, 4):
+                self.out_rows[b_y][b_x + 3] = (bits & 0xf) * 17
                 bits >>= 4
 
     def decode_interpolated_alpha_block(self, offset, cur_x):
