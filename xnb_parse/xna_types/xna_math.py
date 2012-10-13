@@ -15,33 +15,12 @@ class Color(namedtuple('Color', ['r', 'g', 'b', 'a'])):
     def to_packed(self):
         return self.r | self.g << 8 | self.b << 16 | self.a << 24
 
-    def to_bytearray(self):
-        return bytearray((self.r, self.g, self.b, self.a))
-
-    def to_float(self):
-        v_r = unpack_unorm(0xff, self.r)
-        v_g = unpack_unorm(0xff, self.g)
-        v_b = unpack_unorm(0xff, self.b)
-        v_a = unpack_unorm(0xff, self.a)
-        return v_r, v_g, v_b, v_a
-
     @staticmethod
     def from_packed(data):
         v_r = data & 0xff
         v_g = data >> 8 & 0xff
         v_b = data >> 16 & 0xff
         v_a = data >> 24 & 0xff
-        return Color(v_r, v_g, v_b, v_a)
-
-    @staticmethod
-    def from_float(values):
-        v_r = pack_unorm(0xff, values[0])
-        v_g = pack_unorm(0xff, values[1])
-        v_b = pack_unorm(0xff, values[2])
-        try:
-            v_a = pack_unorm(0xff, values[3])
-        except IndexError:
-            v_a = 0xff
         return Color(v_r, v_g, v_b, v_a)
 
     @staticmethod
@@ -64,55 +43,6 @@ class Color(namedtuple('Color', ['r', 'g', 'b', 'a'])):
 
     def xml(self):
         return E.Color(c=self.attrib())
-
-    @staticmethod
-    def lerp(color0, color1, amount):
-        scale = pack_unorm(0xffff, amount)
-        v_r = color0.r + ((color1.r - color0.r) * scale >> 16)
-        v_g = color0.g + ((color1.g - color0.g) * scale >> 16)
-        v_b = color0.b + ((color1.b - color0.b) * scale >> 16)
-        v_a = color0.a + ((color1.a - color0.a) * scale >> 16)
-        return Color(v_r, v_g, v_b, v_a)
-
-
-# pylint: disable-msg=E1001,W0232,E1101
-#noinspection PyClassicStyleClass,PyOldStyleClasses,PyUnresolvedReferences
-class Bgr565(namedtuple('Bgr565', ['r', 'g', 'b'])):
-    __slots__ = ()
-
-    def to_packed(self):
-        return self.b | self.g << 5 | self.r << 11
-
-    def to_float(self):
-        v_r = unpack_unorm(0x1f, self.r)
-        v_g = unpack_unorm(0x3f, self.g)
-        v_b = unpack_unorm(0x1f, self.b)
-        return v_r, v_g, v_b
-
-    @staticmethod
-    def from_packed(data):
-        v_r = data >> 11 & 0x1f
-        v_g = data >> 5 & 0x3f
-        v_b = data >> 0 & 0x1f
-        return Bgr565(v_r, v_g, v_b)
-
-    @staticmethod
-    def from_float(values):
-        v_r = pack_unorm(0x1f, values[0])
-        v_g = pack_unorm(0x3f, values[1])
-        v_b = pack_unorm(0x1f, values[2])
-        return Bgr565(v_r, v_g, v_b)
-
-
-def pack_unorm(bitmask, value):
-    scaled_value = value * bitmask
-    if scaled_value > bitmask:
-        scaled_value = bitmask
-    return int(round(scaled_value))
-
-
-def unpack_unorm(bitmask, value):
-    return float(value & bitmask) / bitmask
 
 
 # pylint: disable-msg=E1001,W0232,E1101

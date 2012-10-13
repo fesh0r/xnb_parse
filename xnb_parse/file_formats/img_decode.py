@@ -5,7 +5,6 @@ Decode DXT/other textures to RGBA
 import struct
 
 from xnb_parse.type_reader import ReaderError
-#from xnb_parse.xna_types.xna_math import Color, Bgr565
 
 
 def decode_bgra(data, width, height, needs_swap):
@@ -96,6 +95,10 @@ class DxtDecoder(object):
         else:
             self.swap_struct = struct.Struct('<HHHH')
 
+        self.explicit_alphas = []
+        for cur_a in range(16):
+            self.explicit_alphas.append(cur_a * 17)
+
     def decode(self):
         source_offset = 0
         for _ in xrange(0, self.height, 4):
@@ -117,15 +120,6 @@ class DxtDecoder(object):
     def decode_rgb_block(self, offset, cur_x, dxt1=False):
         color0_raw, color1_raw, bits0, bits1 = self.swap_struct.unpack_from(self.data, offset)
         bits = bits0 | bits1 << 16
-#        color0 = Color.from_float(Bgr565.from_packed(color0_raw))
-#        color1 = Color.from_float(Bgr565.from_packed(color1_raw))
-#        colors = [color0.to_bytearray(), color1.to_bytearray()]
-#        if color0_raw > color1_raw or not dxt1:
-#            colors.append(Color.lerp(color0, color1, 1./3.).to_bytearray())
-#            colors.append(Color.lerp(color0, color1, 2./3.).to_bytearray())
-#        else:
-#            colors.append(Color.lerp(color0, color1, 1./2.).to_bytearray())
-#            colors.append(Color(0, 0, 0, 0).to_bytearray())
         colors = []
         color0_r = (color0_raw >> 11 & 0x1f) << 3
         color0_g = (color0_raw >> 5 & 0x3f) << 2
@@ -169,7 +163,7 @@ class DxtDecoder(object):
         bits = bits0 | bits1 << 16 | bits2 << 32 | bits3 << 48
         for b_y in range(4):
             for b_x in range(cur_x << 2, (cur_x + 4) << 2, 4):
-                self.out_rows[b_y][b_x + 3] = (bits & 0xf) * 17
+                self.out_rows[b_y][b_x + 3] = self.explicit_alphas[bits & 0xf]
                 bits >>= 4
 
     def decode_interpolated_alpha_block(self, offset, cur_x):
