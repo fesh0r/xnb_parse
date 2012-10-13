@@ -22,9 +22,6 @@ class SoundEffect(object):
         return E.SoundEffect(loopStart=str(self.loop_start), loopLength=str(self.loop_length),
                              duration=str(self.duration))
 
-    def export(self, _):
-        return self.xml()
-
 
 class Song(object):
     def __init__(self, filename, duration):
@@ -36,9 +33,6 @@ class Song(object):
 
     def xml(self):
         return E.Song(filename=self.filename, duration=str(self.duration))
-
-    def export(self, _):
-        return self.xml()
 
 
 class Video(object):
@@ -57,9 +51,6 @@ class Video(object):
     def xml(self):
         return E.Video(filename=self.filename, duration=str(self.duration), width=str(self.width),
                        height=str(self.height), fps=str(self.fps), soundtrackType=str(self.video_soundtrack_type))
-
-    def export(self, _):
-        return self.xml()
 
 
 class VideoSoundtrackType(Enum):

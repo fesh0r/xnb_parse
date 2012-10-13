@@ -15,9 +15,6 @@ class MapTree(object):
     def xml(self):
         return E.MapTree(self.map_node.xml())
 
-    def export(self, _):
-        return self.xml()
-
 
 class MapNode(object):
     def __init__(self, level_name, connections, node_type, conditions, has_lesser_gate, has_warp_gate):
@@ -139,9 +136,6 @@ class Sky(object):
         root.append(self.clouds.xml('Clouds', 'Cloud'))
         return root
 
-    def export(self, _):
-        return self.xml()
-
 
 class SkyLayer(object):
     def __init__(self, name, in_front, opacity, fog_tint):
@@ -174,7 +168,6 @@ class TrileSet(object):
 
     def export(self, filename):
         self.texture_atlas.export(filename)
-        return self.xml()
 
 
 class Trile(object):

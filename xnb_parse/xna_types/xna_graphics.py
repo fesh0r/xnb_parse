@@ -9,7 +9,7 @@ from xnb_parse.type_reader import ReaderError
 from xnb_parse.xna_types.xna_primitive import Enum
 from xnb_parse.file_formats.png import write_png
 from xnb_parse.file_formats.xml_utils import E
-from xnb_parse.file_formats.img_decode import decode_bgra, decode_rgba, decode_a, decode_dxt1, decode_dxt3, decode_dxt5
+from xnb_parse.file_formats.img_decode import decode_bgra, decode_rgba, decode_a, decode_dxt1, decode_dxt3
 
 
 CUBE_SIDES = ['+x', '-x', '+y', '-y', '+z', '-z']
@@ -236,4 +236,3 @@ class SpriteFont(object):
 
     def export(self, filename):
         self.texture.export(filename)
-        return self.xml()

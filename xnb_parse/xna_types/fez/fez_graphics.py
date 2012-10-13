@@ -30,7 +30,6 @@ class AnimatedTexture(object):
 
     def export(self, filename):
         self.export_single(filename)
-        return self.xml()
 
     def export_each(self, filename):
         for i, cur_frame in enumerate(self.frames):
@@ -83,9 +82,6 @@ class ArtObject(object):
         if self.laser_outlets:
             root.append(self.laser_outlets.xml())
         return root
-
-    def export(self, _):
-        return self.xml()
 
 
 class ShaderInstancedIndexedPrimitives(object):
@@ -142,6 +138,3 @@ class NpcMetadata(object):
             root.set('soundPath', self.sound_path)
         root.append(self.sound_actions.xml('SoundActions'))
         return root
-
-    def export(self, _):
-        return self.xml()

@@ -22,9 +22,6 @@ class XNAList(list):
             root.append(cur_tag)
         return root
 
-    def export(self, _):
-        return self.xml()
-
 
 class XNADict(dict):
     __slots__ = ()
@@ -45,9 +42,6 @@ class XNADict(dict):
                 cur_tag.text = unicode(cur_value)
             root.append(cur_tag)
         return root
-
-    def export(self, _):
-        return self.xml()
 
 
 class XNASet(XNAList):

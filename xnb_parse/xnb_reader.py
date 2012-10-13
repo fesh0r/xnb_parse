@@ -198,12 +198,12 @@ class XNBReader(BinaryReader):
         if self.content is None:
             raise ValueError('XNB content not parsed')
         if hasattr(self.content, 'export'):
-            xml = self.content.export(filename)
-            if xml is not None:
-                dirname = os.path.dirname(filename)
-                if not os.path.isdir(dirname):
-                    os.makedirs(dirname)
-                output_xml(xml, filename + '.xml')
+            self.content.export(filename)
+        if hasattr(self.content, 'xml'):
+            dirname = os.path.dirname(filename)
+            if not os.path.isdir(dirname):
+                os.makedirs(dirname)
+            output_xml(self.content.xml(), filename + '.xml')
 
     def read_color(self):
         v_r = self.read_byte()

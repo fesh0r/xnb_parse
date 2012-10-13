@@ -46,9 +46,6 @@ class TrackedSong(object):
             root.append(self.custom_ordering.xml('CustomOrdering', 'Order'))
         return root
 
-    def export(self, _):
-        return self.xml()
-
 
 class Loop(object):
     def __init__(self, duration, loop_times_from, loop_times_to, name, trigger_from, trigger_to, delay, night, day,
