@@ -30,7 +30,7 @@ def decode32(data, width, height, conv):
     stride = width * 4
     expected_len = stride * height
     if len(data) != expected_len:
-        raise ReaderError("Invalid data size for Color: %d != %d", (len(data), expected_len))
+        raise ReaderError("Invalid data size: %d != %d", (len(data), expected_len))
     for pos in xrange(0, len(data), stride):
         row = bytearray(data[pos:pos + stride])
         if conv == 'bgra_rgba':
@@ -39,6 +39,23 @@ def decode32(data, width, height, conv):
             row[3::4], row[0::4], row[1::4], row[2::4] = row[0::4], row[1::4], row[2::4], row[3::4]
         elif conv == 'abgr_rgba':
             row[3::4], row[2::4], row[1::4], row[0::4] = row[0::4], row[1::4], row[2::4], row[3::4]
+        yield row
+
+
+def decode_a(data, width, height, needs_swap):
+    return decode8(data, width, height, 'a_xxxa')
+
+
+def decode8(data, width, height, conv):
+    if conv not in ('a_xxxa',):
+        raise ReaderError("Unknown conversion: '%s'" % conv)
+    stride = width
+    expected_len = stride * height
+    if len(data) != expected_len:
+        raise ReaderError("Invalid data size: %d != %d", (len(data), expected_len))
+    for pos in xrange(0, len(data), stride):
+        row = bytearray([0xff] * width * 4)
+        row[3::4] = data[pos:pos + stride]
         yield row
 
 

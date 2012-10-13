@@ -9,7 +9,7 @@ from xnb_parse.type_reader import ReaderError
 from xnb_parse.xna_types.xna_primitive import Enum
 from xnb_parse.file_formats.png import write_png
 from xnb_parse.file_formats.xml_utils import E
-from xnb_parse.file_formats.img_decode import decode_bgra, decode_rgba, decode_dxt1, decode_dxt3, decode_dxt5
+from xnb_parse.file_formats.img_decode import decode_bgra, decode_rgba, decode_a, decode_dxt1, decode_dxt3, decode_dxt5
 
 
 CUBE_SIDES = ['+x', '-x', '+y', '-y', '+z', '-z']
@@ -29,7 +29,7 @@ SURFACE_FORMAT = {
     12: ('Bgra4444', None),
     13: ('Bgr444', None),
     14: ('Bgra2338', None),
-    15: ('Alpha8', None),
+    15: ('Alpha8', decode_a),
     16: ('Bgr233', None),
     17: ('Bgr24', None),
     18: ('NormalizedByte2', None),
@@ -84,7 +84,7 @@ SURFACE_FORMAT4 = {
     9: ('Rgba1010102', None),
     10: ('Rg32', None),
     11: ('Rgba64', None),
-    12: ('Alpha8', None),
+    12: ('Alpha8', decode_a),
     13: ('Single', None),
     14: ('Vector2', None),
     15: ('Vector4', None),
