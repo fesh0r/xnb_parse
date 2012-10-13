@@ -8,17 +8,37 @@ from xnb_parse.type_reader import ReaderError
 #from xnb_parse.xna_types.xna_math import Color, Bgr565
 
 
-def decode_color(data, width, height, needs_swap):
+def decode_bgra(data, width, height, needs_swap):
+    if needs_swap:
+        conv = 'argb_rgba'
+    else:
+        conv = 'bgra_rgba'
+    return decode32(data, width, height, conv)
+
+
+def decode_rgba(data, width, height, needs_swap):
+    if needs_swap:
+        conv = 'abgr_rgba'
+    else:
+        conv = 'rgba_rgba'
+    return decode32(data, width, height, conv)
+
+
+def decode32(data, width, height, conv):
+    if conv not in ('rgba_rgba', 'abgr_rgba', 'bgra_rgba', 'argb_rgba'):
+        raise ReaderError("Unknown conversion: '%s'" % conv)
     stride = width * 4
     expected_len = stride * height
     if len(data) != expected_len:
         raise ReaderError("Invalid data size for Color: %d != %d", (len(data), expected_len))
     for pos in xrange(0, len(data), stride):
         row = bytearray(data[pos:pos + stride])
-        if needs_swap:
-            row[2::4], row[1::4], row[0::4], row[3::4] = row[3::4], row[2::4], row[1::4], row[0::4]
-        else:
-            row[0::4], row[2::4] = row[2::4], row[0::4]
+        if conv == 'bgra_rgba':
+            row[2::4], row[1::4], row[0::4], row[3::4] = row[0::4], row[1::4], row[2::4], row[3::4]
+        elif conv == 'argb_rgba':
+            row[3::4], row[0::4], row[1::4], row[2::4] = row[0::4], row[1::4], row[2::4], row[3::4]
+        elif conv == 'abgr_rgba':
+            row[3::4], row[2::4], row[1::4], row[0::4] = row[0::4], row[1::4], row[2::4], row[3::4]
         yield row
 
 
@@ -36,8 +56,6 @@ def decode_dxt5(data, width, height, needs_swap):
 
 class DxtDecoder(object):
     _FORMATS = {'DXT1': 8, 'DXT3': 16, 'DXT5': 16}
-    _RGB_S = struct.Struct('<HHI')
-    _EA_S = struct.Struct('<Q')
 
     def __init__(self, width, height, surface_format, data, needs_swap=False):
         if surface_format not in self._FORMATS:
@@ -48,7 +66,6 @@ class DxtDecoder(object):
         self.height = height
         self.surface_format = surface_format
         self.data = data
-        self.needs_swap = needs_swap
         self.block_size = self._FORMATS[self.surface_format]
         stride = (self.width >> 2) * self.block_size
         expected_len = stride * (self.height >> 2)
@@ -56,6 +73,12 @@ class DxtDecoder(object):
             raise ReaderError("Invalid data size for DXT: %d != %d", (len(data), expected_len))
         self.out_rows = [bytearray([0] * self.width * 4), bytearray([0] * self.width * 4),
                          bytearray([0] * self.width * 4), bytearray([0] * self.width * 4)]
+        if needs_swap:
+            self.rgb_struct = struct.Struct('>HHHH')
+            self.ae_struct = struct.Struct('>HHHH')
+        else:
+            self.rgb_struct = struct.Struct('<HHHH')
+            self.ae_struct = struct.Struct('<HHHH')
 
     def decode(self):
         source_offset = 0
@@ -76,7 +99,8 @@ class DxtDecoder(object):
             yield self.out_rows[3]
 
     def decode_rgb_block(self, offset, cur_x, dxt1=False):
-        color0_raw, color1_raw, bits = self._RGB_S.unpack_from(self.data, offset)
+        color0_raw, color1_raw, bits0, bits1 = self.rgb_struct.unpack_from(self.data, offset)
+        bits = bits0 | bits1 << 16
 #        color0 = Color.from_float(Bgr565.from_packed(color0_raw))
 #        color1 = Color.from_float(Bgr565.from_packed(color1_raw))
 #        colors = [color0.to_bytearray(), color1.to_bytearray()]
@@ -114,7 +138,8 @@ class DxtDecoder(object):
                 bits >>= 2
 
     def decode_explicit_alpha_block(self, offset, cur_x):
-        bits, = self._EA_S.unpack_from(self.data, offset)
+        bits0, bits1, bits2, bits3 = self.ae_struct.unpack_from(self.data, offset)
+        bits = bits0 | bits1 << 16 | bits2 << 32 | bits3 << 48
         for y in range(4):
             for x in range(cur_x << 2, (cur_x + 4) << 2, 4):
                 self.out_rows[y][x + 3] = (bits & 0xf) * 17

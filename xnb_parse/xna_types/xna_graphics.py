@@ -9,16 +9,16 @@ from xnb_parse.type_reader import ReaderError
 from xnb_parse.xna_types.xna_primitive import Enum
 from xnb_parse.file_formats.png import write_png
 from xnb_parse.file_formats.xml_utils import E
-from xnb_parse.file_formats.img_decode import decode_color, decode_dxt1, decode_dxt3, decode_dxt5
+from xnb_parse.file_formats.img_decode import decode_bgra, decode_rgba, decode_dxt1, decode_dxt3, decode_dxt5
 
 
 CUBE_SIDES = ['+x', '-x', '+y', '-y', '+z', '-z']
 FORMAT_COLOR = 1
 SURFACE_FORMAT = {
-    1: ('Color', decode_color),
+    1: ('Color', decode_bgra),
     2: ('Bgr32', None),
     3: ('Bgra1010102', None),
-    4: ('Rgba32', None),
+    4: ('Rgba32', decode_rgba),
     5: ('Rgb32', None),
     6: ('Rgba1010102', None),
     7: ('Rg32', None),
@@ -46,7 +46,7 @@ SURFACE_FORMAT = {
     29: ('Dxt2', None),
     30: ('Dxt3', decode_dxt3),
     31: ('Dxt4', None),
-    32: ('Dxt5', decode_dxt5),
+    32: ('Dxt5', None),
     33: ('Luminance8', None),
     34: ('Luminance16', None),
     35: ('LuminanceAlpha8', None),
@@ -72,13 +72,13 @@ SURFACE_FORMAT = {
 }
 FORMAT4_COLOR = 0
 SURFACE_FORMAT4 = {
-    0: ('Color', decode_color),
+    0: ('Color', decode_rgba),
     1: ('Bgr565', None),
     2: ('Bgra5551', None),
     3: ('Bgra4444', None),
     4: ('Dxt1', decode_dxt1),
     5: ('Dxt3', decode_dxt3),
-    6: ('Dxt5', decode_dxt5),
+    6: ('Dxt5', None),
     7: ('NormalizedByte2', None),
     8: ('NormalizedByte4', None),
     9: ('Rgba1010102', None),
@@ -136,19 +136,20 @@ class Texture2D(object):
                                                      len(self.mip_levels), len(self.mip_levels[0]))
 
     def export(self, filename):
-        if self.surface_format.reader:
-            dirname = os.path.dirname(filename)
-            if not os.path.isdir(dirname):
-                os.makedirs(dirname)
+        if not self.surface_format.reader:
+            raise ReaderError("No decoder found: '%s'" % self.surface_format)
+        dirname = os.path.dirname(filename)
+        if not os.path.isdir(dirname):
+            os.makedirs(dirname)
 
-            # hack for ArtObject/TrileSet alpha channel
-            alpha = 'yes'
-            if 'art objects' in filename or 'trile sets' in filename:
-                alpha = 'no'
-                rows = self.surface_format.reader(self.mip_levels[0], self.width, self.height, self.needs_swap)
-                write_png(filename + '_alpha.png', self.width, self.height, rows, alpha='only')
+        # hack for ArtObject/TrileSet alpha channel
+        alpha = 'yes'
+        if 'art objects' in filename or 'trile sets' in filename:
+            alpha = 'no'
             rows = self.surface_format.reader(self.mip_levels[0], self.width, self.height, self.needs_swap)
-            write_png(filename + '.png', self.width, self.height, rows, alpha=alpha)
+            write_png(filename + '_alpha.png', self.width, self.height, rows, alpha='only')
+        rows = self.surface_format.reader(self.mip_levels[0], self.width, self.height, self.needs_swap)
+        write_png(filename + '.png', self.width, self.height, rows, alpha=alpha)
 
 
 class Texture3D(object):
