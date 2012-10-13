@@ -92,11 +92,9 @@ class DxtDecoder(object):
         self.out_rows = [bytearray([0] * self.width * 4), bytearray([0] * self.width * 4),
                          bytearray([0] * self.width * 4), bytearray([0] * self.width * 4)]
         if needs_swap:
-            self.rgb_struct = struct.Struct('>HHHH')
-            self.ae_struct = struct.Struct('>HHHH')
+            self.swap_struct = struct.Struct('>HHHH')
         else:
-            self.rgb_struct = struct.Struct('<HHHH')
-            self.ae_struct = struct.Struct('<HHHH')
+            self.swap_struct = struct.Struct('<HHHH')
 
     def decode(self):
         source_offset = 0
@@ -117,7 +115,7 @@ class DxtDecoder(object):
             yield self.out_rows[3]
 
     def decode_rgb_block(self, offset, cur_x, dxt1=False):
-        color0_raw, color1_raw, bits0, bits1 = self.rgb_struct.unpack_from(self.data, offset)
+        color0_raw, color1_raw, bits0, bits1 = self.swap_struct.unpack_from(self.data, offset)
         bits = bits0 | bits1 << 16
 #        color0 = Color.from_float(Bgr565.from_packed(color0_raw))
 #        color1 = Color.from_float(Bgr565.from_packed(color1_raw))
@@ -128,35 +126,46 @@ class DxtDecoder(object):
 #        else:
 #            colors.append(Color.lerp(color0, color1, 1./2.).to_bytearray())
 #            colors.append(Color(0, 0, 0, 0).to_bytearray())
-        c0_r = (color0_raw >> 11 & 0x1f) << 3
-        c0_g = (color0_raw >> 5 & 0x3f) << 2
-        c0_b = (color0_raw & 0x1f) << 3
-        c1_r = (color1_raw >> 11 & 0x1f) << 3
-        c1_g = (color1_raw >> 5 & 0x3f) << 2
-        c1_b = (color1_raw & 0x1f) << 3
-        colors = [[c0_r, c0_g, c0_b, 255], [c1_r, c1_g, c1_b, 255]]
+        colors = []
+        color0_r = (color0_raw >> 11 & 0x1f) << 3
+        color0_g = (color0_raw >> 5 & 0x3f) << 2
+        color0_b = (color0_raw & 0x1f) << 3
+        color0_a = 255
+        colors.append([color0_r, color0_g, color0_b, color0_a])
+        color1_r = (color1_raw >> 11 & 0x1f) << 3
+        color1_g = (color1_raw >> 5 & 0x3f) << 2
+        color1_b = (color1_raw & 0x1f) << 3
+        color1_a = 255
+        colors.append([color1_r, color1_g, color1_b, color1_a])
         if color0_raw > color1_raw or not dxt1:
-            c2_r = int((2 * c0_r + c1_r) / 3)
-            c2_g = int((2 * c0_g + c1_g) / 3)
-            c2_b = int((2 * c0_b + c1_b) / 3)
-            c3_r = int((c0_r + 2 * c1_r) / 3)
-            c3_g = int((c0_g + 2 * c1_g) / 3)
-            c3_b = int((c0_b + 2 * c1_b) / 3)
-            colors.append([c2_r, c2_g, c2_b, 255])
-            colors.append([c3_r, c3_g, c3_b, 255])
+            c_r = int((2 * color0_r + color1_r) / 3)
+            c_g = int((2 * color0_g + color1_g) / 3)
+            c_b = int((2 * color0_b + color1_b) / 3)
+            c_a = 255
+            colors.append([c_r, c_g, c_b, c_a])
+            c_r = int((color0_r + 2 * color1_r) / 3)
+            c_g = int((color0_g + 2 * color1_g) / 3)
+            c_b = int((color0_b + 2 * color1_b) / 3)
+            c_a = 255
+            colors.append([c_r, c_g, c_b, c_a])
         else:
-            c2_r = int((c0_r + c1_r) / 2)
-            c2_g = int((c0_g + c1_g) / 2)
-            c2_b = int((c0_b + c1_b) / 2)
-            colors.append([c2_r, c2_g, c2_b, 255])
-            colors.append([0, 0, 0, 255])
+            c_r = int((color0_r + color1_r) / 2)
+            c_g = int((color0_g + color1_g) / 2)
+            c_b = int((color0_b + color1_b) / 2)
+            c_a = 255
+            colors.append([c_r, c_g, c_b, c_a])
+            c_r = 0
+            c_g = 0
+            c_b = 0
+            c_a = 255
+            colors.append([c_r, c_g, c_b, c_a])
         for b_y in range(4):
             for b_x in range(cur_x << 2, (cur_x + 4) << 2, 4):
                 self.out_rows[b_y][b_x:b_x + 4] = colors[bits & 3]
                 bits >>= 2
 
     def decode_explicit_alpha_block(self, offset, cur_x):
-        bits0, bits1, bits2, bits3 = self.ae_struct.unpack_from(self.data, offset)
+        bits0, bits1, bits2, bits3 = self.swap_struct.unpack_from(self.data, offset)
         bits = bits0 | bits1 << 16 | bits2 << 32 | bits3 << 48
         for b_y in range(4):
             for b_x in range(cur_x << 2, (cur_x + 4) << 2, 4):
