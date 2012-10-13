@@ -173,4 +173,40 @@ class DxtDecoder(object):
                 bits >>= 4
 
     def decode_interpolated_alpha_block(self, offset, cur_x):
-        pass
+        alpha_raw, bits0, bits1, bits2 = self.swap_struct.unpack_from(self.data, offset)
+        bits = bits0 | bits1 << 16 | bits2 << 32
+        alphas = []
+        alpha0 = alpha_raw & 0xff
+        alphas.append(alpha0)
+        alpha1 = alpha_raw >> 8
+        alphas.append(alpha1)
+        if alpha0 > alpha1:
+            c_a = int((6 * alpha0 + 1 * alpha1) / 7)
+            alphas.append(c_a)
+            c_a = int((5 * alpha0 + 2 * alpha1) / 7)
+            alphas.append(c_a)
+            c_a = int((4 * alpha0 + 3 * alpha1) / 7)
+            alphas.append(c_a)
+            c_a = int((3 * alpha0 + 4 * alpha1) / 7)
+            alphas.append(c_a)
+            c_a = int((2 * alpha0 + 5 * alpha1) / 7)
+            alphas.append(c_a)
+            c_a = int((1 * alpha0 + 6 * alpha1) / 7)
+            alphas.append(c_a)
+        else:
+            c_a = int((4 * alpha0 + 1 * alpha1) / 5)
+            alphas.append(c_a)
+            c_a = int((3 * alpha0 + 2 * alpha1) / 5)
+            alphas.append(c_a)
+            c_a = int((2 * alpha0 + 3 * alpha1) / 5)
+            alphas.append(c_a)
+            c_a = int((1 * alpha0 + 4 * alpha1) / 5)
+            alphas.append(c_a)
+            c_a = 0
+            alphas.append(c_a)
+            c_a = 255
+            alphas.append(c_a)
+        for b_y in range(4):
+            for b_x in range(cur_x << 2, (cur_x + 4) << 2, 4):
+                self.out_rows[b_y][b_x + 3] = alphas[bits & 0x7]
+                bits >>= 3
