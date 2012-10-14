@@ -149,7 +149,7 @@ class DxtDecoder(object):
             c_g = (color0_g + color1_g) / 2
             c_b = (color0_b + color1_b) / 2
             colors.append([c_r, c_g, c_b, 255])
-            colors.append([0, 0, 0, 255])
+            colors.append([0, 0, 0, 0])
         for b_y in range(4):
             for b_x in range(cur_x << 2, (cur_x + 4) << 2, 4):
                 self.out_rows[b_y][b_x:b_x + 4] = colors[bits & 3]
