@@ -121,38 +121,35 @@ class DxtDecoder(object):
         color0_raw, color1_raw, bits0, bits1 = self.swap_struct.unpack_from(self.data, offset)
         bits = bits0 | bits1 << 16
         colors = []
-        color0_r = (color0_raw >> 11 & 0x1f) << 3
-        color0_g = (color0_raw >> 5 & 0x3f) << 2
-        color0_b = (color0_raw & 0x1f) << 3
-        color0_a = 255
-        colors.append([color0_r, color0_g, color0_b, color0_a])
-        color1_r = (color1_raw >> 11 & 0x1f) << 3
-        color1_g = (color1_raw >> 5 & 0x3f) << 2
-        color1_b = (color1_raw & 0x1f) << 3
-        color1_a = 255
-        colors.append([color1_r, color1_g, color1_b, color1_a])
+        c_r = color0_raw >> 11 & 0x1f
+        color0_r = c_r << 3 | c_r >> 2
+        c_g = color0_raw >> 5 & 0x3f
+        color0_g = c_g << 2 | c_g >> 4
+        c_b = color0_raw & 0x1f
+        color0_b = c_b << 3 | c_b >> 2
+        colors.append([color0_r, color0_g, color0_b, 255])
+        c_r = color1_raw >> 11 & 0x1f
+        color1_r = c_r << 3 | c_r >> 2
+        c_g = color1_raw >> 5 & 0x3f
+        color1_g = c_g << 2 | c_g >> 4
+        c_b = color1_raw & 0x1f
+        color1_b = c_b << 3 | c_b >> 2
+        colors.append([color1_r, color1_g, color1_b, 255])
         if color0_raw > color1_raw or not dxt1:
-            c_r = int((2 * color0_r + color1_r) / 3)
-            c_g = int((2 * color0_g + color1_g) / 3)
-            c_b = int((2 * color0_b + color1_b) / 3)
-            c_a = 255
-            colors.append([c_r, c_g, c_b, c_a])
-            c_r = int((color0_r + 2 * color1_r) / 3)
-            c_g = int((color0_g + 2 * color1_g) / 3)
-            c_b = int((color0_b + 2 * color1_b) / 3)
-            c_a = 255
-            colors.append([c_r, c_g, c_b, c_a])
+            c_r = (2 * color0_r + color1_r) / 3
+            c_g = (2 * color0_g + color1_g) / 3
+            c_b = (2 * color0_b + color1_b) / 3
+            colors.append([c_r, c_g, c_b, 255])
+            c_r = (color0_r + 2 * color1_r) / 3
+            c_g = (color0_g + 2 * color1_g) / 3
+            c_b = (color0_b + 2 * color1_b) / 3
+            colors.append([c_r, c_g, c_b, 255])
         else:
-            c_r = int((color0_r + color1_r) / 2)
-            c_g = int((color0_g + color1_g) / 2)
-            c_b = int((color0_b + color1_b) / 2)
-            c_a = 255
-            colors.append([c_r, c_g, c_b, c_a])
-            c_r = 0
-            c_g = 0
-            c_b = 0
-            c_a = 255
-            colors.append([c_r, c_g, c_b, c_a])
+            c_r = (color0_r + color1_r) / 2
+            c_g = (color0_g + color1_g) / 2
+            c_b = (color0_b + color1_b) / 2
+            colors.append([c_r, c_g, c_b, 255])
+            colors.append([0, 0, 0, 255])
         for b_y in range(4):
             for b_x in range(cur_x << 2, (cur_x + 4) << 2, 4):
                 self.out_rows[b_y][b_x:b_x + 4] = colors[bits & 3]
@@ -175,31 +172,19 @@ class DxtDecoder(object):
         alpha1 = alpha_raw >> 8
         alphas.append(alpha1)
         if alpha0 > alpha1:
-            c_a = int((6 * alpha0 + 1 * alpha1) / 7)
-            alphas.append(c_a)
-            c_a = int((5 * alpha0 + 2 * alpha1) / 7)
-            alphas.append(c_a)
-            c_a = int((4 * alpha0 + 3 * alpha1) / 7)
-            alphas.append(c_a)
-            c_a = int((3 * alpha0 + 4 * alpha1) / 7)
-            alphas.append(c_a)
-            c_a = int((2 * alpha0 + 5 * alpha1) / 7)
-            alphas.append(c_a)
-            c_a = int((1 * alpha0 + 6 * alpha1) / 7)
-            alphas.append(c_a)
+            alphas.append((6 * alpha0 + 1 * alpha1) / 7)
+            alphas.append((5 * alpha0 + 2 * alpha1) / 7)
+            alphas.append((4 * alpha0 + 3 * alpha1) / 7)
+            alphas.append((3 * alpha0 + 4 * alpha1) / 7)
+            alphas.append((2 * alpha0 + 5 * alpha1) / 7)
+            alphas.append((1 * alpha0 + 6 * alpha1) / 7)
         else:
-            c_a = int((4 * alpha0 + 1 * alpha1) / 5)
-            alphas.append(c_a)
-            c_a = int((3 * alpha0 + 2 * alpha1) / 5)
-            alphas.append(c_a)
-            c_a = int((2 * alpha0 + 3 * alpha1) / 5)
-            alphas.append(c_a)
-            c_a = int((1 * alpha0 + 4 * alpha1) / 5)
-            alphas.append(c_a)
-            c_a = 0
-            alphas.append(c_a)
-            c_a = 255
-            alphas.append(c_a)
+            alphas.append((4 * alpha0 + 1 * alpha1) / 5)
+            alphas.append((3 * alpha0 + 2 * alpha1) / 5)
+            alphas.append((2 * alpha0 + 3 * alpha1) / 5)
+            alphas.append((1 * alpha0 + 4 * alpha1) / 5)
+            alphas.append(0)
+            alphas.append(255)
         for b_y in range(4):
             for b_x in range(cur_x << 2, (cur_x + 4) << 2, 4):
                 self.out_rows[b_y][b_x + 3] = alphas[bits & 0x7]
