@@ -15,7 +15,9 @@ from xnb_parse.type_readers.fez.fez_basic import (LevelNodeTypeReader, FaceOrien
 from xnb_parse.type_readers.fez.fez_graphics import ShaderInstancedIndexedPrimitivesReader
 from xnb_parse.type_readers.fez.fez_graphics import VertexPositionNormalTextureInstanceReader
 from xnb_parse.xna_types.fez.fez_level import (MapTree, MapNode, MapNodeConnection, WinConditions, Sky, SkyLayer, Trile,
-                                               TrileSet)
+                                               TrileSet, Level, TrileFace, TrileEmplacement, Volume,
+                                               VolumeActorSettings, DotDialogueLine, Script, ScriptTrigger, Entity,
+                                               ScriptAction, ScriptCondition)
 
 
 class MapTreeReader(BaseTypeReader, TypeReaderPlugin):
@@ -192,11 +194,11 @@ class LevelReader(BaseTypeReader, TypeReaderPlugin):
         ambience_tracks = self.stream.read_object(ListReader, [AmbienceTrackReader])
         node_type = self.stream.read_object(LevelNodeTypeReader)
         quantum = self.stream.read_boolean()
-        return (name, size, starting_position, sequence_samples_path, flat, skip_postprocess, base_diffuse,
-                base_ambient, gomez_halo_name, halo_filtering, blinking_alpha, loops, water_type, water_height,
-                sky_name, trile_set_name, volumes, scripts, song_name, fap_fadeout_start, fap_fadeout_length, triles,
-                art_objects, background_planes, groups, nonplayer_characters, paths, descending, rainy, low_pass,
-                muted_loops, ambience_tracks, node_type, quantum)
+        return Level(name, size, starting_position, sequence_samples_path, flat, skip_postprocess, base_diffuse,
+                     base_ambient, gomez_halo_name, halo_filtering, blinking_alpha, loops, water_type, water_height,
+                     sky_name, trile_set_name, volumes, scripts, song_name, fap_fadeout_start, fap_fadeout_length,
+                     triles, art_objects, background_planes, groups, nonplayer_characters, paths, descending, rainy,
+                     low_pass, muted_loops, ambience_tracks, node_type, quantum)
 
 
 class VolumeReader(BaseTypeReader, TypeReaderPlugin):
@@ -208,7 +210,7 @@ class VolumeReader(BaseTypeReader, TypeReaderPlugin):
         v_from = self.stream.read_vector3()
         v_to = self.stream.read_vector3()
         actor_settings = self.stream.read_object(VolumeActorSettingsReader)
-        return orientations, v_from, v_to, actor_settings
+        return Volume(orientations, v_from, v_to, actor_settings)
 
 
 class TrileEmplacementReader(ValueTypeReader, TypeReaderPlugin):
@@ -219,7 +221,7 @@ class TrileEmplacementReader(ValueTypeReader, TypeReaderPlugin):
         v_x = self.stream.read_int32()
         v_y = self.stream.read_int32()
         v_z = self.stream.read_int32()
-        return v_x, v_y, v_z
+        return TrileEmplacement(v_x, v_y, v_z)
 
 
 class TrileInstanceReader(BaseTypeReader, TypeReaderPlugin):
@@ -320,7 +322,7 @@ class TrileFaceReader(BaseTypeReader, TypeReaderPlugin):
     def read(self):
         trile_id = self.stream.read_object(TrileEmplacementReader)
         face = self.stream.read_object(FaceOrientationReader)
-        return trile_id, face
+        return TrileFace(trile_id, face)
 
 
 class NpcInstanceReader(BaseTypeReader, TypeReaderPlugin):
@@ -383,8 +385,8 @@ class VolumeActorSettingsReader(BaseTypeReader, TypeReaderPlugin):
         is_blackhole = self.stream.read_boolean()
         needs_trigger = self.stream.read_boolean()
         is_secret_passage = self.stream.read_boolean()
-        return (faraway_plane_offset, is_point_of_interest, dot_dialogue, water_locked, code_pattern, is_blackhole,
-                needs_trigger, is_secret_passage)
+        return VolumeActorSettings(faraway_plane_offset, is_point_of_interest, dot_dialogue, water_locked, code_pattern,
+                                   is_blackhole, needs_trigger, is_secret_passage)
 
 
 class DotDialogueLineReader(BaseTypeReader, TypeReaderPlugin):
@@ -394,7 +396,7 @@ class DotDialogueLineReader(BaseTypeReader, TypeReaderPlugin):
     def read(self):
         resource_text = self.stream.read_object(StringReader)
         grouped = self.stream.read_boolean()
-        return resource_text, grouped
+        return DotDialogueLine(resource_text, grouped)
 
 
 class ScriptReader(BaseTypeReader, TypeReaderPlugin):
@@ -413,8 +415,8 @@ class ScriptReader(BaseTypeReader, TypeReaderPlugin):
         level_wide_one_time = self.stream.read_boolean()
         disabled = self.stream.read_boolean()
         is_win_condition = self.stream.read_boolean()
-        return (name, timeout, triggers, conditions, actions, one_time, triggerless, ignore_end_triggers,
-                level_wide_one_time, disabled, is_win_condition)
+        return Script(name, timeout, triggers, conditions, actions, one_time, triggerless, ignore_end_triggers,
+                      level_wide_one_time, disabled, is_win_condition)
 
 
 class ScriptTriggerReader(BaseTypeReader, TypeReaderPlugin):
@@ -424,7 +426,7 @@ class ScriptTriggerReader(BaseTypeReader, TypeReaderPlugin):
     def read(self):
         entity = self.stream.read_object(EntityReader)
         event = self.stream.read_string()
-        return entity, event
+        return ScriptTrigger(entity, event)
 
 
 class ScriptActionReader(BaseTypeReader, TypeReaderPlugin):
@@ -437,7 +439,7 @@ class ScriptActionReader(BaseTypeReader, TypeReaderPlugin):
         arguments = self.stream.read_object(ArrayReader, [StringReader])
         killswitch = self.stream.read_boolean()
         blocking = self.stream.read_boolean()
-        return entity, operation, arguments, killswitch, blocking
+        return ScriptAction(entity, operation, arguments, killswitch, blocking)
 
 
 class ScriptConditionReader(BaseTypeReader, TypeReaderPlugin):
@@ -449,7 +451,7 @@ class ScriptConditionReader(BaseTypeReader, TypeReaderPlugin):
         operator = self.stream.read_object(ComparisonOperatorReader)
         property_ = self.stream.read_string()
         value = self.stream.read_string()
-        return entity, operator, property_, value
+        return ScriptCondition(entity, operator, property_, value)
 
 
 class EntityReader(BaseTypeReader, TypeReaderPlugin):
@@ -459,7 +461,7 @@ class EntityReader(BaseTypeReader, TypeReaderPlugin):
     def read(self):
         entity_type = self.stream.read_string()
         identifier = self.stream.read_object(Int32Reader)
-        return entity_type, identifier
+        return Entity(entity_type, identifier)
 
 
 class InstanceActorSettingsReader(BaseTypeReader, TypeReaderPlugin):

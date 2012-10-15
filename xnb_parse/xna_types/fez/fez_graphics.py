@@ -57,7 +57,10 @@ class Frame(object):
         return "Frame d:%d s:%d" % (self.duration, len(self.data))
 
     def xml(self):
-        return E.Frame(duration=str(self.duration))
+        root = E.Frame()
+        if self.duration is not None:
+            root.set('duration', str(self.duration))
+        return root
 
 
 class ArtObject(object):

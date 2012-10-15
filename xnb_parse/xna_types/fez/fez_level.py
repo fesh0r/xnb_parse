@@ -205,3 +205,274 @@ class Trile(object):
         root.append(self.faces.xml('Faces', 'Face'))
         root.append(E.Geometry(self.geometry.xml()))
         return root
+
+
+class Level(object):
+    def __init__(self, name, size, starting_position, sequence_samples_path, flat, skip_postprocess, base_diffuse,
+                 base_ambient, gomez_halo_name, halo_filtering, blinking_alpha, loops, water_type, water_height,
+                 sky_name, trile_set_name, volumes, scripts, song_name, fap_fadeout_start, fap_fadeout_length, triles,
+                 art_objects, background_planes, groups, nonplayer_characters, paths, descending, rainy, low_pass,
+                 muted_loops, ambience_tracks, node_type, quantum):
+        self.name = name
+        self.size = size
+        self.starting_position = starting_position
+        self.sequence_samples_path = sequence_samples_path
+        self.flat = flat
+        self.skip_postprocess = skip_postprocess
+        self.base_diffuse = base_diffuse
+        self.base_ambient = base_ambient
+        self.gomez_halo_name = gomez_halo_name
+        self.halo_filtering = halo_filtering
+        self.blinking_alpha = blinking_alpha
+        self.loops = loops
+        self.water_type = water_type
+        self.water_height = water_height
+        self.sky_name = sky_name
+        self.trile_set_name = trile_set_name
+        self.volumes = volumes
+        self.scripts = scripts
+        self.song_name = song_name
+        self.fap_fadeout_start = fap_fadeout_start
+        self.fap_fadeout_length = fap_fadeout_length
+        self.triles = triles
+        self.art_objects = art_objects
+        self.background_planes = background_planes
+        self.groups = groups
+        self.nonplayer_characters = nonplayer_characters
+        self.paths = paths
+        self.descending = descending
+        self.rainy = rainy
+        self.low_pass = low_pass
+        self.muted_loops = muted_loops
+        self.ambience_tracks = ambience_tracks
+        self.node_type = node_type
+        self.quantum = quantum
+
+    def __str__(self):
+        return "Level '%s'" % self.name
+
+    def xml(self):
+        root = E.Level(name=self.name, flat=str(self.flat),
+                       skipPostprocess=str(self.skip_postprocess), baseDiffuse=str(self.base_diffuse),
+                       baseAmbient=str(self.base_ambient),
+                       haloFiltering=str(self.halo_filtering), blinkingAlpha=str(self.blinking_alpha),
+                       loops=str(self.loops), waterType=str(self.water_type), waterHeight=str(self.water_height),
+                       skyName=self.sky_name, trileSetName=self.trile_set_name,
+                       fapFadeoutStart=str(self.fap_fadeout_start), fapFadeoutLength=str(self.fap_fadeout_length),
+                       descending=str(self.descending), rainy=str(self.rainy), lowPass=str(self.low_pass),
+                       nodeType=str(self.node_type), quantum=str(self.quantum))
+        root.append(E.Size(self.size.xml()))
+        if self.sequence_samples_path:
+            root.set('sequenceSamplesPath', self.sequence_samples_path)
+        if self.gomez_halo_name:
+            root.set('gomezHaloName', self.gomez_halo_name)
+        if self.song_name:
+            root.set('songName', self.song_name)
+        if self.starting_position:
+            root.append(E.StartingPosition(self.starting_position.xml()))
+        if self.volumes:
+            root.append(self.volumes.xml('Volumes'))
+        if self.scripts:
+            root.append(self.scripts.xml('Scripts'))
+        # triles
+        # art_objects
+        # background_planes
+        # groups
+        # nonplayer_characters:
+        # paths
+        if self.muted_loops:
+            root.append(self.muted_loops.xml('MutedLoops'))
+        # ambience_tracks
+        return root
+
+
+class TrileFace(object):
+    def __init__(self, trile_id, face):
+        self.trile_id = trile_id
+        self.face = face
+
+    def __str__(self):
+        return "TrileFace f:%s t:%d,%d,%d" % (self.face, self.trile_id.v_x, self.trile_id.v_y, self.trile_id.v_z)
+
+    def xml(self):
+        root = E.TrileFace(face=str(self.face))
+        root.append(E.TrileId(self.trile_id.xml()))
+        return root
+
+
+class TrileEmplacement(object):
+    def __init__(self, v_x, v_y, v_z):
+        self.v_x = v_x
+        self.v_y = v_y
+        self.v_z = v_z
+
+    def __str__(self):
+        return "TrileEmplacement(%d,%d,%d)" % (self.v_x, self.v_y, self.v_z)
+
+    def xml(self):
+        return E.TrileEmplacement(x=str(self.v_x), y=str(self.v_y), z=str(self.v_z))
+
+
+class Volume(object):
+    def __init__(self, orientations, v_from, v_to, actor_settings):
+        self.orientations = orientations
+        self.v_from = v_from
+        self.v_to = v_to
+        self.actor_settings = actor_settings
+
+    def __str__(self):
+        return "Volume"
+
+    def xml(self):
+        root = E.Volume()
+        if self.orientations:
+            root.append(self.orientations.xml('Orientations'))
+        if self.v_from:
+            root.append(E.From(self.v_from.xml()))
+        if self.v_to:
+            root.append(E.To(self.v_to.xml()))
+        if self.actor_settings:
+            root.append(E.ActorSettings(self.actor_settings.xml()))
+        return root
+
+
+class VolumeActorSettings(object):
+    def __init__(self, faraway_plane_offset, is_point_of_interest, dot_dialogue, water_locked, code_pattern,
+                 is_blackhole, needs_trigger, is_secret_passage):
+        self.faraway_plane_offset = faraway_plane_offset
+        self.is_point_of_interest = is_point_of_interest
+        self.dot_dialogue = dot_dialogue
+        self.water_locked = water_locked
+        self.code_pattern = code_pattern
+        self.is_blackhole = is_blackhole
+        self.needs_trigger = needs_trigger
+        self.is_secret_passage = is_secret_passage
+
+    def __str__(self):
+        return "VolumeActorSettings"
+
+    def xml(self):
+        root = E.VolumeActorSettings(isPointOfInterest=str(self.is_point_of_interest),
+                                     waterLocked=str(self.water_locked), isBlackhole=str(self.is_blackhole),
+                                     needsTrigger=str(self.needs_trigger), isSecretPassage=str(self.is_secret_passage))
+        root.append(E.FarawayPlaneOffset(self.faraway_plane_offset.xml()))
+        if self.dot_dialogue:
+            root.append(self.dot_dialogue.xml('DotDialogue'))
+        if self.code_pattern:
+            root.append(self.code_pattern.xml('CodePattern'))
+        return root
+
+
+class DotDialogueLine(object):
+    def __init__(self, resource_text, grouped):
+        self.resource_text = resource_text
+        self.grouped = grouped
+
+    def __str__(self):
+        return "DotDialogueLine '%s'" % self.resource_text
+
+    def xml(self):
+        root = E.Line(grouped=str(self.grouped))
+        if self.resource_text:
+            root.text = self.resource_text
+        return root
+
+
+class Script(object):
+    def __init__(self, name, timeout, triggers, conditions, actions, one_time, triggerless, ignore_end_triggers,
+                 level_wide_one_time, disabled, is_win_condition):
+        self.name = name
+        self.timeout = timeout
+        self.triggers = triggers
+        self.conditions = conditions
+        self.actions = actions
+        self.one_time = one_time
+        self.triggerless = triggerless
+        self.ignore_end_triggers = ignore_end_triggers
+        self.level_wide_one_time = level_wide_one_time
+        self.disabled = disabled
+        self.is_win_condition = is_win_condition
+
+    def __str__(self):
+        return "Script '%s'" % self.name
+
+    def xml(self):
+        root = E.Script(name=self.name, oneTime=str(self.one_time), triggerless=str(self.triggerless),
+                        ignoreEndTriggers=str(self.ignore_end_triggers), levelWideOneTime=str(self.level_wide_one_time),
+                        disabled=str(self.disabled), isWinCondition=str(self.is_win_condition))
+        if self.timeout is not None:
+            root.set('timeout', str(self.timeout))
+        if self.triggers:
+            root.append(self.triggers.xml('Triggers'))
+        if self.conditions:
+            root.append(self.conditions.xml('Conditions'))
+        if self.actions:
+            root.append(self.actions.xml('Actions'))
+        return root
+
+
+class ScriptTrigger(object):
+    def __init__(self, entity, event):
+        self.entity = entity
+        self.event = event
+
+    def __str__(self):
+        return "ScriptTrigger"
+
+    def xml(self):
+        root = E.ScriptTrigger(event=self.event)
+        if self.entity:
+            root.append(self.entity.xml())
+        return root
+
+
+class Entity(object):
+    def __init__(self, entity_type, identifier):
+        self.entity_type = entity_type
+        self.identifier = identifier
+
+    def __str__(self):
+        return "Entity i:%d" % self.identifier
+
+    def xml(self):
+        root = E.Entity(entityType=self.entity_type)
+        if self.identifier is not None:
+            root.set('identifier', str(self.identifier))
+        return root
+
+
+class ScriptAction(object):
+    def __init__(self, entity, operation, arguments, killswitch, blocking):
+        self.entity = entity
+        self.operation = operation
+        self.arguments = arguments
+        self.killswitch = killswitch
+        self.blocking = blocking
+
+    def __str__(self):
+        return "ScriptAction a:%s" % self.operation
+
+    def xml(self):
+        root = E.ScriptAction(operation=self.operation, killswitch=str(self.killswitch), blocking=str(self.blocking))
+        if self.entity:
+            root.append(self.entity.xml())
+        if self.arguments:
+            root.append(self.arguments.xml('Arguments'))
+        return root
+
+
+class ScriptCondition(object):
+    def __init__(self, entity, operator, property_, value):
+        self.entity = entity
+        self.operator = operator
+        self.property_ = property_
+        self.value = value
+
+    def __str__(self):
+        return "ScriptCondition o:%s" % self.operator
+
+    def xml(self):
+        root = E.ScriptCondition(operator=str(self.operator), property=self.property_, value=self.value)
+        if self.entity:
+            root.append(self.entity.xml())
+        return root
