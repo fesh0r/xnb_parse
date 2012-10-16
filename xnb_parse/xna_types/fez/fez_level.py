@@ -301,15 +301,22 @@ class Level(object):
             root.append(self.scripts.xml('Scripts'))
         if self.song_name is not None:
             root.set('songName', self.song_name)
-        # triles
-        # art_objects
-        # background_planes
-        # groups
-        # nonplayer_characters:
-        # paths
+        if self.triles is not None:
+            root.append(self.triles.xml('Triles'))
+        if self.art_objects is not None:
+            root.append(self.art_objects.xml('ArtObjects'))
+        if self.background_planes is not None:
+            root.append(self.background_planes.xml('BackgroundPlanes'))
+        if self.groups is not None:
+            root.append(self.groups.xml('Groups'))
+        if self.nonplayer_characters is not None:
+            root.append(self.nonplayer_characters.xml('NonplayerCharacters'))
+        if self.paths is not None:
+            root.append(self.paths.xml('Paths'))
         if self.muted_loops is not None:
             root.append(self.muted_loops.xml('MutedLoops'))
-        # ambience_tracks
+        if self.ambience_tracks is not None:
+            root.append(self.ambience_tracks.xml('AmbienceTracks'))
         if self.node_type is not None:
             root.set('nodeType', str(self.node_type))
         return root
@@ -350,6 +357,149 @@ class TrileEmplacement(object):
         return root
 
 
+class TrileInstance(object):
+    def __init__(self, position, trile_id, orientation, actor_settings, overlapped_triles):
+        self.position = position
+        self.trile_id = trile_id
+        self.orientation = orientation
+        self.actor_settings = actor_settings
+        self.overlapped_triles = overlapped_triles
+
+    def __str__(self):
+        return "TrileInstance t:%d" % self.trile_id
+
+    def xml(self):
+        root = E.TrileInstance(trileId=str(self.trile_id), orientation=str(self.orientation))
+        root.append(E.Position(self.position.xml()))
+        if self.actor_settings is not None:
+            root.append(self.actor_settings.xml())
+        if self.overlapped_triles is not None:
+            root.append(self.overlapped_triles.xml('OverlappedTriles'))
+        return root
+
+
+class ArtObjectInstance(object):
+    def __init__(self, name, position, rotation, scale, actor_settings):
+        self.name = name
+        self.position = position
+        self.rotation = rotation
+        self.scale = scale
+        self.actor_settings = actor_settings
+
+    def __str__(self):
+        return "ArtObjectInstance '%s'" % self.name
+
+    def xml(self):
+        root = E.ArtObjectInstance(name=self.name)
+        root.append(E.Position(self.position.xml()))
+        root.append(E.Rotation(self.rotation.xml()))
+        root.append(E.Scale(self.scale.xml()))
+        if self.actor_settings is not None:
+            root.append(self.actor_settings.xml())
+        return root
+
+
+class BackgroundPlane(object):
+    def __init__(self, position, rotation, scale, size, texture_name, light_map, allow_overbrightness, filter_,
+                 animated, doublesided, opacity, attached_group, billboard, sync_with_samples, crosshatch, unknown,
+                 always_on_top, fullbright, pixelated_lightmap, x_texture_repeat, y_texture_repeat, clamp_texture,
+                 actor_type, attached_plane, parallax_factor):
+        self.position = position
+        self.rotation = rotation
+        self.scale = scale
+        self.size = size
+        self.texture_name = texture_name
+        self.light_map = light_map
+        self.allow_overbrightness = allow_overbrightness
+        self.filter_ = filter_
+        self.animated = animated
+        self.doublesided = doublesided
+        self.opacity = opacity
+        self.attached_group = attached_group
+        self.billboard = billboard
+        self.sync_with_samples = sync_with_samples
+        self.crosshatch = crosshatch
+        self.unknown = unknown
+        self.always_on_top = always_on_top
+        self.fullbright = fullbright
+        self.pixelated_lightmap = pixelated_lightmap
+        self.x_texture_repeat = x_texture_repeat
+        self.y_texture_repeat = y_texture_repeat
+        self.clamp_texture = clamp_texture
+        self.actor_type = actor_type
+        self.attached_plane = attached_plane
+        self.parallax_factor = parallax_factor
+
+    def __str__(self):
+        return "BackgroundPlane t:%s" % self.texture_name
+
+    def xml(self):
+        root = E.BackgroundPlane(textureName=self.texture_name, lightMap=str(self.light_map),
+                                 allowOverbrightness=str(self.allow_overbrightness), animated=str(self.animated),
+                                 doubleSided=str(self.doublesided), opacity=str(self.opacity),
+                                 billboard=str(self.billboard), syncWithSamples=str(self.sync_with_samples),
+                                 crosshatch=str(self.crosshatch), unknown=str(self.unknown),
+                                 alwaysOnTop=str(self.always_on_top), fullbright=str(self.fullbright),
+                                 pixelatedLightmap=str(self.pixelated_lightmap),
+                                 xTextureRepeat=str(self.x_texture_repeat), yTextureRepeat=str(self.y_texture_repeat),
+                                 clampTexture=str(self.clamp_texture), parallaxFactor=str(self.parallax_factor))
+        root.append(E.Position(self.position.xml()))
+        root.append(E.Rotation(self.rotation.xml()))
+        root.append(E.Scale(self.scale.xml()))
+        root.set('filter', self.filter_.attrib())
+        if self.attached_group is not None:
+            root.set('attachedGroup', str(self.attached_group))
+        if self.actor_type is not None:
+            root.set('actorType', str(self.actor_type))
+        if self.attached_plane is not None:
+            root.set('attachedPlane', str(self.attached_plane))
+        return root
+
+
+class TrileGroup(object):
+    def __init__(self, triles, path, heavy, actor_type, geyser_offset, geyser_pause_for, geyser_lift_for,
+                 geyser_apex_height, spin_center, spin_clockwise, spin_frequency, spin_needs_triggering,
+                 spin_180_degrees, fall_on_rotate, spin_offset, associated_sound):
+        self.triles = triles
+        self.path = path
+        self.heavy = heavy
+        self.actor_type = actor_type
+        self.geyser_offset = geyser_offset
+        self.geyser_pause_for = geyser_pause_for
+        self.geyser_lift_for = geyser_lift_for
+        self.geyser_apex_height = geyser_apex_height
+        self.spin_center = spin_center
+        self.spin_clockwise = spin_clockwise
+        self.spin_frequency = spin_frequency
+        self.spin_needs_triggering = spin_needs_triggering
+        self.spin_180_degrees = spin_180_degrees
+        self.fall_on_rotate = fall_on_rotate
+        self.spin_offset = spin_offset
+        self.associated_sound = associated_sound
+
+    def __str__(self):
+        return "TrileGroup"
+
+    def xml(self):
+        root = E.TrileGroup(heavy=str(self.heavy), geyserOffset=str(self.geyser_offset),
+                            geyserPauseFor=str(self.geyser_pause_for), geyserLiftFor=str(self.geyser_lift_for),
+                            geyserApexHeight=str(self.geyser_apex_height), spinClockwise=str(self.spin_clockwise),
+                            spinFrequency=str(self.spin_frequency), spinNeedsTriggering=str(self.spin_needs_triggering),
+                            spin180Degrees=str(self.spin_180_degrees), fallOnRotate=str(self.fall_on_rotate),
+                            spinOffset=str(self.spin_offset))
+        if self.triles is not None:
+            root.append(self.triles.xml('Triles'))
+        if self.path is not None:
+            root.append(self.path.xml())
+        if self.actor_type is not None:
+            root.set('actorType', str(self.actor_type))
+        if self.spin_center is not None:
+            root.append(E.SpinCenter(self.spin_center.xml()))
+        if self.associated_sound is not None:
+            root.set('associatedSound', self.associated_sound)
+        return root
+
+
 class TrileFace(object):
     def __init__(self, trile_id, face):
         self.trile_id = trile_id
@@ -364,6 +514,83 @@ class TrileFace(object):
             root.set('face', str(self.face))
         if self.trile_id is not None:
             root.append(E.TrileId(self.trile_id.xml()))
+        return root
+
+
+class NpcInstance(object):
+    def __init__(self, name, position, destination_offset, walk_speed, randomize_speech, say_first_speed_line_once,
+                 avoids_gomez, actor_type, speech, actions):
+        self.name = name
+        self.position = position
+        self.destination_offset = destination_offset
+        self.walk_speed = walk_speed
+        self.randomize_speech = randomize_speech
+        self.say_first_speed_line_once = say_first_speed_line_once
+        self.avoids_gomez = avoids_gomez
+        self.actor_type = actor_type
+        self.speech = speech
+        self.actions = actions
+
+    def __str__(self):
+        return "NpcInstance '%s'" % self.name
+
+    def xml(self):
+        root = E.NpcInstance(name=self.name, walkSpeed=str(self.walk_speed), randomizeSpeed=str(self.randomize_speech),
+                             sayFirstSpeedLineOnce=str(self.say_first_speed_line_once),
+                             avoidsGomez=str(self.avoids_gomez))
+        if self.position is not None:
+            root.append(E.Position(self.position.xml()))
+        if self.destination_offset is not None:
+            root.append(E.DestinationOffset(self.destination_offset.xml()))
+        if self.actor_type is not None:
+            root.set('actorType', str(self.actor_type))
+        if self.speech is not None:
+            root.append(self.speech.xml('Speech'))
+        if self.actions is not None:
+            root.append(self.actions.xml('Actions', 'Action'))
+        return root
+
+
+class MovementPath(object):
+    def __init__(self, segments, needs_trigger, end_behavior, sound_name, is_spline, offset_seconds, save_trigger):
+        self.segments = segments
+        self.needs_trigger = needs_trigger
+        self.end_behavior = end_behavior
+        self.sound_name = sound_name
+        self.is_spline = is_spline
+        self.offset_seconds = offset_seconds
+        self.save_trigger = save_trigger
+
+    def __str__(self):
+        return "MovementPath"
+
+    def xml(self):
+        root = E.MovementPath(needsTrigger=str(self.needs_trigger), isSpline=str(self.is_spline),
+                              offsetSeconds=str(self.offset_seconds), saveTrigger=str(self.save_trigger))
+        if self.segments is not None:
+            root.append(self.segments.xml('Segments'))
+        if self.end_behavior is not None:
+            root.set('endBehavior', str(self.end_behavior))
+        if self.sound_name is not None:
+            root.set('soundName', str(self.sound_name))
+        return root
+
+
+class AmbienceTrack(object):
+    def __init__(self, name, dawn, day, dusk, night):
+        self.name = name
+        self.dawn = dawn
+        self.day = day
+        self.dusk = dusk
+        self.night = night
+
+    def __str__(self):
+        return "AmbienceTrack '%s'" % self.name
+
+    def xml(self):
+        root = E.AmbienceTrack(dawn=str(self.dawn), day=str(self.day), dusk=str(self.dusk), night=str(self.night))
+        if self.name is not None:
+            root.set('name', self.name)
         return root
 
 
@@ -508,4 +735,167 @@ class Entity(object):
         root = E.Entity(entityType=self.entity_type)
         if self.identifier is not None:
             root.set('identifier', str(self.identifier))
+        return root
+
+
+class InstanceActorSettings(object):
+    def __init__(self, contained_trile, sign_text, sequence, sequence_sample_name, sequence_alternate_sample_name,
+                 host_volume):
+        self.contained_trile = contained_trile
+        self.sign_text = sign_text
+        self.sequence = sequence
+        self.sequence_sample_name = sequence_sample_name
+        self.sequence_alternate_sample_name = sequence_alternate_sample_name
+        self.host_volume = host_volume
+
+    def __str__(self):
+        return "InstanceActorSettings"
+
+    def xml(self):
+        root = E.InstanceActorSettings()
+        if self.contained_trile is not None:
+            root.set('containedTrile', str(self.contained_trile))
+        if self.sign_text is not None:
+            root.set('signText', self.sign_text)
+        if self.sequence is not None:
+            root.append(self.sequence.xml('Sequence'))
+        if self.sequence_sample_name is not None:
+            root.set('sequenceSampleName', self.sequence_sample_name)
+        if self.sequence_alternate_sample_name is not None:
+            root.set('sequenceAlternateSampleName', self.sequence_alternate_sample_name)
+        if self.host_volume is not None:
+            root.set('hostVolume', str(self.host_volume))
+        return root
+
+
+class ArtObjectActorSettings(object):
+    def __init__(self, inactive, contained_trile, attached_group, spin_view, spin_every, spin_offset, off_center,
+                 rotation_center, vibration_pattern, code_pattern, segment, next_node, destination_level,
+                 treasure_map_name, invisible_sides, timeswitch_wind_back_speed):
+        self.inactive = inactive
+        self.contained_trile = contained_trile
+        self.attached_group = attached_group
+        self.spin_view = spin_view
+        self.spin_every = spin_every
+        self.spin_offset = spin_offset
+        self.off_center = off_center
+        self.rotation_center = rotation_center
+        self.vibration_pattern = vibration_pattern
+        self.code_pattern = code_pattern
+        self.segment = segment
+        self.next_node = next_node
+        self.destination_level = destination_level
+        self.treasure_map_name = treasure_map_name
+        self.invisible_sides = invisible_sides
+        self.timeswitch_wind_back_speed = timeswitch_wind_back_speed
+
+    def __str__(self):
+        return "ActObjectActorSettings"
+
+    def xml(self):
+        root = E.ArtObjectActorSettings(inactive=str(self.inactive), spinEvery=str(self.spin_every),
+                                        spinOffset=str(self.spin_offset), offCenter=str(self.off_center),
+                                        timeswitchWindBackSpeed=str(self.timeswitch_wind_back_speed))
+        if self.contained_trile is not None:
+            root.set('containedTrile', str(self.contained_trile))
+        if self.attached_group is not None:
+            root.set('attachedGroup', str(self.attached_group))
+        if self.spin_view is not None:
+            root.set('spinView', str(self.spin_view))
+        if self.rotation_center is not None:
+            root.append(E.RotationCenter(self.rotation_center.xml()))
+        if self.vibration_pattern is not None:
+            root.append(self.vibration_pattern.xml('VibrationPattern'))
+        if self.code_pattern is not None:
+            root.append(self.code_pattern.xml('CodePattern'))
+        if self.segment is not None:
+            root.append(E.Segment(self.segment.xml()))
+        if self.next_node is not None:
+            root.set('nextNode', str(self.next_node))
+        if self.destination_level is not None:
+            root.set('destinationLevel', str(self.destination_level))
+        if self.treasure_map_name is not None:
+            root.set('treasureMapName', str(self.treasure_map_name))
+        return root
+
+
+class PathSegment(object):
+    def __init__(self, destination, duration, wait_time_on_start, wait_time_on_finish, acceleration, deceleration,
+                 jitter_factor, orientation, custom_data):
+        self.destination = destination
+        self.duration = duration
+        self.wait_time_on_start = wait_time_on_start
+        self.wait_time_on_finish = wait_time_on_finish
+        self.acceleration = acceleration
+        self.deceleration = deceleration
+        self.jitter_factor = jitter_factor
+        self.orientation = orientation
+        self.custom_data = custom_data
+
+    def __str__(self):
+        return "PathSegment"
+
+    def xml(self):
+        root = E.PathSegment(acceleration=str(self.acceleration), deceleration=str(self.deceleration),
+                             jitterFactor=str(self.jitter_factor))
+        root.append(E.Destination(self.destination.xml()))
+        if self.duration is not None:
+            root.set('duration', str(self.duration))
+        if self.wait_time_on_start is not None:
+            root.set('waitTimeOnStart', str(self.wait_time_on_start))
+        if self.wait_time_on_finish is not None:
+            root.set('waitTimeOnFinish', str(self.wait_time_on_finish))
+        root.append(E.Orientation(self.orientation.xml()))
+        if self.custom_data is not None:
+            root.append(E.CustomData(self.custom_data.xml()))
+        return root
+
+
+class SpeechLine(object):
+    def __init__(self, text, override_content):
+        self.text = text
+        self.override_content = override_content
+
+    def __str__(self):
+        return "SpeechLine '%s'" % self.text
+
+    def xml(self):
+        root = E.SpeechLine()
+        if self.text is not None:
+            root.set('text', self.text)
+        if self.override_content is not None:
+            root.append(E.OverrideContent(self.override_content.xml()))
+        return root
+
+
+class NpcActionContent(object):
+    def __init__(self, animation_name, sound_name):
+        self.animation_name = animation_name
+        self.sound_name = sound_name
+
+    def __str__(self):
+        return "NpcActionContent"
+
+    def xml(self):
+        root = E.NpcActionContent()
+        if self.animation_name is not None:
+            root.set('animationName', self.animation_name)
+        if self.sound_name is not None:
+            root.set('soundName', self.sound_name)
+        return root
+
+
+class CameraNodeData(object):
+    def __init__(self, perspective, pixels_per_trixel, sound_name):
+        self.perspective = perspective
+        self.pixels_per_trixel = pixels_per_trixel
+        self.sound_name = sound_name
+
+    def __str__(self):
+        return "CameraNodeData"
+
+    def xml(self):
+        root = E.CameraNodeData(perspective=str(self.perspective), pixelsPerTrixel=str(self.pixels_per_trixel))
+        if self.sound_name is not None:
+            root.set('soundName', str(self.sound_name))
         return root

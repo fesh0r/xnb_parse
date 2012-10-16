@@ -17,7 +17,10 @@ from xnb_parse.type_readers.fez.fez_graphics import VertexPositionNormalTextureI
 from xnb_parse.xna_types.fez.fez_level import (MapTree, MapNode, MapNodeConnection, WinConditions, Sky, SkyLayer, Trile,
                                                TrileSet, Level, TrileFace, TrileEmplacement, Volume,
                                                VolumeActorSettings, DotDialogueLine, Script, ScriptTrigger, Entity,
-                                               ScriptAction, ScriptCondition)
+                                               ScriptAction, ScriptCondition, TrileInstance, InstanceActorSettings,
+                                               ArtObjectInstance, ArtObjectActorSettings, PathSegment, CameraNodeData,
+                                               SpeechLine, NpcActionContent, NpcInstance, BackgroundPlane, TrileGroup,
+                                               MovementPath, AmbienceTrack)
 
 
 class MapTreeReader(BaseTypeReader, TypeReaderPlugin):
@@ -237,7 +240,7 @@ class TrileInstanceReader(BaseTypeReader, TypeReaderPlugin):
         if has_actor_settings:
             actor_settings = self.stream.read_object(InstanceActorSettingsReader)
         overlapped_triles = self.stream.read_object(ListReader, [TrileInstanceReader])
-        return position, trile_id, orientation, actor_settings, overlapped_triles
+        return TrileInstance(position, trile_id, orientation, actor_settings, overlapped_triles)
 
 
 class ArtObjectInstanceReader(BaseTypeReader, TypeReaderPlugin):
@@ -250,7 +253,7 @@ class ArtObjectInstanceReader(BaseTypeReader, TypeReaderPlugin):
         rotation = self.stream.read_quaternion()
         scale = self.stream.read_vector3()
         actor_settings = self.stream.read_object(ArtObjectActorSettingsReader)
-        return name, position, rotation, scale, actor_settings
+        return ArtObjectInstance(name, position, rotation, scale, actor_settings)
 
 
 class BackgroundPlaneReader(BaseTypeReader, TypeReaderPlugin):
@@ -283,10 +286,10 @@ class BackgroundPlaneReader(BaseTypeReader, TypeReaderPlugin):
         actor_type = self.stream.read_object(ActorTypeReader)
         attached_plane = self.stream.read_object(Int32Reader)
         parallax_factor = self.stream.read_single()
-        return (position, rotation, scale, size, texture_name, light_map, allow_overbrightness, filter_, animated,
-                doublesided, opacity, attached_group, billboard, sync_with_samples, crosshatch, unknown, always_on_top,
-                fullbright, pixelated_lightmap, x_texture_repeat, y_texture_repeat, clamp_texture, actor_type,
-                attached_plane, parallax_factor)
+        return BackgroundPlane(position, rotation, scale, size, texture_name, light_map, allow_overbrightness, filter_,
+                               animated, doublesided, opacity, attached_group, billboard, sync_with_samples, crosshatch,
+                               unknown, always_on_top, fullbright, pixelated_lightmap, x_texture_repeat,
+                               y_texture_repeat, clamp_texture, actor_type, attached_plane, parallax_factor)
 
 
 class TrileGroupReader(BaseTypeReader, TypeReaderPlugin):
@@ -310,9 +313,9 @@ class TrileGroupReader(BaseTypeReader, TypeReaderPlugin):
         fall_on_rotate = self.stream.read_boolean()
         spin_offset = self.stream.read_single()
         associated_sound = self.stream.read_object(StringReader)
-        return (triles, path, heavy, actor_type, geyser_offset, geyser_pause_for, geyser_lift_for, geyser_apex_height,
-                spin_center, spin_clockwise, spin_frequency, spin_needs_triggering, spin_180_degrees, fall_on_rotate,
-                spin_offset, associated_sound)
+        return TrileGroup(triles, path, heavy, actor_type, geyser_offset, geyser_pause_for, geyser_lift_for,
+                          geyser_apex_height, spin_center, spin_clockwise, spin_frequency, spin_needs_triggering,
+                          spin_180_degrees, fall_on_rotate, spin_offset, associated_sound)
 
 
 class TrileFaceReader(BaseTypeReader, TypeReaderPlugin):
@@ -340,8 +343,8 @@ class NpcInstanceReader(BaseTypeReader, TypeReaderPlugin):
         actor_type = self.stream.read_object(ActorTypeReader)
         speech = self.stream.read_object(ListReader, [SpeechLineReader])
         actions = self.stream.read_object(DictionaryReader, [NpcActionReader, NpcActionContentReader])
-        return (name, position, destination_offset, walk_speed, randomize_speech, say_first_speed_line_once,
-                avoids_gomez, actor_type, speech, actions)
+        return NpcInstance(name, position, destination_offset, walk_speed, randomize_speech, say_first_speed_line_once,
+                           avoids_gomez, actor_type, speech, actions)
 
 
 class MovementPathReader(BaseTypeReader, TypeReaderPlugin):
@@ -356,7 +359,7 @@ class MovementPathReader(BaseTypeReader, TypeReaderPlugin):
         is_spline = self.stream.read_boolean()
         offset_seconds = self.stream.read_single()
         save_trigger = self.stream.read_boolean()
-        return segments, needs_trigger, end_behavior, sound_name, is_spline, offset_seconds, save_trigger
+        return MovementPath(segments, needs_trigger, end_behavior, sound_name, is_spline, offset_seconds, save_trigger)
 
 
 class AmbienceTrackReader(BaseTypeReader, TypeReaderPlugin):
@@ -369,7 +372,7 @@ class AmbienceTrackReader(BaseTypeReader, TypeReaderPlugin):
         day = self.stream.read_boolean()
         dusk = self.stream.read_boolean()
         night = self.stream.read_boolean()
-        return name, dawn, day, dusk, night
+        return AmbienceTrack(name, dawn, day, dusk, night)
 
 
 class VolumeActorSettingsReader(BaseTypeReader, TypeReaderPlugin):
@@ -475,7 +478,8 @@ class InstanceActorSettingsReader(BaseTypeReader, TypeReaderPlugin):
         sequence_sample_name = self.stream.read_object(StringReader)
         sequence_alternate_sample_name = self.stream.read_object(StringReader)
         host_volume = self.stream.read_object(Int32Reader)
-        return contained_trile, sign_text, sequence, sequence_sample_name, sequence_alternate_sample_name, host_volume
+        return InstanceActorSettings(contained_trile, sign_text, sequence, sequence_sample_name,
+                                     sequence_alternate_sample_name, host_volume)
 
 
 class ArtObjectActorSettingsReader(BaseTypeReader, TypeReaderPlugin):
@@ -499,9 +503,9 @@ class ArtObjectActorSettingsReader(BaseTypeReader, TypeReaderPlugin):
         treasure_map_name = self.stream.read_object(StringReader)
         invisible_sides = self.stream.read_object(ArrayReader, [FaceOrientationReader])
         timeswitch_wind_back_speed = self.stream.read_single()
-        return (inactive, contained_trile, attached_group, spin_view, spin_every, spin_offset, off_center,
-                rotation_center, vibration_pattern, code_pattern, segment, next_node, destination_level,
-                treasure_map_name, invisible_sides, timeswitch_wind_back_speed)
+        return ArtObjectActorSettings(inactive, contained_trile, attached_group, spin_view, spin_every, spin_offset,
+                                      off_center, rotation_center, vibration_pattern, code_pattern, segment, next_node,
+                                      destination_level, treasure_map_name, invisible_sides, timeswitch_wind_back_speed)
 
 
 class PathSegmentReader(BaseTypeReader, TypeReaderPlugin):
@@ -521,8 +525,8 @@ class PathSegmentReader(BaseTypeReader, TypeReaderPlugin):
         has_custom_data = self.stream.read_boolean()
         if has_custom_data:
             custom_data = self.stream.read_object(CameraNodeDataReader)
-        return (destination, duration, wait_time_on_start, wait_time_on_finish, acceleration, deceleration,
-                jitter_factor, orientation, custom_data)
+        return PathSegment(destination, duration, wait_time_on_start, wait_time_on_finish, acceleration, deceleration,
+                           jitter_factor, orientation, custom_data)
 
 
 class SpeechLineReader(BaseTypeReader, TypeReaderPlugin):
@@ -532,7 +536,7 @@ class SpeechLineReader(BaseTypeReader, TypeReaderPlugin):
     def read(self):
         text = self.stream.read_object(StringReader)
         override_content = self.stream.read_object(NpcActionContentReader)
-        return text, override_content
+        return SpeechLine(text, override_content)
 
 
 class NpcActionContentReader(BaseTypeReader, TypeReaderPlugin):
@@ -542,7 +546,7 @@ class NpcActionContentReader(BaseTypeReader, TypeReaderPlugin):
     def read(self):
         animation_name = self.stream.read_object(StringReader)
         sound_name = self.stream.read_object(StringReader)
-        return animation_name, sound_name
+        return NpcActionContent(animation_name, sound_name)
 
 
 class CameraNodeDataReader(BaseTypeReader, TypeReaderPlugin):
@@ -553,4 +557,4 @@ class CameraNodeDataReader(BaseTypeReader, TypeReaderPlugin):
         perspective = self.stream.read_boolean()
         pixels_per_trixel = self.stream.read_int32()
         sound_name = self.stream.read_object(StringReader)
-        return perspective, pixels_per_trixel, sound_name
+        return CameraNodeData(perspective, pixels_per_trixel, sound_name)
