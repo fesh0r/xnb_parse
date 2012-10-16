@@ -2,6 +2,8 @@
 FEZ level types
 """
 
+from collections import namedtuple
+
 from xnb_parse.file_formats.xml_utils import E
 
 
@@ -343,21 +345,19 @@ class Volume(object):
         return root
 
 
-class TrileEmplacement(object):
-    def __init__(self, v_x, v_y, v_z):
-        self.v_x = v_x
-        self.v_y = v_y
-        self.v_z = v_z
-
-    def __str__(self):
-        return "TrileEmplacement(%d,%d,%d)" % (self.v_x, self.v_y, self.v_z)
+# pylint: disable-msg=E1001,W0232,E1101
+#noinspection PyClassicStyleClass,PyOldStyleClasses,PyUnresolvedReferences
+class TrileEmplacement(namedtuple('TrileEmplacement', ['x', 'y', 'z'])):
+    __slots__ = ()
 
     def xml(self):
-        root = E.TrileEmplacement(x=str(self.v_x), y=str(self.v_y), z=str(self.v_z))
+        root = E.TrileEmplacement(x=str(self.x), y=str(self.y), z=str(self.z))
         return root
 
 
 class TrileInstance(object):
+    __slots__ = ('position', 'trile_id', 'orientation', 'actor_settings', 'overlapped_triles')
+
     def __init__(self, position, trile_id, orientation, actor_settings, overlapped_triles):
         self.position = position
         self.trile_id = trile_id
@@ -366,7 +366,7 @@ class TrileInstance(object):
         self.overlapped_triles = overlapped_triles
 
     def __str__(self):
-        return "TrileInstance t:%d" % self.trile_id
+        return "TrileInstance t:%d p:%f,%f,%f" % (self.trile_id, self.position.x, self.position.y, self.position.z)
 
     def xml(self):
         root = E.TrileInstance(trileId=str(self.trile_id), orientation=str(self.orientation))
@@ -400,6 +400,11 @@ class ArtObjectInstance(object):
 
 
 class BackgroundPlane(object):
+    __slots__ = ('position', 'rotation', 'scale', 'size', 'texture_name', 'light_map', 'allow_overbrightness',
+                 'filter_', 'animated', 'doublesided', 'opacity', 'attached_group', 'billboard', 'sync_with_samples',
+                 'crosshatch', 'unknown', 'always_on_top', 'fullbright', 'pixelated_lightmap', 'x_texture_repeat',
+                 'y_texture_repeat', 'clamp_texture', 'actor_type', 'attached_plane', 'parallax_factor')
+
     def __init__(self, position, rotation, scale, size, texture_name, light_map, allow_overbrightness, filter_,
                  animated, doublesided, opacity, attached_group, billboard, sync_with_samples, crosshatch, unknown,
                  always_on_top, fullbright, pixelated_lightmap, x_texture_repeat, y_texture_repeat, clamp_texture,
@@ -506,7 +511,7 @@ class TrileFace(object):
         self.face = face
 
     def __str__(self):
-        return "TrileFace f:%s t:%d,%d,%d" % (self.face, self.trile_id.v_x, self.trile_id.v_y, self.trile_id.v_z)
+        return "TrileFace f:%s t:%d,%d,%d" % (self.face, self.trile_id.x, self.trile_id.y, self.trile_id.z)
 
     def xml(self):
         root = E.TrileFace()
@@ -769,6 +774,10 @@ class InstanceActorSettings(object):
 
 
 class ArtObjectActorSettings(object):
+    __slots__ = ('inactive', 'contained_trile', 'attached_group', 'spin_view', 'spin_every', 'spin_offset',
+                 'off_center', 'rotation_center', 'vibration_pattern', 'code_pattern', 'segment', 'next_node',
+                 'destination_level', 'treasure_map_name', 'invisible_sides', 'timeswitch_wind_back_speed')
+
     def __init__(self, inactive, contained_trile, attached_group, spin_view, spin_every, spin_offset, off_center,
                  rotation_center, vibration_pattern, code_pattern, segment, next_node, destination_level,
                  treasure_map_name, invisible_sides, timeswitch_wind_back_speed):
