@@ -12,7 +12,9 @@ class Enum(object):
 
     def __init__(self, value):
         self._value = value
-        self._name = self.enum_values[value]
+        self._name = None
+        if value is not None:
+            self._name = self.enum_values[value]
 
     @property
     def value(self):
@@ -30,4 +32,5 @@ class Enum(object):
 
     def xml(self):
         xml_tag = self.xml_tag if self.xml_tag else self.__class__.__name__
-        return E(xml_tag, self._name)
+        root = E(xml_tag, self._name)
+        return root

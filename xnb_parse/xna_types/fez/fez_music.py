@@ -37,12 +37,15 @@ class TrackedSong(object):
 
     def xml(self):
         root = E.TrackedSong(name=self.name, tempo=str(self.tempo), timeSignature=str(self.time_signature))
-        root.append(self.assemble_chord.xml())
-        root.append(self.notes.xml('Notes'))
-        root.append(self.loops.xml('Loops'))
-        if self.random_ordering:
-            root.append(E.RandomOrdering())
-        if self.custom_ordering:
+        if self.assemble_chord is not None:
+            root.append(self.assemble_chord.xml())
+        if self.notes is not None:
+            root.append(self.notes.xml('Notes'))
+        if self.loops is not None:
+            root.append(self.loops.xml('Loops'))
+        if self.random_ordering is not None:
+            root.set('randomOrdering', str(self.random_ordering))
+        if self.custom_ordering is not None:
             root.append(self.custom_ordering.xml('CustomOrdering', 'Order'))
         return root
 
@@ -72,13 +75,6 @@ class Loop(object):
         root = E.Loop(name=self.name, duration=str(self.duration), loopTimesFrom=str(self.loop_times_from),
                       loopTimesTo=str(self.loop_times_to), triggerFrom=str(self.trigger_from),
                       triggerTo=str(self.trigger_to), delay=str(self.delay), fractionalTime=str(self.fractional_time),
-                      oneAtATime=str(self.one_at_a_time), cutOffTail=str(self.cut_off_tail))
-        if self.night:
-            root.append(E.Night())
-        if self.day:
-            root.append(E.Day())
-        if self.dusk:
-            root.append(E.Dusk())
-        if self.dawn:
-            root.append(E.Dawn())
+                      oneAtATime=str(self.one_at_a_time), cutOffTail=str(self.cut_off_tail), night=str(self.night),
+                      day=str(self.day), dusk=str(self.dusk), dawn=str(self.dawn))
         return root

@@ -202,10 +202,26 @@ class Effect(object):
             out_handle.write(self.effect_data)
 
 
-class PrimitiveType(Enum):
-    __slots__ = ()
-    enum_values = {1: 'PointList', 2: 'LineList', 3: 'LineStrip', 4: 'TriangleList', 5: 'TriangleStrip',
-                   6: 'TriangleFan'}
+class BasicEffect(object):
+    def __init__(self, texture, colour_d, colour_e, colour_s, spec, alpha, colour_v):
+        self.texture = texture
+        self.colour_d = colour_d
+        self.colour_e = colour_e
+        self.colour_s = colour_s
+        self.spec = spec
+        self.alpha = alpha
+        self.colour_v = colour_v
+
+    def __str__(self):
+        return "BasicEffectReader '%s'" % self.texture
+
+    def xml(self):
+        root = E.BasicEffect(spec=str(self.spec), alpha=str(self.alpha), colorV=str(self.colour_v))
+        root.append(E.Texture(self.texture.xml()))
+        root.append(E.ColorD(self.colour_d.xml()))
+        root.append(E.ColorE(self.colour_e.xml()))
+        root.append(E.ColorS(self.colour_s.xml()))
+        return root
 
 
 class SpriteFont(object):
@@ -228,11 +244,22 @@ class SpriteFont(object):
                             vSpace=str(self.v_space))
         if self.default_char is not None:
             root.set('defaultChar', self.default_char)
-        root.append(self.glyphs.xml('Glyphs'))
-        root.append(self.cropping.xml('Cropping'))
-        root.append(self.kerning.xml('Kerning'))
-        root.append(self.char_map.xml('CharMap', 'Char', 'c'))
+        if self.glyphs is not None:
+            root.append(self.glyphs.xml('Glyphs'))
+        if self.cropping is not None:
+            root.append(self.cropping.xml('Cropping'))
+        if self.kerning is not None:
+            root.append(self.kerning.xml('Kerning'))
+        if self.char_map is not None:
+            root.append(self.char_map.xml('CharMap', 'Char', 'c'))
         return root
 
     def export(self, filename):
-        self.texture.export(filename)
+        if self.texture is not None:
+            self.texture.export(filename)
+
+
+class PrimitiveType(Enum):
+    __slots__ = ()
+    enum_values = {1: 'PointList', 2: 'LineList', 3: 'LineStrip', 4: 'TriangleList', 5: 'TriangleStrip',
+                   6: 'TriangleFan'}

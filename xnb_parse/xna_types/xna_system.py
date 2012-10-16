@@ -48,4 +48,20 @@ class XNASet(XNAList):
     __slots__ = ()
 
     def xml(self, xml_tag='Set', xml_entry='Entry', attrib=None):
-        return XNAList.xml(self, xml_tag=xml_tag, xml_entry=xml_entry, attrib=attrib)
+        root = XNAList.xml(self, xml_tag=xml_tag, xml_entry=xml_entry, attrib=attrib)
+        return root
+
+
+class ExternalReference(object):
+    def __init__(self, filename, expected_type):
+        self.filename = filename
+        self.expected_type = expected_type
+
+    def __str__(self):
+        return "ExternalReference '%s'" % self.filename
+
+    def xml(self):
+        root = E.ExternalReference(filename=self.filename)
+        if self.expected_type is not None:
+            root.set('expectedType', self.expected_type.target_type)
+        return root

@@ -19,8 +19,9 @@ class SoundEffect(object):
                                                                self.duration, self.loop_start, self.loop_length)
 
     def xml(self):
-        return E.SoundEffect(loopStart=str(self.loop_start), loopLength=str(self.loop_length),
+        root = E.SoundEffect(loopStart=str(self.loop_start), loopLength=str(self.loop_length),
                              duration=str(self.duration))
+        return root
 
 
 class Song(object):
@@ -32,7 +33,8 @@ class Song(object):
         return "Song f:'%s' d:%dms" % (self.filename, self.duration)
 
     def xml(self):
-        return E.Song(filename=self.filename, duration=str(self.duration))
+        root = E.Song(filename=self.filename, duration=str(self.duration))
+        return root
 
 
 class Video(object):
@@ -49,8 +51,20 @@ class Video(object):
                                                           self.fps, self.video_soundtrack_type)
 
     def xml(self):
-        return E.Video(filename=self.filename, duration=str(self.duration), width=str(self.width),
-                       height=str(self.height), fps=str(self.fps), soundtrackType=str(self.video_soundtrack_type))
+        root = E.Video()
+        if self.filename is not None:
+            root.set('filename', self.filename)
+        if self.duration is not None:
+            root.set('duration', str(self.duration))
+        if self.width is not None:
+            root.set('width', str(self.width))
+        if self.height is not None:
+            root.set('height', str(self.height))
+        if self.fps is not None:
+            root.set('fps', str(self.fps))
+        if self.video_soundtrack_type is not None:
+            root.set('soundtrackType', str(self.video_soundtrack_type))
+        return root
 
 
 class VideoSoundtrackType(Enum):

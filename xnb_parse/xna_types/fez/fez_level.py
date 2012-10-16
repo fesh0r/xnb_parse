@@ -13,7 +13,10 @@ class MapTree(object):
         return "MapTree %s" % self.map_node
 
     def xml(self):
-        return E.MapTree(self.map_node.xml())
+        root = E.MapTree()
+        if self.map_node is not None:
+            root.append(self.map_node.xml())
+        return root
 
 
 class MapNode(object):
@@ -30,10 +33,12 @@ class MapNode(object):
 
     def xml(self):
         root = E.Node(name=self.level_name, hasLesserGate=str(self.has_lesser_gate),
-                      hasWarpGate=str(self.has_warp_gate), type=str(self.node_type))
-        if self.conditions:
+                      hasWarpGate=str(self.has_warp_gate))
+        if self.node_type is not None:
+            root.set('type', str(self.node_type))
+        if self.conditions is not None:
             root.append(self.conditions.xml())
-        if self.connections:
+        if self.connections is not None:
             root.append(self.connections.xml('Connections'))
         return root
 
@@ -48,8 +53,11 @@ class MapNodeConnection(object):
         return "MapNodeConnection f:%s" % self.face
 
     def xml(self):
-        root = E.Connection(face=str(self.face), branchOversize=str(self.branch_oversize))
-        root.append(self.node.xml())
+        root = E.Connection(branchOversize=str(self.branch_oversize))
+        if self.face is not None:
+            root.set('face', str(self.face))
+        if self.node is not None:
+            root.append(self.node.xml())
         return root
 
 
@@ -73,7 +81,7 @@ class WinConditions(object):
                                unlockedDoors=str(self.unlocked_door_count), cubeShards=str(self.cube_shard_count),
                                splitUp=str(self.split_up_count), secrets=str(self.secret_count),
                                others=str(self.other_collectible_count))
-        if self.script_ids:
+        if self.script_ids is not None:
             root.append(self.script_ids.xml('Scripts', 'Script'))
         return root
 
@@ -126,14 +134,16 @@ class Sky(object):
                      shadowOpacity=str(self.shadow_opacity), foliageShadows=str(self.foliage_shadows),
                      noPerFaceLayerXOffset=str(self.no_per_face_layer_x_offset),
                      layerBaseXOffset=str(self.layer_base_x_offset))
-        if self.shadows:
+        if self.shadows is not None:
             root.set('shadows', self.shadows)
-        if self.stars:
+        if self.stars is not None:
             root.set('stars', self.stars)
-        if self.cloud_tint:
+        if self.cloud_tint is not None:
             root.set('cloudTint', self.cloud_tint)
-        root.append(self.layers.xml('Layers'))
-        root.append(self.clouds.xml('Clouds', 'Cloud'))
+        if self.layers is not None:
+            root.append(self.layers.xml('Layers'))
+        if self.clouds is not None:
+            root.append(self.clouds.xml('Clouds', 'Cloud'))
         return root
 
 
@@ -148,8 +158,9 @@ class SkyLayer(object):
         return "SkyLayer '%s' o:%f" % (self.name, self.opacity)
 
     def xml(self):
-        return E.SkyLayer(name=self.name, opacity=str(self.opacity), fogTint=str(self.fog_tint),
+        root = E.SkyLayer(name=self.name, opacity=str(self.opacity), fogTint=str(self.fog_tint),
                           inFront=str(self.in_front))
+        return root
 
 
 class TrileSet(object):
@@ -163,11 +174,13 @@ class TrileSet(object):
 
     def xml(self):
         root = E.TrileSet(name=self.name)
-        root.append(self.triles.xml('Triles', 'TrileEntry'))
+        if self.triles is not None:
+            root.append(self.triles.xml('Triles', 'TrileEntry'))
         return root
 
     def export(self, filename):
-        self.texture_atlas.export(filename)
+        if self.texture_atlas is not None:
+            self.texture_atlas.export(filename)
 
 
 class Trile(object):
@@ -196,14 +209,23 @@ class Trile(object):
 
     def xml(self):
         root = E.Trile(name=self.name, cubemapPath=self.cubemap_path, immaterial=str(self.immaterial),
-                       seeThrough=str(self.see_through), thin=str(self.thin), forceHugging=str(self.force_hugging),
-                       surfaceType=str(self.surface_type))
-        root.append(E.ActorSettings(type=str(self.actor_settings_type), face=str(self.actor_settings_face)))
+                       seeThrough=str(self.see_through), thin=str(self.thin), forceHugging=str(self.force_hugging))
+        if self.surface_type is not None:
+            root.set('surfaceType', str(self.surface_type))
+        if self.actor_settings_type is not None or self.actor_settings_face is not None:
+            actor_settings = E.ActorSettings()
+            if self.actor_settings_type is not None:
+                actor_settings.set('type', str(self.actor_settings_type))
+            if self.actor_settings_face is not None:
+                actor_settings.set('face', str(self.actor_settings_face))
+            root.append(actor_settings)
         root.append(E.Size(self.size.xml()))
         root.append(E.Offset(self.offset.xml()))
         root.append(E.AtlasOffset(self.atlas_offset.xml()))
-        root.append(self.faces.xml('Faces', 'Face'))
-        root.append(E.Geometry(self.geometry.xml()))
+        if self.faces is not None:
+            root.append(self.faces.xml('Faces', 'Face'))
+        if self.geometry is not None:
+            root.append(E.Geometry(self.geometry.xml()))
         return root
 
 
@@ -252,65 +274,45 @@ class Level(object):
         return "Level '%s'" % self.name
 
     def xml(self):
-        root = E.Level(name=self.name, flat=str(self.flat),
+        root = E.Level(flat=str(self.flat),
                        skipPostprocess=str(self.skip_postprocess), baseDiffuse=str(self.base_diffuse),
-                       baseAmbient=str(self.base_ambient),
-                       haloFiltering=str(self.halo_filtering), blinkingAlpha=str(self.blinking_alpha),
-                       loops=str(self.loops), waterType=str(self.water_type), waterHeight=str(self.water_height),
-                       skyName=self.sky_name, trileSetName=self.trile_set_name,
+                       baseAmbient=str(self.base_ambient), haloFiltering=str(self.halo_filtering),
+                       blinkingAlpha=str(self.blinking_alpha), loops=str(self.loops),
+                       waterHeight=str(self.water_height), skyName=self.sky_name,
                        fapFadeoutStart=str(self.fap_fadeout_start), fapFadeoutLength=str(self.fap_fadeout_length),
                        descending=str(self.descending), rainy=str(self.rainy), lowPass=str(self.low_pass),
-                       nodeType=str(self.node_type), quantum=str(self.quantum))
+                       quantum=str(self.quantum))
+        if self.name is not None:
+            root.set('name', self.name)
         root.append(E.Size(self.size.xml()))
-        if self.sequence_samples_path:
-            root.set('sequenceSamplesPath', self.sequence_samples_path)
-        if self.gomez_halo_name:
-            root.set('gomezHaloName', self.gomez_halo_name)
-        if self.song_name:
-            root.set('songName', self.song_name)
-        if self.starting_position:
+        if self.starting_position is not None:
             root.append(E.StartingPosition(self.starting_position.xml()))
-        if self.volumes:
+        if self.sequence_samples_path is not None:
+            root.set('sequenceSamplesPath', self.sequence_samples_path)
+        if self.gomez_halo_name is not None:
+            root.set('gomezHaloName', self.gomez_halo_name)
+        if self.water_type is not None:
+            root.set('waterType', str(self.water_type))
+        if self.trile_set_name is not None:
+            root.set('trileSetName', self.trile_set_name)
+        if self.volumes is not None:
             root.append(self.volumes.xml('Volumes'))
-        if self.scripts:
+        if self.scripts is not None:
             root.append(self.scripts.xml('Scripts'))
+        if self.song_name is not None:
+            root.set('songName', self.song_name)
         # triles
         # art_objects
         # background_planes
         # groups
         # nonplayer_characters:
         # paths
-        if self.muted_loops:
+        if self.muted_loops is not None:
             root.append(self.muted_loops.xml('MutedLoops'))
         # ambience_tracks
+        if self.node_type is not None:
+            root.set('nodeType', str(self.node_type))
         return root
-
-
-class TrileFace(object):
-    def __init__(self, trile_id, face):
-        self.trile_id = trile_id
-        self.face = face
-
-    def __str__(self):
-        return "TrileFace f:%s t:%d,%d,%d" % (self.face, self.trile_id.v_x, self.trile_id.v_y, self.trile_id.v_z)
-
-    def xml(self):
-        root = E.TrileFace(face=str(self.face))
-        root.append(E.TrileId(self.trile_id.xml()))
-        return root
-
-
-class TrileEmplacement(object):
-    def __init__(self, v_x, v_y, v_z):
-        self.v_x = v_x
-        self.v_y = v_y
-        self.v_z = v_z
-
-    def __str__(self):
-        return "TrileEmplacement(%d,%d,%d)" % (self.v_x, self.v_y, self.v_z)
-
-    def xml(self):
-        return E.TrileEmplacement(x=str(self.v_x), y=str(self.v_y), z=str(self.v_z))
 
 
 class Volume(object):
@@ -325,14 +327,43 @@ class Volume(object):
 
     def xml(self):
         root = E.Volume()
-        if self.orientations:
+        if self.orientations is not None:
             root.append(self.orientations.xml('Orientations'))
-        if self.v_from:
-            root.append(E.From(self.v_from.xml()))
-        if self.v_to:
-            root.append(E.To(self.v_to.xml()))
-        if self.actor_settings:
+        root.append(E.From(self.v_from.xml()))
+        root.append(E.To(self.v_to.xml()))
+        if self.actor_settings is not None:
             root.append(E.ActorSettings(self.actor_settings.xml()))
+        return root
+
+
+class TrileEmplacement(object):
+    def __init__(self, v_x, v_y, v_z):
+        self.v_x = v_x
+        self.v_y = v_y
+        self.v_z = v_z
+
+    def __str__(self):
+        return "TrileEmplacement(%d,%d,%d)" % (self.v_x, self.v_y, self.v_z)
+
+    def xml(self):
+        root = E.TrileEmplacement(x=str(self.v_x), y=str(self.v_y), z=str(self.v_z))
+        return root
+
+
+class TrileFace(object):
+    def __init__(self, trile_id, face):
+        self.trile_id = trile_id
+        self.face = face
+
+    def __str__(self):
+        return "TrileFace f:%s t:%d,%d,%d" % (self.face, self.trile_id.v_x, self.trile_id.v_y, self.trile_id.v_z)
+
+    def xml(self):
+        root = E.TrileFace()
+        if self.face is not None:
+            root.set('face', str(self.face))
+        if self.trile_id is not None:
+            root.append(E.TrileId(self.trile_id.xml()))
         return root
 
 
@@ -356,9 +387,9 @@ class VolumeActorSettings(object):
                                      waterLocked=str(self.water_locked), isBlackhole=str(self.is_blackhole),
                                      needsTrigger=str(self.needs_trigger), isSecretPassage=str(self.is_secret_passage))
         root.append(E.FarawayPlaneOffset(self.faraway_plane_offset.xml()))
-        if self.dot_dialogue:
+        if self.dot_dialogue is not None:
             root.append(self.dot_dialogue.xml('DotDialogue'))
-        if self.code_pattern:
+        if self.code_pattern is not None:
             root.append(self.code_pattern.xml('CodePattern'))
         return root
 
@@ -373,7 +404,7 @@ class DotDialogueLine(object):
 
     def xml(self):
         root = E.Line(grouped=str(self.grouped))
-        if self.resource_text:
+        if self.resource_text is not None:
             root.text = self.resource_text
         return root
 
@@ -402,11 +433,11 @@ class Script(object):
                         disabled=str(self.disabled), isWinCondition=str(self.is_win_condition))
         if self.timeout is not None:
             root.set('timeout', str(self.timeout))
-        if self.triggers:
+        if self.triggers is not None:
             root.append(self.triggers.xml('Triggers'))
-        if self.conditions:
+        if self.conditions is not None:
             root.append(self.conditions.xml('Conditions'))
-        if self.actions:
+        if self.actions is not None:
             root.append(self.actions.xml('Actions'))
         return root
 
@@ -421,23 +452,8 @@ class ScriptTrigger(object):
 
     def xml(self):
         root = E.ScriptTrigger(event=self.event)
-        if self.entity:
+        if self.entity is not None:
             root.append(self.entity.xml())
-        return root
-
-
-class Entity(object):
-    def __init__(self, entity_type, identifier):
-        self.entity_type = entity_type
-        self.identifier = identifier
-
-    def __str__(self):
-        return "Entity i:%d" % self.identifier
-
-    def xml(self):
-        root = E.Entity(entityType=self.entity_type)
-        if self.identifier is not None:
-            root.set('identifier', str(self.identifier))
         return root
 
 
@@ -454,9 +470,9 @@ class ScriptAction(object):
 
     def xml(self):
         root = E.ScriptAction(operation=self.operation, killswitch=str(self.killswitch), blocking=str(self.blocking))
-        if self.entity:
+        if self.entity is not None:
             root.append(self.entity.xml())
-        if self.arguments:
+        if self.arguments is not None:
             root.append(self.arguments.xml('Arguments'))
         return root
 
@@ -472,7 +488,24 @@ class ScriptCondition(object):
         return "ScriptCondition o:%s" % self.operator
 
     def xml(self):
-        root = E.ScriptCondition(operator=str(self.operator), property=self.property_, value=self.value)
-        if self.entity:
+        root = E.ScriptCondition(property=self.property_, value=self.value)
+        if self.operator is not None:
+            root.set('operator', str(self.operator))
+        if self.entity is not None:
             root.append(self.entity.xml())
+        return root
+
+
+class Entity(object):
+    def __init__(self, entity_type, identifier):
+        self.entity_type = entity_type
+        self.identifier = identifier
+
+    def __str__(self):
+        return "Entity i:%d" % self.identifier
+
+    def xml(self):
+        root = E.Entity(entityType=self.entity_type)
+        if self.identifier is not None:
+            root.set('identifier', str(self.identifier))
         return root

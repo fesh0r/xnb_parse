@@ -9,7 +9,7 @@ from xnb_parse.xna_native import decompress
 from xnb_parse.type_reader import ReaderError, generic_reader_type
 from xnb_parse.type_readers.xna_system import EnumReader
 from xnb_parse.xna_types.xna_math import Color, Vector2, Vector3, Vector4, Quaternion, Matrix
-from xnb_parse.xna_types.xna_system import XNAList
+from xnb_parse.xna_types.xna_system import XNAList, ExternalReference
 from xnb_parse.file_formats.xml_utils import output_xml
 
 
@@ -214,7 +214,7 @@ class XNBReader(BinaryReader):
 
     def read_external_reference(self, expected_type=None):
         filename = self.read_string()
-        return filename, expected_type
+        return ExternalReference(filename, expected_type)
 
     def read_matrix(self):
         matrix = XNAList()

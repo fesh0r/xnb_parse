@@ -8,61 +8,6 @@ from xnb_parse.file_formats.xml_utils import E
 from xnb_parse.xna_types.xna_graphics import Texture2D, FORMAT_COLOR, get_surface_format
 
 
-class AnimatedTexture(object):
-    surface_format = get_surface_format(VERSION_31, FORMAT_COLOR)
-
-    def __init__(self, width, height, actual_width, actual_height, frames):
-        self.width = width
-        self.height = height
-        self.actual_width = actual_width
-        self.actual_height = actual_height
-        self.frames = frames
-
-    def __str__(self):
-        return "AnimatedTexture d:%dx%d a:%dx%d f:%d" % (self.width, self.height, self.actual_width,
-                                                         self.actual_height, len(self.frames))
-
-    def xml(self):
-        root = E.AnimatedTexture(width=str(self.width), height=str(self.height), actualWidth=str(self.actual_width),
-                                 actualHeight=str(self.actual_height))
-        root.append(self.frames.xml('Frames'))
-        return root
-
-    def export(self, filename):
-        self.export_single(filename)
-
-    def export_each(self, filename):
-        for i, cur_frame in enumerate(self.frames):
-            texture = Texture2D(self.surface_format, self.width, self.height, [cur_frame.data])
-            cur_filename = "%s_ani\\%d" % (filename, i)
-            texture.export(cur_filename)
-
-    def export_single(self, filename):
-        texture_data = bytearray()
-        for cur_frame in self.frames:
-            texture_data.extend(cur_frame.data)
-        texture = Texture2D(self.surface_format, self.width, self.height * len(self.frames), [texture_data])
-        texture.export(filename + '.ani')
-
-
-class Frame(object):
-    def __init__(self, duration, data):
-        self.duration = duration
-        raw_stream = BinaryWriter()
-        for col in data:
-            raw_stream.write_uint32(col.to_packed())
-        self.data = raw_stream.serial()
-
-    def __str__(self):
-        return "Frame d:%d s:%d" % (self.duration, len(self.data))
-
-    def xml(self):
-        root = E.Frame()
-        if self.duration is not None:
-            root.set('duration', str(self.duration))
-        return root
-
-
 class ArtObject(object):
     def __init__(self, name, cubemap_path, size, geometry, actor_type, no_silhouette, laser_outlets):
         self.name = name
@@ -78,12 +23,14 @@ class ArtObject(object):
                                                     len(self.geometry.vertices))
 
     def xml(self):
-        root = E.ArtObject(name=self.name, cubemapPath=self.cubemap_path, actorType=str(self.actor_type),
-                           noSilhouette=str(self.no_silhouette))
+        root = E.ArtObject(name=self.name, cubemapPath=self.cubemap_path, noSilhouette=str(self.no_silhouette))
         root.append(E.Size(self.size.xml()))
-        root.append(self.geometry.xml())
-        if self.laser_outlets:
-            root.append(self.laser_outlets.xml())
+        if self.actor_type is not None:
+            root.set('actorType', str(self.actor_type))
+        if self.geometry is not None:
+            root.append(self.geometry.xml())
+        if self.laser_outlets is not None:
+            root.append(self.laser_outlets.xml('LaserOutlets'))
         return root
 
 
@@ -100,9 +47,13 @@ class ShaderInstancedIndexedPrimitives(object):
                                                                     len(self.indices))
 
     def xml(self):
-        root = E.ShaderInstancedIndexedPrimitives(type=str(self.primitive_type))
-        root.append(self.vertices.xml('Vertices'))
-        root.append(self.indices.xml('Indices', 'Index'))
+        root = E.ShaderInstancedIndexedPrimitives()
+        if self.primitive_type is not None:
+            root.set('type', str(self.primitive_type))
+        if self.vertices is not None:
+            root.append(self.vertices.xml('Vertices'))
+        if self.indices is not None:
+            root.append(self.indices.xml('Indices', 'Index'))
         return root
 
 
@@ -137,7 +88,65 @@ class NpcMetadata(object):
 
     def xml(self):
         root = E.NpcMetadata(avoidsGomez=str(self.avoids_gomez), walkSpeed=str(self.walk_speed))
-        if self.sound_path:
+        if self.sound_path is not None:
             root.set('soundPath', self.sound_path)
-        root.append(self.sound_actions.xml('SoundActions'))
+        if self.sound_actions is not None:
+            root.append(self.sound_actions.xml('SoundActions'))
+        return root
+
+
+class AnimatedTexture(object):
+    surface_format = get_surface_format(VERSION_31, FORMAT_COLOR)
+
+    def __init__(self, width, height, actual_width, actual_height, frames):
+        self.width = width
+        self.height = height
+        self.actual_width = actual_width
+        self.actual_height = actual_height
+        self.frames = frames
+
+    def __str__(self):
+        return "AnimatedTexture d:%dx%d a:%dx%d f:%d" % (self.width, self.height, self.actual_width,
+                                                         self.actual_height, len(self.frames))
+
+    def xml(self):
+        root = E.AnimatedTexture(width=str(self.width), height=str(self.height), actualWidth=str(self.actual_width),
+                                 actualHeight=str(self.actual_height))
+        if self.frames is not None:
+            root.append(self.frames.xml('Frames'))
+        return root
+
+    def export(self, filename):
+        if self.frames is not None:
+            self.export_single(filename)
+
+    def export_each(self, filename):
+        for i, cur_frame in enumerate(self.frames):
+            texture = Texture2D(self.surface_format, self.width, self.height, [cur_frame.data])
+            cur_filename = "%s_ani\\%d" % (filename, i)
+            texture.export(cur_filename)
+
+    def export_single(self, filename):
+        texture_data = bytearray()
+        for cur_frame in self.frames:
+            texture_data.extend(cur_frame.data)
+        texture = Texture2D(self.surface_format, self.width, self.height * len(self.frames), [texture_data])
+        texture.export(filename + '.ani')
+
+
+class Frame(object):
+    def __init__(self, duration, data):
+        self.duration = duration
+        raw_stream = BinaryWriter()
+        for col in data:
+            raw_stream.write_uint32(col.to_packed())
+        self.data = raw_stream.serial()
+
+    def __str__(self):
+        return "Frame d:%d s:%d" % (self.duration, len(self.data))
+
+    def xml(self):
+        root = E.Frame()
+        if self.duration is not None:
+            root.set('duration', str(self.duration))
         return root

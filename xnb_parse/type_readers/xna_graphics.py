@@ -5,7 +5,7 @@ graphics type readers
 from xnb_parse.type_reader import BaseTypeReader, ReaderError, EnumTypeReader
 from xnb_parse.type_reader_manager import TypeReaderPlugin
 from xnb_parse.xna_types.xna_graphics import (Texture2D, Texture3D, TextureCube, CUBE_SIDES, IndexBuffer, Effect,
-                                              get_surface_format, PrimitiveType, SpriteFont)
+                                              get_surface_format, PrimitiveType, SpriteFont, BasicEffect)
 from xnb_parse.type_readers.xna_system import ListReader, DictionaryReader
 from xnb_parse.type_readers.xna_math import Vector3Reader, RectangleReader
 from xnb_parse.type_readers.xna_primitive import CharReader, StringReader, ObjectReader
@@ -148,7 +148,7 @@ class BasicEffectReader(BaseTypeReader, TypeReaderPlugin):
         spec = self.stream.read_single()
         alpha = self.stream.read_single()
         colour_v = self.stream.read_boolean()
-        return texture, colour_d, colour_e, colour_s, spec, alpha, colour_v
+        return BasicEffect(texture, colour_d, colour_e, colour_s, spec, alpha, colour_v)
 
 
 class SpriteFontReader(BaseTypeReader, TypeReaderPlugin):

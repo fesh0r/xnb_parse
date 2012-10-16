@@ -42,7 +42,8 @@ class Color(namedtuple('Color', ['r', 'g', 'b', 'a'])):
         return "#%02X%02X%02X%02X" % (self.a & 0xff, self.r & 0xff, self.g & 0xff, self.b & 0xff)
 
     def xml(self):
-        return E.Color(c=self.attrib())
+        root = E.Color(c=self.attrib())
+        return root
 
 
 # pylint: disable-msg=E1001,W0232,E1101
@@ -51,7 +52,8 @@ class Rectangle(namedtuple('Rectangle', ['x', 'y', 'w', 'h'])):
     __slots__ = ()
 
     def xml(self):
-        return E.Rectangle(x=str(self.x), y=str(self.y), w=str(self.w), h=str(self.h))
+        root = E.Rectangle(x=str(self.x), y=str(self.y), w=str(self.w), h=str(self.h))
+        return root
 
 
 # pylint: disable-msg=E1001,W0232,E1101
@@ -60,7 +62,8 @@ class Quaternion(namedtuple('Quarternion', ['x', 'y', 'z', 'w'])):
     __slots__ = ()
 
     def xml(self):
-        return E.Quaternion(x=str(self.x), y=str(self.y), z=str(self.z), w=str(self.w))
+        root = E.Quaternion(x=str(self.x), y=str(self.y), z=str(self.z), w=str(self.w))
+        return root
 
 
 # pylint: disable-msg=E1001,W0232,E1101
@@ -69,7 +72,8 @@ class Vector2(namedtuple('Vector2', ['x', 'y'])):
     __slots__ = ()
 
     def xml(self):
-        return E.Vector2(x=str(self.x), y=str(self.y))
+        root = E.Vector2(x=str(self.x), y=str(self.y))
+        return root
 
 
 # pylint: disable-msg=E1001,W0232,E1101
@@ -78,7 +82,8 @@ class Vector3(namedtuple('Vector3', ['x', 'y', 'z'])):
     __slots__ = ()
 
     def xml(self):
-        return E.Vector3(x=str(self.x), y=str(self.y), z=str(self.z))
+        root = E.Vector3(x=str(self.x), y=str(self.y), z=str(self.z))
+        return root
 
 
 # pylint: disable-msg=E1001,W0232,E1101
@@ -87,7 +92,8 @@ class Vector4(namedtuple('Vector4', ['x', 'y', 'z', 'w'])):
     __slots__ = ()
 
     def xml(self):
-        return E.Vector4(x=str(self.x), y=str(self.y), z=str(self.z), w=str(self.w))
+        root = E.Vector4(x=str(self.x), y=str(self.y), z=str(self.z), w=str(self.w))
+        return root
 
 
 # pylint: disable-msg=E1001,W0232,E1101
@@ -96,7 +102,8 @@ class Point(namedtuple('Point', ['x', 'y'])):
     __slots__ = ()
 
     def xml(self):
-        return E.Point(x=str(self.x), y=str(self.y))
+        root = E.Point(x=str(self.x), y=str(self.y))
+        return root
 
 
 # pylint: disable-msg=E1001,W0232,E1101
@@ -105,7 +112,8 @@ class Plane(namedtuple('Plane', ['normal', 'd'])):
     __slots__ = ()
 
     def xml(self):
-        return E.Plane(self.normal.xml(), d=str(self.d))
+        root = E.Plane(self.normal.xml(), d=str(self.d))
+        return root
 
 
 # pylint: disable-msg=E1001,W0232,E1101
@@ -114,7 +122,8 @@ class BoundingBox(namedtuple('BoundingBox', ['min', 'max'])):
     __slots__ = ()
 
     def xml(self):
-        return E.BoundingBox(self.min.xml(), self.max.xml())
+        root = E.BoundingBox(self.min.xml(), self.max.xml())
+        return root
 
 
 # pylint: disable-msg=E1001,W0232,E1101
@@ -123,7 +132,8 @@ class BoundingSphere(namedtuple('BoundingSphere', ['center', 'radius'])):
     __slots__ = ()
 
     def xml(self):
-        return E.BoundingSphere(self.center.xml(), radius=str(self.radius))
+        root = E.BoundingSphere(self.center.xml(), radius=str(self.radius))
+        return root
 
 
 # pylint: disable-msg=E1001,W0232,E1101
@@ -132,7 +142,8 @@ class Ray(namedtuple('Ray', ['pos', 'dir'])):
     __slots__ = ()
 
     def xml(self):
-        return E.Ray(self.pos.xml(), self.dir.xml())
+        root = E.Ray(self.pos.xml(), self.dir.xml())
+        return root
 
 
 class Matrix(object):
@@ -147,7 +158,8 @@ class Matrix(object):
         return 'Matrix(' + ','.join([str(v) for v in self.value]) + ')'
 
     def xml(self):
-        return self.value.xml('Matrix', 'Cell')
+        root = self.value.xml('Matrix', 'Cell')
+        return root
 
 
 # pylint: disable-msg=E1001,W0232,E1101
@@ -156,4 +168,5 @@ class BoundingFrustum(namedtuple('BoundingFrustum', ['v'])):
     __slots__ = ()
 
     def xml(self):
-        return E.BoundingFrustum(self.v.xml())
+        root = E.BoundingFrustum(self.v.xml())
+        return root
