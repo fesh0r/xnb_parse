@@ -31,7 +31,7 @@ class XNADict(dict):
         for cur_key, cur_value in self.items():
             cur_tag = E(xml_entry)
             if hasattr(cur_key, 'xml') and not isinstance(cur_key, Enum):
-                raise ValueError("XNADict key is xml")
+                cur_tag.append(cur_key.xml())
             else:
                 cur_tag.set('key', unicode(cur_key))
             if hasattr(cur_value, 'xml'):
