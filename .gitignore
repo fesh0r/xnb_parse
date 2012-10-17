@@ -4,3 +4,6 @@
 *.pyc
 *.pyo
 __pycache__/
+Content/
+export/
+out/
