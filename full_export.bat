@@ -7,7 +7,7 @@ if %errorlevel% neq 0 goto error
 call xnb_decomp.bat out out_u
 if %errorlevel% neq 0 goto error
 
-call read_xnb_dir.bat out export
+call read_xnb_dir.bat out_u export
 if %errorlevel% neq 0 goto error
 
 pause
