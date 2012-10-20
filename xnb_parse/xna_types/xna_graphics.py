@@ -147,9 +147,9 @@ class Texture2D(object):
         if 'art objects' in filename or 'trile sets' in filename:
             alpha = 'no'
             rows = self.surface_format.reader(self.mip_levels[0], self.width, self.height, self.needs_swap)
-            write_png(filename + '_alpha.png', self.width, self.height, rows, alpha='only')
+            write_png(filename + '_alpha', self.width, self.height, rows, alpha='only')
         rows = self.surface_format.reader(self.mip_levels[0], self.width, self.height, self.needs_swap)
-        write_png(filename + '.png', self.width, self.height, rows, alpha=alpha)
+        write_png(filename, self.width, self.height, rows, alpha=alpha)
 
 
 class Texture3D(object):

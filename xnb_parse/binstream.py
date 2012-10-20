@@ -258,7 +258,7 @@ class ByteSwapper(object):
     _TYPECODES = ['b', 'h', 'l']
 
     def __init__(self):
-        # try and figure out a
+        # try and figure out a typecode for 16 and 32 bit values
         self.size_types = {}
         for size in [2, 4]:
             cur_type = None

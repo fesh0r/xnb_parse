@@ -198,8 +198,13 @@ class XNBReader(BinaryReader):
         if self.content is None:
             raise ValueError('XNB content not parsed')
         if hasattr(self.content, 'export'):
+            filename = os.path.normpath(filename)
+            dirname = os.path.dirname(filename)
+            if not os.path.isdir(dirname):
+                os.makedirs(dirname)
             self.content.export(filename)
         if hasattr(self.content, 'xml'):
+            filename = os.path.normpath(filename)
             dirname = os.path.dirname(filename)
             if not os.path.isdir(dirname):
                 os.makedirs(dirname)

@@ -81,6 +81,7 @@ class PyPngWriter(object):
 
 
 def write_png(filename, width, height, rows, alpha='yes'):
+    full_filename = filename + '.png'
     out_png = PyPngWriter(width=width, height=height)
-    with open(filename, 'wb') as out_handle:
+    with open(full_filename, 'wb') as out_handle:
         out_png.write_bytearray(out_handle, rows, alpha)
