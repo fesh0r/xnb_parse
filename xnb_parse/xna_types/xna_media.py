@@ -3,20 +3,25 @@ media types
 """
 
 from xnb_parse.file_formats.xml_utils import E
+from xnb_parse.file_formats.wav import write_wav
 from xnb_parse.xna_types.xna_primitive import Enum
 
 
 class SoundEffect(object):
-    def __init__(self, sound_format, sound_data, loop_start, loop_length, duration):
+    def __init__(self, sound_format, sound_data, loop_start, loop_length, duration, needs_swap=False):
         self.sound_format = sound_format
         self.sound_data = sound_data
         self.loop_start = loop_start
         self.loop_length = loop_length
         self.duration = duration
+        self.needs_swap = needs_swap
 
     def __str__(self):
         return "SoundEffect fs:%d ds:%d d:%dms ls:%d ll:%d" % (len(self.sound_format), len(self.sound_data),
                                                                self.duration, self.loop_start, self.loop_length)
+
+    def export(self, filename):
+        write_wav(filename, self.sound_format, self.sound_data, self.needs_swap)
 
     def xml(self):
         root = E.SoundEffect(loopStart=str(self.loop_start), loopLength=str(self.loop_length),

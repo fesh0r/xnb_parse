@@ -20,7 +20,7 @@ class SoundEffectReader(BaseTypeReader, TypeReaderPlugin):
         loop_start = self.stream.read_int32()
         loop_length = self.stream.read_int32()
         duration = self.stream.read_int32()
-        return SoundEffect(wave_format, wave_data, loop_start, loop_length, duration)
+        return SoundEffect(wave_format, wave_data, loop_start, loop_length, duration, self.stream.needs_swap)
 
 
 class SongReader(BaseTypeReader, TypeReaderPlugin):
