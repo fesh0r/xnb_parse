@@ -10,11 +10,15 @@ if %errorlevel% neq 0 goto error
 call read_xnb_dir.bat out_u export
 if %errorlevel% neq 0 goto error
 
+call xma_decode.bat export
+if %errorlevel% neq 0 goto error
+
 pause
 
 goto end
 
 :error
 echo BANG
+exit /b 1
 
 :end
