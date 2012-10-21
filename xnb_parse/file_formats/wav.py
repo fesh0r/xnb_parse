@@ -115,7 +115,11 @@ class PyWavWriter(object):
             h_s.write_uint16(self.h_size)
             if self.h_format_tag == WAVE_FORMAT_XMA2:
                 h_s.write_uint16(self.hx_num_streams)
-                h_s.write_uint32(self.hx_channel_mask)
+                # hack so mono sounds end up center rather than left
+                if self.h_channels == 1:
+                    h_s.write_uint32(0)
+                else:
+                    h_s.write_uint32(self.hx_channel_mask)
                 h_s.write_uint32(self.hx_samples_encoded)
                 h_s.write_uint32(self.hx_bytes_per_block)
                 h_s.write_uint32(self.hx_play_begin)
