@@ -17,6 +17,7 @@ class BinaryStream(object):
         's2': 'h',
         'u1': 'B',
         's1': 'b',
+        'c1': 'c',
         'f': 'f',
         'd': 'd',
         '?': '?'
@@ -82,6 +83,9 @@ class BinaryWriter(BinaryStream):
 
     def write_sbyte(self, value):
         return self.write_struct(value, self._types['s1'])
+
+    def write_cbyte(self, value):
+        return self.write_struct(value, self._types['c1'])
 
     def write_int16(self, value):
         return self.write_struct(value, self._types['s2'])
@@ -190,6 +194,9 @@ class BinaryReader(BinaryStream):
 
     def read_sbyte(self):
         return self.read_struct(self._types['s1'])
+
+    def read_cbyte(self):
+        return self.read_struct(self._types['c1'])
 
     def read_int16(self):
         return self.read_struct(self._types['s2'])
