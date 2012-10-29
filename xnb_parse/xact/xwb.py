@@ -96,7 +96,6 @@ class XWB(object):
         (h_sig, h_version, h_header_version) = stream.unpack(self._wb_header)
         self.h_version = h_version
         self.h_header_version = h_header_version
-        print "XWB: s:%s v:%d h:%d" % (h_sig, h_version, h_header_version)
         # pylint: disable-msg=W0212
         regions = dict(zip(self._regions, [XWBRegion._make(stream.unpack(self._wb_region)) for _ in self._regions]))
         # pylint: enable-msg=W0212
@@ -113,9 +112,6 @@ class XWB(object):
         self.h_flags = h_flags
         self.h_bank_name = h_bank_name
         self.h_buildtime = h_buildtime
-        print "f:0x%08x c:%d n:'%s' ms:%d ns:%d a:%d c:0x%08x bt:%s" % (
-            h_flags, h_entry_count, h_bank_name, h_entry_metadata_element_size, h_entry_name_element_size,
-            h_alignment, h_compact_format, str(h_buildtime))
 
         # check what type of ENTRYMETADATA we have and parse it
         if h_flags & WAVEBANK_FLAGS_COMPACT:
@@ -167,7 +163,6 @@ class XWB(object):
             c_samples_per_sec = cur_meta.format >> 5 & 0x3ffff
             c_block_align = cur_meta.format >> 23 & 0xff
             c_bits_per_sample = cur_meta.format >> 31
-            print 'File %d: f:0x%01x d:%d fmt:0x%08x' % (i, c_entry_flags, c_duration, cur_meta.format)
             if entry_names is not None:
                 entry_name = entry_names[i]
             else:
@@ -183,9 +178,6 @@ class XWB(object):
                 c_bits_per_sample = 16
                 c_avg_bytes_per_sec = WMA_AVG_BYTES_PER_SEC[c_block_align >> 5]
                 c_block_align = WMA_BLOCK_ALIGN[c_block_align & 0x1f]
-                print 'wFormatTag:0x%04x nChannels:%d nSamplesPerSec:%d wBlockAlign:%d' % (
-                    c_format_tag, c_channels, c_samples_per_sec, c_block_align),
-                print 'wBitsPerSample:%d nAvgBytesPerSec: %d' % (c_bits_per_sample, c_avg_bytes_per_sec)
                 entry_header = self._waveformatex.pack(c_format_tag, c_channels, c_samples_per_sec,
                                                        c_avg_bytes_per_sec, c_block_align, c_bits_per_sample, 0)
                 if entry_seektables is None:
@@ -193,6 +185,7 @@ class XWB(object):
                 entry_dpds = entry_seektables[i]
             else:
                 raise ReaderError("Unhandled entry format: %d" % c_format_tag)
+
             # read entry wave data
             stream.seek(regions['ENTRYWAVEDATA'].offset + cur_meta.play_offset)
             entry_data = stream.read_bytes(cur_meta.play_length)
