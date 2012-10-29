@@ -164,6 +164,12 @@ class BinaryReader(BinaryStream):
     def next(self, count):
         return self.data[self._index:self._index + count]
 
+    def seek(self, offset):
+        self._index = offset
+
+    def tell(self):
+        return self._index
+
     def pull(self, count):
         value = self.data[self._index:self._index + count]
         self._index += count
