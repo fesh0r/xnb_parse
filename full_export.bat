@@ -13,6 +13,9 @@ if %errorlevel% neq 0 goto error
 call xma_decode.bat export
 if %errorlevel% neq 0 goto error
 
+call xwma_decode.bat export
+if %errorlevel% neq 0 goto error
+
 pause
 
 goto end
