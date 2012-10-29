@@ -8,6 +8,8 @@ from xnb_parse.type_reader import ReaderError
 from xnb_parse.binstream import BinaryWriter, BinaryReader
 
 
+WAVE_FORMAT_WMAUDIO2 = 0x161
+WAVE_FORMAT_WMAUDIO3 = 0x162
 WAVE_FORMAT_XMA2 = 0x166
 WAVE_FORMAT_EXTENSIBLE = 0xFFFE
 WAVE_FORMAT = {
@@ -130,7 +132,11 @@ class PyWavWriter(object):
         else:
             seek_size = None
         o_s = BinaryWriter()
-        self.write_header(o_s, 'WAVE', len(header_raw), len(self.data_raw), dpds_size, seek_size)
+        if self.h_format_tag == WAVE_FORMAT_WMAUDIO2 or self.h_format_tag == WAVE_FORMAT_WMAUDIO3:
+            riff_type = 'XWMA'
+        else:
+            riff_type = 'WAVE'
+        self.write_header(o_s, riff_type, len(header_raw), len(self.data_raw), dpds_size, seek_size)
         self.write_chunk(o_s, 'fmt ', header_raw)
         if self.dpds_raw:
             self.write_chunk(o_s, 'dpds', self.dpds_raw)
@@ -140,6 +146,8 @@ class PyWavWriter(object):
         wav_data = o_s.serial()
         if self.h_format_tag == WAVE_FORMAT_XMA2:
             full_filename = filename + '.xma'
+        elif self.h_format_tag == WAVE_FORMAT_WMAUDIO2 or self.h_format_tag == WAVE_FORMAT_WMAUDIO2:
+            full_filename = filename + '.xwma'
         else:
             full_filename = filename + '.wav'
         with open(full_filename, 'wb') as out_file:
