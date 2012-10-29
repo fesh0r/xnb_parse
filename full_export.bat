@@ -18,7 +18,7 @@ pause
 goto end
 
 :error
-echo BANG
+echo *** BANG ***
 exit /b 1
 
 :end
