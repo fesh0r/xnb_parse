@@ -146,10 +146,11 @@ class Texture2D(object):
         alpha = 'yes'
         if 'art objects' in filename or 'trile sets' in filename:
             alpha = 'no'
-            rows = self.surface_format.reader(self.mip_levels[0], self.width, self.height, self.needs_swap)
-            write_png(filename + '_alpha', self.width, self.height, rows, alpha='only')
-        rows = self.surface_format.reader(self.mip_levels[0], self.width, self.height, self.needs_swap)
-        write_png(filename, self.width, self.height, rows, alpha=alpha)
+            rows = self.surface_format.reader(self.mip_levels[0], self.width, self.height, self.needs_swap,
+                                              alpha='only')
+            write_png(filename + '_alpha', self.width, self.height, rows)
+        rows = self.surface_format.reader(self.mip_levels[0], self.width, self.height, self.needs_swap, alpha=alpha)
+        write_png(filename, self.width, self.height, rows)
 
 
 class Texture3D(object):

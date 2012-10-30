@@ -27,10 +27,7 @@ class PyPngWriter(object):
         self.planes = 4
         self.stride = self.width * self.planes
 
-    def write_bytearray(self, outfile, rows, alpha='yes'):
-        if alpha not in ('yes', 'no', 'only'):
-            raise ValueError("Invalid alpha parameter: '%s'", alpha)
-
+    def write_bytearray(self, outfile, rows):
         # http://www.w3.org/TR/PNG/#5PNG-file-signature
         outfile.write(PyPngWriter._SIGNATURE)
 
@@ -41,16 +38,9 @@ class PyPngWriter(object):
         # http://www.w3.org/TR/PNG/#11IDAT
         compressor = zlib.compressobj()
 
-        full_row_ff = [0xff] * self.width
         data = bytearray()
         for row in rows:
             data.append(0)
-            if alpha == 'no':
-                row[3::4] = full_row_ff
-            elif alpha == 'only':
-                row[0::4] = full_row_ff
-                row[1::4] = full_row_ff
-                row[2::4] = full_row_ff
             data.extend(row)
             if len(data) > self.chunk_limit:
                 compressed = compressor.compress(str(data))
@@ -80,8 +70,8 @@ class PyPngWriter(object):
         outfile.write(struct.pack("!I", checksum))
 
 
-def write_png(filename, width, height, rows, alpha='yes'):
+def write_png(filename, width, height, rows):
     full_filename = filename + '.png'
     out_png = PyPngWriter(width=width, height=height)
     with open(full_filename, 'wb') as out_handle:
-        out_png.write_bytearray(out_handle, rows, alpha)
+        out_png.write_bytearray(out_handle, rows)

@@ -7,29 +7,32 @@ import struct
 from xnb_parse.type_reader import ReaderError
 
 
-def decode_bgra(data, width, height, needs_swap):
+def decode_bgra(data, width, height, needs_swap, alpha='yes'):
     if needs_swap:
         conv = 'argb_rgba'
     else:
         conv = 'bgra_rgba'
-    return decode32(data, width, height, conv)
+    return decode32(data, width, height, conv, alpha=alpha)
 
 
-def decode_rgba(data, width, height, needs_swap):
+def decode_rgba(data, width, height, needs_swap, alpha='yes'):
     if needs_swap:
         conv = 'abgr_rgba'
     else:
         conv = 'rgba_rgba'
-    return decode32(data, width, height, conv)
+    return decode32(data, width, height, conv, alpha=alpha)
 
 
-def decode32(data, width, height, conv):
+def decode32(data, width, height, conv, alpha='yes'):
     if conv not in ('rgba_rgba', 'abgr_rgba', 'bgra_rgba', 'argb_rgba'):
         raise ReaderError("Unknown conversion: '%s'" % conv)
+    if alpha not in ('yes', 'no', 'only'):
+        raise ValueError("Invalid alpha parameter: '%s'", alpha)
     stride = width * 4
     expected_len = stride * height
     if len(data) != expected_len:
         raise ReaderError("Invalid data size: %d != %d", (len(data), expected_len))
+    full_row_ff = bytearray([0xff] * width)
     for pos in xrange(0, len(data), stride):
         row = bytearray(data[pos:pos + stride])
         if conv == 'bgra_rgba':
@@ -38,11 +41,17 @@ def decode32(data, width, height, conv):
             row[3::4], row[0::4], row[1::4], row[2::4] = row[0::4], row[1::4], row[2::4], row[3::4]
         elif conv == 'abgr_rgba':
             row[3::4], row[2::4], row[1::4], row[0::4] = row[0::4], row[1::4], row[2::4], row[3::4]
+        if alpha == 'no':
+            row[3::4] = full_row_ff
+        elif alpha == 'only':
+            row[0::4] = full_row_ff
+            row[1::4] = full_row_ff
+            row[2::4] = full_row_ff
         yield row
 
 
 #noinspection PyUnusedLocal
-def decode_a(data, width, height, needs_swap):  # pylint: disable-msg=W0613
+def decode_a(data, width, height, needs_swap, alpha='yes'):  # pylint: disable-msg=W0613
     return decode8(data, width, height, 'a_xxxa')
 
 
@@ -59,16 +68,16 @@ def decode8(data, width, height, conv):
         yield row
 
 
-def decode_dxt1(data, width, height, needs_swap):
-    return DxtDecoder(width, height, 'DXT1', data, needs_swap).decode()
+def decode_dxt1(data, width, height, needs_swap, alpha='yes'):
+    return DxtDecoder(width, height, 'DXT1', data, needs_swap).decode(alpha)
 
 
-def decode_dxt3(data, width, height, needs_swap):
-    return DxtDecoder(width, height, 'DXT3', data, needs_swap).decode()
+def decode_dxt3(data, width, height, needs_swap, alpha='yes'):
+    return DxtDecoder(width, height, 'DXT3', data, needs_swap).decode(alpha)
 
 
-def decode_dxt5(data, width, height, needs_swap):
-    return DxtDecoder(width, height, 'DXT5', data, needs_swap).decode()
+def decode_dxt5(data, width, height, needs_swap, alpha='yes'):
+    return DxtDecoder(width, height, 'DXT5', data, needs_swap).decode(alpha)
 
 
 class DxtDecoder(object):
@@ -99,8 +108,11 @@ class DxtDecoder(object):
         for cur_a in range(16):
             self.explicit_alphas.append(cur_a * 17)
 
-    def decode(self):
+    def decode(self, alpha='yes'):
+        if alpha not in ('yes', 'no', 'only'):
+            raise ValueError("Invalid alpha parameter: '%s'", alpha)
         source_offset = 0
+        full_row_ff = bytearray([0xff] * self.width)
         for _ in xrange(0, self.height, 4):
             for cur_x in xrange(0, self.width, 4):
                 if self.surface_format == 'DXT3':
@@ -112,6 +124,13 @@ class DxtDecoder(object):
                 else:
                     self.decode_rgb_block(source_offset, cur_x, dxt1=True)
                 source_offset += self.block_size
+            for row in self.out_rows:
+                if alpha == 'no':
+                    row[3::4] = full_row_ff
+                elif alpha == 'only':
+                    row[0::4] = full_row_ff
+                    row[1::4] = full_row_ff
+                    row[2::4] = full_row_ff
             yield self.out_rows[0]
             yield self.out_rows[1]
             yield self.out_rows[2]
