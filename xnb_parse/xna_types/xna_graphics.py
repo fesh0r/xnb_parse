@@ -152,6 +152,16 @@ class Texture2D(object):
         rows = self.surface_format.reader(self.mip_levels[0], self.width, self.height, self.needs_swap, alpha=alpha)
         write_png(filename, self.width, self.height, rows)
 
+    def full_data(self, alpha='yes'):
+        if not self.surface_format.reader:
+            raise ReaderError("No decoder found: '%s'" % self.surface_format)
+
+        rows = self.surface_format.reader(self.mip_levels[0], self.width, self.height, self.needs_swap, alpha=alpha)
+        data = bytearray()
+        for row in rows:
+            data.extend(row)
+        return data
+
 
 class Texture3D(object):
     def __init__(self, surface_format, width, height, depth, mip_levels, needs_swap=False):
