@@ -436,7 +436,7 @@ class BackgroundPlane(object):
         self.parallax_factor = parallax_factor
 
     def __str__(self):
-        return "BackgroundPlane t:%s" % self.texture_name
+        return "BackgroundPlane t:'%s'" % self.texture_name
 
     def xml(self):
         root = E.BackgroundPlane(textureName=self.texture_name, lightMap=str(self.light_map),

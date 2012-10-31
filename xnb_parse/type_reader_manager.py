@@ -18,20 +18,20 @@ class TypeReaderManager(object):
         for class_ in classes:
             if issubclass(class_, GenericTypeReader):
                 if class_.generic_reader_name in self.generic_type_readers:
-                    raise ReaderError("Duplicate generic type reader name: %s" % class_.generic_reader_name)
+                    raise ReaderError("Duplicate generic type reader name: '%s'" % class_.generic_reader_name)
                 self.generic_type_readers[class_.generic_reader_name] = class_
                 if class_.generic_target_type in self.generic_type_readers:
-                    raise ReaderError("Duplicate generic type reader type: %s" % class_.generic_target_type)
+                    raise ReaderError("Duplicate generic type reader type: '%s'" % class_.generic_target_type)
                 self.generic_type_readers_type[class_.generic_target_type] = class_
             elif issubclass(class_, BaseTypeReader):
                 if class_.reader_name in self.type_readers:
-                    raise ReaderError("Duplicate type reader name: %s" % class_.reader_name)
+                    raise ReaderError("Duplicate type reader name: '%s'" % class_.reader_name)
                 self.type_readers[class_.reader_name] = class_
                 if class_.target_type in self.type_readers_type:
-                    raise ReaderError("Duplicate type reader type: %s" % class_.target_type)
+                    raise ReaderError("Duplicate type reader type: '%s'" % class_.target_type)
                 self.type_readers_type[class_.target_type] = class_
             else:
-                raise ReaderError("Unknown base class for reader: %s" % str(class_))
+                raise ReaderError("Unknown base class for reader: '%s'" % str(class_))
 
     def get_type_reader(self, type_reader):
         try:
@@ -58,7 +58,7 @@ class TypeReaderManager(object):
                 self.type_readers_type[generic_type_reader_class.target_type] = generic_type_reader_class
                 return generic_type_reader_class
 
-        raise ReaderError("Type reader not found for '%s'" % type_spec.full_name)
+        raise ReaderError("Type reader not found: '%s'" % type_spec.full_name)
 
     def get_type_reader_by_type(self, type_reader):
         try:
@@ -85,7 +85,7 @@ class TypeReaderManager(object):
                 self.type_readers_type[generic_type_reader_class.target_type] = generic_type_reader_class
                 return generic_type_reader_class
 
-        raise ReaderError("Type reader not found for '%s'" % type_spec.full_name)
+        raise ReaderError("Type reader not found: '%s'" % type_spec.full_name)
 
 
 def _find_subclasses(pkgname, cls):

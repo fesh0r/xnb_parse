@@ -83,6 +83,8 @@ class XWB(object):
     _regions = ['BANKDATA', 'ENTRYMETADATA', 'SEEKTABLES', 'ENTRYNAMES', 'ENTRYWAVEDATA']
     _waveformatex = Struct('<H H I I H H H')
 
+    #noinspection PyUnusedLocal
+    # pylint: disable-msg=W0612
     def __init__(self, data):
         # check sig to find file endianess
         h_sig = data[:4]

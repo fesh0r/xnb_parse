@@ -57,7 +57,7 @@ class XNBReader(BinaryReader):
 
     def parse(self, verbose=False):
         if self.type_reader_manager is None:
-            raise ValueError('No type reader manager')
+            raise ValueError("No type reader manager")
         if self.content is not None:
             return self.content
 
@@ -69,7 +69,7 @@ class XNBReader(BinaryReader):
             self.type_readers.append(reader)
 
         if verbose:
-            print 'Type: %s' % str(self.type_readers[0])
+            print "Type: '%s'" % str(self.type_readers[0])
 
         for reader in self.type_readers:
             reader.init_reader()
@@ -77,20 +77,20 @@ class XNBReader(BinaryReader):
         shared_count = self.read_7bit_encoded_int()
 
         if shared_count:
-            raise ReaderError('Shared resources present')
+            raise ReaderError("Shared resources present")
 
         self.content = self.read_object(self.expected_type_reader)
         if verbose:
-            print 'Asset: %s' % str(self.content)
+            print "Asset: '%s'" % str(self.content)
 
         for i in range(shared_count):
             obj = self.read_object()
             self.shared_objects.append(obj)
             if verbose:
-                print 'Shared resource %d: %s' % (i, str(obj))
+                print "Shared resource %d: '%s'" % (i, str(obj))
 
         if self.remaining():
-            raise ReaderError('remaining: %d' % self.remaining())
+            raise ReaderError("remaining: %d" % self.remaining())
         del self.data
         return self.content
 
@@ -107,19 +107,19 @@ class XNBReader(BinaryReader):
         stream = BinaryReader(data, big_endian=False)
         (sig, platform, version, attribs, size) = stream.unpack(cls._header)
         if sig != XNB_SIGNATURE:
-            raise ValueError('bad sig: %s' % repr(sig))
+            raise ValueError("bad sig: '%s'" % repr(sig))
         if platform not in cls.platforms:
-            raise ValueError('bad platform: %s' % repr(platform))
+            raise ValueError("bad platform: '%s'" % repr(platform))
         if version not in cls.versions:
-            raise ValueError('bad version: %s' % repr(version))
+            raise ValueError("bad version: %d" % version)
         if len(data) != size:
-            raise ValueError('bad size: %d != %d' % (len(data), size))
+            raise ValueError("bad size: %d != %d" % (len(data), size))
         compressed = False
         profile = 0
         if version >= VERSION_40:
             profile = attribs & cls._profile_mask
             if profile not in cls.profiles:
-                raise ValueError('bad profile: %s' % repr(profile))
+                raise ValueError("bad profile: %d" % profile)
         if version >= VERSION_30:
             compressed = bool(attribs & cls._compress_mask)
             size -= stream.calc_size(cls._header)
@@ -134,15 +134,15 @@ class XNBReader(BinaryReader):
 
     def save(self, compress=False):
         if not hasattr(self, 'data'):
-            raise ValueError('XNB data deleted')
+            raise ValueError("XNB data deleted")
         if self.file_platform not in self.platforms:
-            raise ValueError('bad platform: %s' % repr(self.file_platform))
+            raise ValueError("bad platform: '%s'" % repr(self.file_platform))
         if self.file_version not in self.versions:
-            raise ValueError('bad version: %s' % repr(self.file_version))
+            raise ValueError('bad version: %d' % self.file_version)
         attribs = 0
         if self.file_version >= VERSION_40:
             if self.graphics_profile not in self.profiles:
-                raise ValueError('bad profile: %s' % repr(self.graphics_profile))
+                raise ValueError("bad profile: %d" % self.graphics_profile)
             attribs |= self.graphics_profile & self._profile_mask
         do_compress = False
         if self.file_version >= VERSION_30:
@@ -151,7 +151,7 @@ class XNBReader(BinaryReader):
                 attribs |= self._compress_mask
         stream = BinaryWriter(big_endian=False)
         if do_compress:
-            raise ValueError('Recompression not supported')
+            raise ValueError("Recompression not supported")
         else:
             data = self.data
             size = len(data) + stream.calc_size(self._header)
@@ -172,9 +172,9 @@ class XNBReader(BinaryReader):
                 else:
                     expected_type = expected_type_reader.target_type
             except AttributeError:
-                raise ReaderError("bad expected_type_reader: %s" % expected_type_reader)
+                raise ReaderError("bad expected_type_reader: '%s'" % expected_type_reader)
             if type_reader.target_type != expected_type:
-                raise ReaderError("Unexpected type: %s != %s" % (type_reader.target_type, expected_type))
+                raise ReaderError("Unexpected type: '%s' != '%s'" % (type_reader.target_type, expected_type))
         return type_reader.read()
 
     def read_value_or_object(self, type_reader):
@@ -194,9 +194,9 @@ class XNBReader(BinaryReader):
 
     def export(self, filename):
         if not hasattr(self, 'content'):
-            raise ValueError('XNB content deleted')
+            raise ValueError("XNB content deleted")
         if self.content is None:
-            raise ValueError('XNB content not parsed')
+            raise ValueError("XNB content not parsed")
         if hasattr(self.content, 'export'):
             filename = os.path.normpath(filename)
             dirname = os.path.dirname(filename)

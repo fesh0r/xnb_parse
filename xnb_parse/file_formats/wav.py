@@ -29,6 +29,7 @@ class PyWavWriter(object):
     _waveformat_xma2 = 'H I I I I I I I B B H'
     _waveformat_extensible = 'H I 16s'
 
+    #noinspection PyUnusedLocal
     def __init__(self, header, data, dpds=None, seek=None, needs_swap=False):
         self.header_raw = header
         self.data_raw = data
@@ -42,7 +43,7 @@ class PyWavWriter(object):
          self.h_bits_per_sample) = h_s.unpack(self._waveformatex)
         header_size = waveformatex_size
 
-        # do we have an WAVEFORMATEX
+        # do we have a WAVEFORMATEX
         self.h_size = None
         if len(self.header_raw) >= waveformatex_size + 2:
             self.h_size = h_s.read_uint16()

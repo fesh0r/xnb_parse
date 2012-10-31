@@ -7,7 +7,7 @@ import sys
 import pyglet
 from pyglet.gl import *  # pylint: disable-msg=W0614,W0401
 
-from xnb_parse.trackball_camera import TrackballCamera, norm1, vec
+from xnb_parse.trackball_camera import TrackballCamera, norm1, vec_args
 from xnb_parse.type_reader import ReaderError
 from xnb_parse.xnb_reader import XNBReader
 from xnb_parse.type_reader_manager import TypeReaderManager
@@ -20,16 +20,18 @@ NORMALS = [Vector3(-1., 0., 0.), Vector3(0., -1., 0.), Vector3(0., 0., -1.),
            Vector3(1., 0., 0.), Vector3(0., 1., 0.), Vector3(0., 0., 1.)]
 
 
+#noinspection PyMethodOverriding
 class AOWindow(pyglet.window.Window):  # pylint: disable-msg=W0223
     wireframe = False
     lighting = True
     culling = False
 
-    def __init__(self, filename, width=1000, height=750, config=None):
-        super(AOWindow, self).__init__(width=width, height=height, resizable=True, config=config)
-        self.tbcam = TrackballCamera()
-        self.art_object = AO(filename)
+    def __init__(self, filename, width=1000, height=750, config=None):  # pylint: disable-msg=W0231
+        #noinspection PyCallByClass,PyTypeChecker
+        pyglet.window.Window.__init__(self, width=width, height=height, resizable=True, config=config)
         self.gl_setup()
+        self.art_object = AO(filename)
+        self.tbcam = TrackballCamera()
         self.fps_display = pyglet.clock.ClockDisplay(color=(0.5, 0.5, 0.5, 1.0))
 
     @staticmethod
@@ -50,9 +52,9 @@ class AOWindow(pyglet.window.Window):  # pylint: disable-msg=W0223
         glDisable(GL_LIGHTING)
 
         glEnable(GL_LIGHT0)
-        glLightfv(GL_LIGHT0, GL_POSITION, vec(0.5, 0.5, 10.0, 1.0))
-        glLightfv(GL_LIGHT0, GL_AMBIENT, vec(0.5, 0.5, 0.5, 1.0))
-        glLightfv(GL_LIGHT0, GL_DIFFUSE, vec(1.0, 1.0, 1.0, 1.0))
+        glLightfv(GL_LIGHT0, GL_POSITION, vec_args(0.5, 0.5, 10.0, 1.0))
+        glLightfv(GL_LIGHT0, GL_AMBIENT, vec_args(0.5, 0.5, 0.5, 1.0))
+        glLightfv(GL_LIGHT0, GL_DIFFUSE, vec_args(1.0, 1.0, 1.0, 1.0))
 
     def on_resize(self, width, height):
         # Override the default on_resize handler to create a 3D projection
@@ -64,7 +66,7 @@ class AOWindow(pyglet.window.Window):  # pylint: disable-msg=W0223
         glMatrixMode(GL_MODELVIEW)
         return pyglet.event.EVENT_HANDLED
 
-    def on_draw(self):
+    def on_draw(self):  # pylint: disable-msg=W0221
         self.clear()
 
         if self.culling:
@@ -88,6 +90,7 @@ class AOWindow(pyglet.window.Window):  # pylint: disable-msg=W0223
         glDisable(GL_CULL_FACE)
         glDisable(GL_LIGHTING)
 
+    #noinspection PyUnusedLocal
     def on_key_press(self, symbol, modifiers):
         if symbol == pyglet.window.key.W:
             self.wireframe = not self.wireframe
@@ -98,7 +101,8 @@ class AOWindow(pyglet.window.Window):  # pylint: disable-msg=W0223
         elif symbol == pyglet.window.key.ESCAPE:
             self.dispatch_event('on_close')
 
-    def on_mouse_press(self, x, y, button, modifiers):
+    #noinspection PyUnresolvedReferences,PyUnusedLocal
+    def on_mouse_press(self, x, y, button, modifiers):  # pylint: disable-msg=W0221,C0103
         if button == pyglet.window.mouse.LEFT:
             self.tbcam.mouse_roll(
                 norm1(x, self.width),
@@ -110,7 +114,8 @@ class AOWindow(pyglet.window.Window):  # pylint: disable-msg=W0223
                 norm1(y, self.height),
                 False)
 
-    def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
+    #noinspection PyUnresolvedReferences,PyUnusedLocal
+    def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):  # pylint: disable-msg=W0221,C0103
         if buttons & pyglet.window.mouse.LEFT:
             self.tbcam.mouse_roll(
                 norm1(x, self.width),
@@ -122,6 +127,7 @@ class AOWindow(pyglet.window.Window):  # pylint: disable-msg=W0223
 
 
 class AO(object):
+    #noinspection PyUnresolvedReferences
     def __init__(self, ao_filename):
         type_reader_manager = TypeReaderManager()
         ao_filename = os.path.normpath(ao_filename)
@@ -154,7 +160,7 @@ class AO(object):
         glEnable(self.texture.target)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
-        glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, vec(0.6, 0.6, 0.6, 1.0))
+        glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, vec_args(0.6, 0.6, 0.6, 1.0))
 
     def draw(self):
         glBindTexture(self.texture.target, self.texture.id)

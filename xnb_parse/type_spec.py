@@ -187,7 +187,7 @@ class TypeSpec(object):
                             if name[pos] == ',':
                                 pos += 1
                             else:
-                                raise TypeSpecError("Invalid generic arguments separator '%s'" % name[pos])
+                                raise TypeSpecError("Invalid generic arguments separator: '%s'" % name[pos])
                         if pos >= len(name) or name[pos] != ']':
                             raise TypeSpecError("Error parsing generic params spec")
                         data.generic_params = args
@@ -201,7 +201,7 @@ class TypeSpec(object):
                                     raise TypeSpecError("Array spec cannot have 2 bound dimensions")
                                 bound = True
                             elif name[pos] != ',':
-                                raise TypeSpecError("Invalid character in array spec '%s'" % name[pos])
+                                raise TypeSpecError("Invalid character in array spec: '%s'" % name[pos])
                             else:
                                 dimensions += 1
                             pos += 1

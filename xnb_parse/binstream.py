@@ -281,7 +281,7 @@ class ByteSwapper(object):
                     cur_type = typecode
                     break
             if cur_type is None:
-                raise ValueError("array typecode not found for %d bytes" % size)
+                raise ValueError("array typecode not found for size: %d" % size)
             self.size_types[size] = cur_type
 
     def swap(self, swap_size, data):

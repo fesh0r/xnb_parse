@@ -14,7 +14,7 @@ _DLL_NAME = 'XnaNative.dll'
 
 def _find_native():
     if not sys.platform == 'win32' or not platform.architecture()[0] == '32bit':
-        raise IOError('win32 required for decompression')
+        raise IOError("win32 required for decompression")
     import _winreg
 
     native_path = None
@@ -30,7 +30,7 @@ def _find_native():
         except WindowsError:
             pass
     if native_path is None:
-        raise IOError('XnaNative.dll not found')
+        raise IOError("%s not found" % _DLL_NAME)
     return native_path
 
 
@@ -38,7 +38,7 @@ def decompress(in_buf, out_size):
     dll = ctypes.CDLL(_find_native())
     ctx = dll.CreateDecompressionContext()
     if ctx is None:
-        raise IOError('CreateDecompressionContext failed')
+        raise IOError("CreateDecompressionContext failed")
 
     in_size = len(in_buf)
     compressed_position = 0
@@ -61,9 +61,9 @@ def decompress(in_buf, out_size):
         r_decompressed_size = int(s_decompressed_size.value)
 
         if err:
-            raise IOError('Decompress failed: %d' % err)
+            raise IOError("Decompress failed: %d" % err)
         if r_compressed_size == 0 and r_decompressed_size == 0:
-            raise IOError('Decompress failed')
+            raise IOError("Decompress failed")
 
         compressed_position += r_compressed_size
         decompressed_position += r_decompressed_size

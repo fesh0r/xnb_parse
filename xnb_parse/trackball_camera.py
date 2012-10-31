@@ -88,134 +88,135 @@ from pyglet.gl import *  # pylint: disable-msg=W0614,W0401
 
 # a little vector library that is misused in odd ways below.
 
-def v3add(src1, src2):
-    return [src1[0] + src2[0],
-            src1[1] + src2[1],
-            src1[2] + src2[2]]
+def v3add(vec1, vec2):
+    return [vec1[0] + vec2[0],
+            vec1[1] + vec2[1],
+            vec1[2] + vec2[2]]
 
 
-def v3sub(src1, src2):
-    return [src1[0] - src2[0],
-            src1[1] - src2[1],
-            src1[2] - src2[2]]
+def v3sub(vec1, vec2):
+    return [vec1[0] - vec2[0],
+            vec1[1] - vec2[1],
+            vec1[2] - vec2[2]]
 
 
-def v3scale(v, scale):
-    return [v[0] * scale,
-            v[1] * scale,
-            v[2] * scale]
+def v3scale(vec, scale):
+    return [vec[0] * scale,
+            vec[1] * scale,
+            vec[2] * scale]
 
 
-def v3dot(v1, v2):
-    return v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2]
+def v3dot(vec1, vec2):
+    return vec1[0] * vec2[0] + vec1[1] * vec2[1] + vec1[2] * vec2[2]
 
 
-def v3cross(v1, v2):
-    return [v1[1] * v2[2] - v1[2] * v2[1],
-            v1[2] * v2[0] - v1[0] * v2[2],
-            v1[0] * v2[1] - v1[1] * v2[0]]
+def v3cross(vec1, vec2):
+    return [vec1[1] * vec2[2] - vec1[2] * vec2[1],
+            vec1[2] * vec2[0] - vec1[0] * vec2[2],
+            vec1[0] * vec2[1] - vec1[1] * vec2[0]]
 
 
-def v3length(v):
-    return math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2])
+def v3length(vec):
+    return math.sqrt(vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2])
 
 
-def v3normalize(v):
+def v3normalize(vec):
     try:
-        tmp = v3scale(v, 1.0 / v3length(v))
-        return tmp
+        return v3scale(vec, 1.0 / v3length(vec))
     except ZeroDivisionError:
-        return v
+        return vec
 
 
 # Some quaternion routines
 
-def q_add(q1, q2):
+def q_add(quat1, quat2):
     """Given two quaternions, add them together to get a third quaternion.
     Adding quaternions to get a compound rotation is analagous to adding
     translations to get a compound translation.  When incrementally
     adding rotations, the first argument here should be the new rotation.
     """
-    t1 = v3scale(q1, q2[3])
-    t2 = v3scale(q2, q1[3])
-    t3 = v3cross(q2, q1)
+    t1 = v3scale(quat1, quat2[3])
+    t2 = v3scale(quat2, quat1[3])
+    t3 = v3cross(quat2, quat1)
     tf = v3add(t1, t2)
     tf = v3add(t3, tf)
-    tf.append(q1[3] * q2[3] - v3dot(q1, q2))
+    tf.append(quat1[3] * quat2[3] - v3dot(quat1, quat2))
     return tf
 
 
-def q_from_axis_angle(a, phi):
-    # a is a 3-vector, q is a 4-vector
+def q_from_axis_angle(axis, phi):
+    # axis is a 3-vector, quat is a 4-vector
     """Computes a quaternion based on an axis (defined by the given vector)
     and an angle about which to rotate.  The angle is expressed in radians.
     """
-    q = v3normalize(a)
-    q = v3scale(q, math.sin(phi / 2.0))
-    q.append(math.cos(phi / 2.0))
-    return q
+    quat = v3normalize(axis)
+    quat = v3scale(quat, math.sin(phi / 2.0))
+    quat.append(math.cos(phi / 2.0))
+    return quat
 
 
-def q_normalize(q):
+def q_normalize(quat):
     """Return a normalized quaternion"""
-    mag = q[0] * q[0] + q[1] * q[1] + q[2] * q[2] + q[3] * q[3]
+    mag = quat[0] * quat[0] + quat[1] * quat[1] + quat[2] * quat[2] + quat[3] * quat[3]
     if mag != 0:
         for i in range(4):
-            q[i] /= mag
-    return q
+            quat[i] /= mag
+    return quat
 
 
-def q_matrix(q):
-    """return the rotation matrix based on q"""
-    m = [0.0] * 16
-    m[0 * 4 + 0] = 1.0 - 2.0 * (q[1] * q[1] + q[2] * q[2])
-    m[0 * 4 + 1] = 2.0 * (q[0] * q[1] - q[2] * q[3])
-    m[0 * 4 + 2] = 2.0 * (q[2] * q[0] + q[1] * q[3])
-    m[0 * 4 + 3] = 0.0
+def q_matrix(quat):
+    """return the rotation matrix based on quat"""
+    mat = [0.0] * 16
+    mat[0 * 4 + 0] = 1.0 - 2.0 * (quat[1] * quat[1] + quat[2] * quat[2])
+    mat[0 * 4 + 1] = 2.0 * (quat[0] * quat[1] - quat[2] * quat[3])
+    mat[0 * 4 + 2] = 2.0 * (quat[2] * quat[0] + quat[1] * quat[3])
+    mat[0 * 4 + 3] = 0.0
 
-    m[1 * 4 + 0] = 2.0 * (q[0] * q[1] + q[2] * q[3])
-    m[1 * 4 + 1] = 1.0 - 2.0 * (q[2] * q[2] + q[0] * q[0])
-    m[1 * 4 + 2] = 2.0 * (q[1] * q[2] - q[0] * q[3])
-    m[1 * 4 + 3] = 0.0
+    mat[1 * 4 + 0] = 2.0 * (quat[0] * quat[1] + quat[2] * quat[3])
+    mat[1 * 4 + 1] = 1.0 - 2.0 * (quat[2] * quat[2] + quat[0] * quat[0])
+    mat[1 * 4 + 2] = 2.0 * (quat[1] * quat[2] - quat[0] * quat[3])
+    mat[1 * 4 + 3] = 0.0
 
-    m[2 * 4 + 0] = 2.0 * (q[2] * q[0] - q[1] * q[3])
-    m[2 * 4 + 1] = 2.0 * (q[1] * q[2] + q[0] * q[3])
-    m[2 * 4 + 2] = 1.0 - 2.0 * (q[1] * q[1] + q[0] * q[0])
-    m[2 * 4 + 3] = 0.0
+    mat[2 * 4 + 0] = 2.0 * (quat[2] * quat[0] - quat[1] * quat[3])
+    mat[2 * 4 + 1] = 2.0 * (quat[1] * quat[2] + quat[0] * quat[3])
+    mat[2 * 4 + 2] = 1.0 - 2.0 * (quat[1] * quat[1] + quat[0] * quat[0])
+    mat[2 * 4 + 3] = 0.0
 
-    m[3 * 4 + 0] = 0.0
-    m[3 * 4 + 1] = 0.0
-    m[3 * 4 + 2] = 0.0
-    m[3 * 4 + 3] = 1.0
-    return m
+    mat[3 * 4 + 0] = 0.0
+    mat[3 * 4 + 1] = 0.0
+    mat[3 * 4 + 2] = 0.0
+    mat[3 * 4 + 3] = 1.0
+    return mat
 
 
-def project_z(r, x, y):
-    """Project an x,y pair onto a sphere of radius r OR a hyperbolic sheet
+def project_z(rad, x_c, y_c):
+    """Project an x_c,y_c pair onto a sphere of radius rad OR a hyperbolic sheet
     if we are away from the center of the sphere.
     """
-    d = math.sqrt(x * x + y * y)
-    if d < r * (math.sqrt(2) / 2):    # Inside sphere
-        z = math.sqrt(r * r - d * d)
-    else:                                   # On hyperbola
-        t = r / math.sqrt(2)
-        z = t * t / d
-    return z
+    dist = math.sqrt(x_c * x_c + y_c * y_c)
+    if dist < rad * (math.sqrt(2) / 2):  # Inside sphere
+        z_c = math.sqrt(rad * rad - dist * dist)
+    else:                                # On hyperbola
+        t = rad / math.sqrt(2)
+        z_c = t * t / dist
+    return z_c
 
 
-def vec(*args):
+def vec_args(*args):
     """GLfloat vector of args"""
+    #noinspection PyCallingNonCallable,PyTypeChecker
     return (GLfloat * len(args))(*args)
 
 
 def vec_mat(mat):
     """GLfloat vector of matrix"""
-    return (GLfloat * len(mat))(*mat)
+    #noinspection PyCallingNonCallable,PyTypeChecker
+    return (GLfloat * len(mat))(*mat)  # pylint: disable-msg=W0142
 
 
-def norm1(x, maxx):
+def norm1(val, max_val):
     """given x within [0, maxx], scale to a range [-1, 1]."""
-    return (2.0 * x - float(maxx)) / float(maxx)
+    return (2.0 * val - float(max_val)) / float(max_val)
 
 
 class TrackballCamera(object):
@@ -234,14 +235,14 @@ class TrackballCamera(object):
         self.cam_focus = [0., 0., 0.]
         self.cam_up = [0., 1., 0.]
         # in add_quat routine, renormalize "sometimes"
-        self.RENORMCOUNT = 97
+        self.renorm_count = 97
         self.count = 0
         # Trackballsize should really be based on the distance from the center of
         # rotation to the point on the object underneath the mouse.  That
         # point would then track the mouse as closely as possible.  This is a
         # simple example, though, so that is left as an Exercise for the
         # Programmer.
-        self.TRACKBALLSIZE = 1.0
+        self.trackball_size = 1.0
 
     def mouse_roll(self, norm_mouse_x, norm_mouse_y, dragging=True):
         """When you click or drag the primary mouse button, scale the mouse
@@ -254,7 +255,7 @@ class TrackballCamera(object):
             norm_mouse_quat = self._rotate(norm_mouse_x, norm_mouse_y)
             self.rot_quat = q_add(norm_mouse_quat, self.rot_quat)
             self.count += 1
-            if self.count > self.RENORMCOUNT:
+            if self.count > self.renorm_count:
                 self.rot_quat = q_normalize(self.rot_quat)
                 self.count = 0
             self.update_modelview()
@@ -269,10 +270,10 @@ class TrackballCamera(object):
         The initial click should set dragging to False.
         """
         if self.last_x:
-            dx = norm_mouse_x - self.last_x
-            dy = norm_mouse_y - self.last_y
-            norm_mouse_r_delta = 20.0 * math.sqrt(dx * dx + dy * dy)
-            if dy > 0.0:
+            d_x = norm_mouse_x - self.last_x
+            d_y = norm_mouse_y - self.last_y
+            norm_mouse_r_delta = 20.0 * math.sqrt(d_x * d_x + d_y * d_y)
+            if d_y > 0.0:
                 norm_mouse_r_delta = -norm_mouse_r_delta
             if dragging:
                 self.cam_eye[2] += norm_mouse_r_delta
@@ -295,15 +296,12 @@ class TrackballCamera(object):
             self.cam_up = cam_up
         glMatrixMode(GL_MODELVIEW)
         glLoadIdentity()
-        gluLookAt(
-            self.cam_eye[0], self.cam_eye[1], self.cam_eye[2],
-            self.cam_focus[0], self.cam_focus[1], self.cam_focus[2],
-            self.cam_up[0], self.cam_up[1], self.cam_up[2]
-        )
+        gluLookAt(self.cam_eye[0], self.cam_eye[1], self.cam_eye[2],
+                  self.cam_focus[0], self.cam_focus[1], self.cam_focus[2],
+                  self.cam_up[0], self.cam_up[1], self.cam_up[2])
         # rotate this view by the current orientation
-        m = self._matrix()
-#        mm = (GLfloat * len(m))(*m)  # FIXME there is prob a better way...
-        glMultMatrixf(vec_mat(m))
+        mat = self._matrix()
+        glMultMatrixf(vec_mat(mat))
 
     def _matrix(self):
         """return the rotation matrix for the trackball"""
@@ -330,20 +328,20 @@ class TrackballCamera(object):
         # First, figure out z-coordinates for projection of P1 and P2 to
         # deformed sphere
         #
-        last = [self.last_x, self.last_y, project_z(self.TRACKBALLSIZE, self.last_x, self.last_y)]
-        new = [norm_mouse_x, norm_mouse_y, project_z(self.TRACKBALLSIZE, norm_mouse_x, norm_mouse_y)]
+        last = [self.last_x, self.last_y, project_z(self.trackball_size, self.last_x, self.last_y)]
+        new = [norm_mouse_x, norm_mouse_y, project_z(self.trackball_size, norm_mouse_x, norm_mouse_y)]
 
         #
         # Now, we want the cross product of LAST and NEW
         # aka the axis of rotation
         #
-        a = v3cross(new, last)
+        axis = v3cross(new, last)
 
         #
         # Figure out how much to rotate around that axis (phi)
         #
-        d = v3sub(last, new)
-        t = v3length(d) / (2.0 * self.TRACKBALLSIZE)
+        diff = v3sub(last, new)
+        t = v3length(diff) / (2.0 * self.trackball_size)
         # Avoid problems with out-of-control values...
         if t > 1.0:
             t = 1.0
@@ -351,4 +349,4 @@ class TrackballCamera(object):
             t = -1.0
         phi = 2.0 * math.asin(t)
 
-        return q_from_axis_angle(a, phi)
+        return q_from_axis_angle(axis, phi)
