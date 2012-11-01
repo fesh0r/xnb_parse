@@ -25,6 +25,7 @@ class AOWindow(pyglet.window.Window):  # pylint: disable-msg=W0223
     wireframe = False
     lighting = True
     culling = False
+    texturing = True
 
     def __init__(self, filename, width=1000, height=750, config=None):  # pylint: disable-msg=W0231
         #noinspection PyCallByClass,PyTypeChecker
@@ -76,17 +77,17 @@ class AOWindow(pyglet.window.Window):  # pylint: disable-msg=W0223
         if self.wireframe:
             glEnable(GL_POLYGON_OFFSET_FILL)
             glColor3f(1.0, 1.0, 1.0)
-            self.art_object.draw()
+            self.art_object.draw(self.texturing)
             glDisable(GL_POLYGON_OFFSET_FILL)
 
             glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
             glColor3f(0.0, 0.0, 0.0)
             glDisable(GL_LIGHTING)
-            self.art_object.draw()
+            self.art_object.draw(False)
             glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
         else:
             glColor3f(1.0, 1.0, 1.0)
-            self.art_object.draw()
+            self.art_object.draw(self.texturing)
         glDisable(GL_CULL_FACE)
         glDisable(GL_LIGHTING)
 
@@ -98,6 +99,8 @@ class AOWindow(pyglet.window.Window):  # pylint: disable-msg=W0223
             self.lighting = not self.lighting
         elif symbol == pyglet.window.key.C:
             self.culling = not self.culling
+        elif symbol == pyglet.window.key.T:
+            self.texturing = not self.texturing
         elif symbol == pyglet.window.key.ESCAPE:
             self.dispatch_event('on_close')
 
@@ -157,14 +160,17 @@ class AO(object):
                                                        ('n3f', normals),
                                                        ('t2f', texture_coords))
 
-        glEnable(self.texture.target)
+        glDisable(self.texture.target)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
         glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, vec_args(0.6, 0.6, 0.6, 1.0))
 
-    def draw(self):
-        glBindTexture(self.texture.target, self.texture.id)
+    def draw(self, texturing=True):
+        if texturing:
+            glEnable(self.texture.target)
+            glBindTexture(self.texture.target, self.texture.id)
         self.vli.draw(pyglet.gl.GL_TRIANGLES)
+        glDisable(self.texture.target)
 
 
 def read_xnb(filename, expected_type=None, type_reader_manager=None):
