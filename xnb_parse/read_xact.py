@@ -11,7 +11,7 @@ from xnb_parse.xact.xwb import XWB
 
 def read_xact(in_file, out_dir=None):
     in_file = os.path.normpath(in_file)
-    print "'%s'" % in_file
+    print in_file
     with open(in_file, 'rb') as in_handle:
         in_data = in_handle.read()
     xwb = XWB(in_data)

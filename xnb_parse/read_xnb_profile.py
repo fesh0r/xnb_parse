@@ -14,7 +14,7 @@ from xnb_parse.type_reader_manager import TypeReaderManager
 def read_xnb(in_file, type_reader_manager=None):
     heapy = hpy()
     in_file = os.path.normpath(in_file)
-    print "'%s'" % in_file
+    print in_file
     with open(in_file, 'rb') as in_handle:
         in_data = in_handle.read()
     heapy.setrelheap()

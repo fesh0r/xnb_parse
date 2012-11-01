@@ -20,7 +20,7 @@ def read_xnb(in_dir, out_dir):
             if not os.path.isdir(os.path.dirname(out_file)):
                 os.makedirs(os.path.dirname(out_file))
 
-            print "'%s'" % out_file
+            print in_file
             with open(in_file, 'rb') as in_handle:
                 in_data = in_handle.read()
             xnb = XNBReader.load(in_data, parse=False)

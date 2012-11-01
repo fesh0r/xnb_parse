@@ -20,11 +20,11 @@ def read_xnb_dir(in_dir, out_dir=None, type_reader_manager=None):
         sub_dir = os.path.relpath(path, in_dir)
         for cur_file in fnmatch.filter(filelist, '*.xnb'):
             short_name = os.path.join(sub_dir, cur_file)
-            in_file = os.path.join(in_dir, short_name)
+            in_file = os.path.normpath(os.path.join(in_dir, short_name))
             out_file = None
             if out_dir is not None:
-                out_file = os.path.join(out_dir, short_name).replace('.xnb', '')
-            print "'%s'" % short_name
+                out_file = os.path.normpath(os.path.join(out_dir, short_name).replace('.xnb', ''))
+            print in_file
             with open(in_file, 'rb') as in_handle:
                 in_data = in_handle.read()
             xnb = XNBReader.load(in_data, type_reader_manager, parse=False)
