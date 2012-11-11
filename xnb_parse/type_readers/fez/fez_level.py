@@ -24,8 +24,8 @@ from xnb_parse.xna_types.fez.fez_level import (MapTree, MapNode, MapNodeConnecti
 
 
 class MapTreeReader(BaseTypeReader, TypeReaderPlugin):
-    target_type = u'FezEngine.Structure.MapTree'
-    reader_name = u'FezEngine.Readers.MapTreeReader'
+    target_type = 'FezEngine.Structure.MapTree'
+    reader_name = 'FezEngine.Readers.MapTreeReader'
 
     def read(self):
         root = self.stream.read_object(MapNodeReader)
@@ -33,8 +33,8 @@ class MapTreeReader(BaseTypeReader, TypeReaderPlugin):
 
 
 class MapNodeReader(BaseTypeReader, TypeReaderPlugin):
-    target_type = u'FezEngine.Structure.MapNode'
-    reader_name = u'FezEngine.Readers.MapNodeReader'
+    target_type = 'FezEngine.Structure.MapNode'
+    reader_name = 'FezEngine.Readers.MapNodeReader'
 
     def read(self):
         level_name = self.stream.read_string()
@@ -47,8 +47,8 @@ class MapNodeReader(BaseTypeReader, TypeReaderPlugin):
 
 
 class MapNodeConnectionReader(BaseTypeReader, TypeReaderPlugin):
-    target_type = u'FezEngine.Structure.MapNode+Connection'
-    reader_name = u'FezEngine.Readers.MapNodeConnectionReader'
+    target_type = 'FezEngine.Structure.MapNode+Connection'
+    reader_name = 'FezEngine.Readers.MapNodeConnectionReader'
 
     def read(self):
         face = self.stream.read_object(FaceOrientationReader)
@@ -58,8 +58,8 @@ class MapNodeConnectionReader(BaseTypeReader, TypeReaderPlugin):
 
 
 class WinConditionsReader(BaseTypeReader, TypeReaderPlugin):
-    target_type = u'FezEngine.Structure.WinConditions'
-    reader_name = u'FezEngine.Readers.WinConditionsReader'
+    target_type = 'FezEngine.Structure.WinConditions'
+    reader_name = 'FezEngine.Readers.WinConditionsReader'
 
     def read(self):
         chest_count = self.stream.read_int32()
@@ -75,8 +75,8 @@ class WinConditionsReader(BaseTypeReader, TypeReaderPlugin):
 
 
 class SkyReader(BaseTypeReader, TypeReaderPlugin):
-    target_type = u'FezEngine.Structure.Sky'
-    reader_name = u'FezEngine.Readers.SkyReader'
+    target_type = 'FezEngine.Structure.Sky'
+    reader_name = 'FezEngine.Readers.SkyReader'
 
     def read(self):
         name = self.stream.read_string()
@@ -112,8 +112,8 @@ class SkyReader(BaseTypeReader, TypeReaderPlugin):
 
 
 class SkyLayerReader(BaseTypeReader, TypeReaderPlugin):
-    target_type = u'FezEngine.Structure.SkyLayer'
-    reader_name = u'FezEngine.Readers.SkyLayerReader'
+    target_type = 'FezEngine.Structure.SkyLayer'
+    reader_name = 'FezEngine.Readers.SkyLayerReader'
 
     def read(self):
         name = self.stream.read_string()
@@ -124,8 +124,8 @@ class SkyLayerReader(BaseTypeReader, TypeReaderPlugin):
 
 
 class TrileSetReader(BaseTypeReader, TypeReaderPlugin):
-    target_type = u'FezEngine.Structure.TrileSet'
-    reader_name = u'FezEngine.Readers.TrileSetReader'
+    target_type = 'FezEngine.Structure.TrileSet'
+    reader_name = 'FezEngine.Readers.TrileSetReader'
 
     def read(self):
         name = self.stream.read_string()
@@ -135,8 +135,8 @@ class TrileSetReader(BaseTypeReader, TypeReaderPlugin):
 
 
 class TrileReader(BaseTypeReader, TypeReaderPlugin):
-    target_type = u'FezEngine.Structure.Trile'
-    reader_name = u'FezEngine.Readers.TrileReader'
+    target_type = 'FezEngine.Structure.Trile'
+    reader_name = 'FezEngine.Readers.TrileReader'
 
     def read(self):
         name = self.stream.read_string()
@@ -159,8 +159,8 @@ class TrileReader(BaseTypeReader, TypeReaderPlugin):
 
 
 class LevelReader(BaseTypeReader, TypeReaderPlugin):
-    target_type = u'FezEngine.Structure.Level'
-    reader_name = u'FezEngine.Readers.LevelReader'
+    target_type = 'FezEngine.Structure.Level'
+    reader_name = 'FezEngine.Readers.LevelReader'
 
     def read(self):
         name = self.stream.read_object(StringReader)
@@ -205,8 +205,8 @@ class LevelReader(BaseTypeReader, TypeReaderPlugin):
 
 
 class VolumeReader(BaseTypeReader, TypeReaderPlugin):
-    target_type = u'FezEngine.Structure.Volume'
-    reader_name = u'FezEngine.Readers.VolumeReader'
+    target_type = 'FezEngine.Structure.Volume'
+    reader_name = 'FezEngine.Readers.VolumeReader'
 
     def read(self):
         orientations = self.stream.read_object(ArrayReader, [FaceOrientationReader])
@@ -217,8 +217,8 @@ class VolumeReader(BaseTypeReader, TypeReaderPlugin):
 
 
 class TrileEmplacementReader(ValueTypeReader, TypeReaderPlugin):
-    target_type = u'FezEngine.Structure.TrileEmplacement'
-    reader_name = u'FezEngine.Readers.TrileEmplacementReader'
+    target_type = 'FezEngine.Structure.TrileEmplacement'
+    reader_name = 'FezEngine.Readers.TrileEmplacementReader'
 
     def read(self):
         v_x = self.stream.read_int32()
@@ -228,8 +228,8 @@ class TrileEmplacementReader(ValueTypeReader, TypeReaderPlugin):
 
 
 class TrileInstanceReader(BaseTypeReader, TypeReaderPlugin):
-    target_type = u'FezEngine.Structure.TrileInstance'
-    reader_name = u'FezEngine.Readers.TrileInstanceReader'
+    target_type = 'FezEngine.Structure.TrileInstance'
+    reader_name = 'FezEngine.Readers.TrileInstanceReader'
 
     def read(self):
         position = self.stream.read_vector3()
@@ -244,8 +244,8 @@ class TrileInstanceReader(BaseTypeReader, TypeReaderPlugin):
 
 
 class ArtObjectInstanceReader(BaseTypeReader, TypeReaderPlugin):
-    target_type = u'FezEngine.Structure.ArtObjectInstance'
-    reader_name = u'FezEngine.Readers.ArtObjectInstanceReader'
+    target_type = 'FezEngine.Structure.ArtObjectInstance'
+    reader_name = 'FezEngine.Readers.ArtObjectInstanceReader'
 
     def read(self):
         name = self.stream.read_string()
@@ -257,8 +257,8 @@ class ArtObjectInstanceReader(BaseTypeReader, TypeReaderPlugin):
 
 
 class BackgroundPlaneReader(BaseTypeReader, TypeReaderPlugin):
-    target_type = u'FezEngine.Structure.BackgroundPlane'
-    reader_name = u'FezEngine.Readers.BackgroundPlaneReader'
+    target_type = 'FezEngine.Structure.BackgroundPlane'
+    reader_name = 'FezEngine.Readers.BackgroundPlaneReader'
 
     def read(self):
         position = self.stream.read_vector3()
@@ -293,8 +293,8 @@ class BackgroundPlaneReader(BaseTypeReader, TypeReaderPlugin):
 
 
 class TrileGroupReader(BaseTypeReader, TypeReaderPlugin):
-    target_type = u'FezEngine.Structure.TrileGroup'
-    reader_name = u'FezEngine.Readers.TrileGroupReader'
+    target_type = 'FezEngine.Structure.TrileGroup'
+    reader_name = 'FezEngine.Readers.TrileGroupReader'
 
     def read(self):
         triles = self.stream.read_object(ListReader, [TrileInstanceReader])
@@ -319,8 +319,8 @@ class TrileGroupReader(BaseTypeReader, TypeReaderPlugin):
 
 
 class TrileFaceReader(BaseTypeReader, TypeReaderPlugin):
-    target_type = u'FezEngine.Structure.TrileFace'
-    reader_name = u'FezEngine.Readers.TrileFaceReader'
+    target_type = 'FezEngine.Structure.TrileFace'
+    reader_name = 'FezEngine.Readers.TrileFaceReader'
 
     def read(self):
         trile_id = self.stream.read_object(TrileEmplacementReader)
@@ -329,8 +329,8 @@ class TrileFaceReader(BaseTypeReader, TypeReaderPlugin):
 
 
 class NpcInstanceReader(BaseTypeReader, TypeReaderPlugin):
-    target_type = u'FezEngine.Structure.NpcInstance'
-    reader_name = u'FezEngine.Readers.NpcInstanceReader'
+    target_type = 'FezEngine.Structure.NpcInstance'
+    reader_name = 'FezEngine.Readers.NpcInstanceReader'
 
     def read(self):
         name = self.stream.read_string()
@@ -348,8 +348,8 @@ class NpcInstanceReader(BaseTypeReader, TypeReaderPlugin):
 
 
 class MovementPathReader(BaseTypeReader, TypeReaderPlugin):
-    target_type = u'FezEngine.Structure.MovementPath'
-    reader_name = u'FezEngine.Readers.MovementPathReader'
+    target_type = 'FezEngine.Structure.MovementPath'
+    reader_name = 'FezEngine.Readers.MovementPathReader'
 
     def read(self):
         segments = self.stream.read_object(ListReader, [PathSegmentReader])
@@ -363,8 +363,8 @@ class MovementPathReader(BaseTypeReader, TypeReaderPlugin):
 
 
 class AmbienceTrackReader(BaseTypeReader, TypeReaderPlugin):
-    target_type = u'FezEngine.Structure.AmbienceTrack'
-    reader_name = u'FezEngine.Readers.AmbienceTrackReader'
+    target_type = 'FezEngine.Structure.AmbienceTrack'
+    reader_name = 'FezEngine.Readers.AmbienceTrackReader'
 
     def read(self):
         name = self.stream.read_object(StringReader)
@@ -376,8 +376,8 @@ class AmbienceTrackReader(BaseTypeReader, TypeReaderPlugin):
 
 
 class VolumeActorSettingsReader(BaseTypeReader, TypeReaderPlugin):
-    target_type = u'FezEngine.Structure.VolumeActorSettings'
-    reader_name = u'FezEngine.Readers.VolumeActorSettingsReader'
+    target_type = 'FezEngine.Structure.VolumeActorSettings'
+    reader_name = 'FezEngine.Readers.VolumeActorSettingsReader'
 
     def read(self):
         faraway_plane_offset = self.stream.read_vector2()
@@ -393,8 +393,8 @@ class VolumeActorSettingsReader(BaseTypeReader, TypeReaderPlugin):
 
 
 class DotDialogueLineReader(BaseTypeReader, TypeReaderPlugin):
-    target_type = u'FezEngine.Structure.DotDialogueLine'
-    reader_name = u'FezEngine.Readers.DotDialogueLineReader'
+    target_type = 'FezEngine.Structure.DotDialogueLine'
+    reader_name = 'FezEngine.Readers.DotDialogueLineReader'
 
     def read(self):
         resource_text = self.stream.read_object(StringReader)
@@ -403,8 +403,8 @@ class DotDialogueLineReader(BaseTypeReader, TypeReaderPlugin):
 
 
 class ScriptReader(BaseTypeReader, TypeReaderPlugin):
-    target_type = u'FezEngine.Structure.Scripting.Script'
-    reader_name = u'FezEngine.Readers.ScriptReader'
+    target_type = 'FezEngine.Structure.Scripting.Script'
+    reader_name = 'FezEngine.Readers.ScriptReader'
 
     def read(self):
         name = self.stream.read_string()
@@ -423,8 +423,8 @@ class ScriptReader(BaseTypeReader, TypeReaderPlugin):
 
 
 class ScriptTriggerReader(BaseTypeReader, TypeReaderPlugin):
-    target_type = u'FezEngine.Structure.Scripting.ScriptTrigger'
-    reader_name = u'FezEngine.Readers.ScriptTriggerReader'
+    target_type = 'FezEngine.Structure.Scripting.ScriptTrigger'
+    reader_name = 'FezEngine.Readers.ScriptTriggerReader'
 
     def read(self):
         entity = self.stream.read_object(EntityReader)
@@ -433,8 +433,8 @@ class ScriptTriggerReader(BaseTypeReader, TypeReaderPlugin):
 
 
 class ScriptActionReader(BaseTypeReader, TypeReaderPlugin):
-    target_type = u'FezEngine.Structure.Scripting.ScriptAction'
-    reader_name = u'FezEngine.Readers.ScriptActionReader'
+    target_type = 'FezEngine.Structure.Scripting.ScriptAction'
+    reader_name = 'FezEngine.Readers.ScriptActionReader'
 
     def read(self):
         entity = self.stream.read_object(EntityReader)
@@ -446,8 +446,8 @@ class ScriptActionReader(BaseTypeReader, TypeReaderPlugin):
 
 
 class ScriptConditionReader(BaseTypeReader, TypeReaderPlugin):
-    target_type = u'FezEngine.Structure.Scripting.ScriptCondition'
-    reader_name = u'FezEngine.Readers.ScriptConditionReader'
+    target_type = 'FezEngine.Structure.Scripting.ScriptCondition'
+    reader_name = 'FezEngine.Readers.ScriptConditionReader'
 
     def read(self):
         entity = self.stream.read_object(EntityReader)
@@ -458,8 +458,8 @@ class ScriptConditionReader(BaseTypeReader, TypeReaderPlugin):
 
 
 class EntityReader(BaseTypeReader, TypeReaderPlugin):
-    target_type = u'FezEngine.Structure.Scripting.Entity'
-    reader_name = u'FezEngine.Readers.EntityReader'
+    target_type = 'FezEngine.Structure.Scripting.Entity'
+    reader_name = 'FezEngine.Readers.EntityReader'
 
     def read(self):
         entity_type = self.stream.read_string()
@@ -468,8 +468,8 @@ class EntityReader(BaseTypeReader, TypeReaderPlugin):
 
 
 class InstanceActorSettingsReader(BaseTypeReader, TypeReaderPlugin):
-    target_type = u'FezEngine.Structure.InstanceActorSettings'
-    reader_name = u'FezEngine.Readers.InstanceActorSettingsReader'
+    target_type = 'FezEngine.Structure.InstanceActorSettings'
+    reader_name = 'FezEngine.Readers.InstanceActorSettingsReader'
 
     def read(self):
         contained_trile = self.stream.read_object(Int32Reader)
@@ -483,8 +483,8 @@ class InstanceActorSettingsReader(BaseTypeReader, TypeReaderPlugin):
 
 
 class ArtObjectActorSettingsReader(BaseTypeReader, TypeReaderPlugin):
-    target_type = u'FezEngine.Structure.ArtObjectActorSettings'
-    reader_name = u'FezEngine.Readers.ArtObjectActorSettingsReader'
+    target_type = 'FezEngine.Structure.ArtObjectActorSettings'
+    reader_name = 'FezEngine.Readers.ArtObjectActorSettingsReader'
 
     def read(self):
         inactive = self.stream.read_boolean()
@@ -509,8 +509,8 @@ class ArtObjectActorSettingsReader(BaseTypeReader, TypeReaderPlugin):
 
 
 class PathSegmentReader(BaseTypeReader, TypeReaderPlugin):
-    target_type = u'FezEngine.Structure.PathSegment'
-    reader_name = u'FezEngine.Readers.PathSegmentReader'
+    target_type = 'FezEngine.Structure.PathSegment'
+    reader_name = 'FezEngine.Readers.PathSegmentReader'
 
     def read(self):
         destination = self.stream.read_vector3()
@@ -530,8 +530,8 @@ class PathSegmentReader(BaseTypeReader, TypeReaderPlugin):
 
 
 class SpeechLineReader(BaseTypeReader, TypeReaderPlugin):
-    target_type = u'FezEngine.Structure.SpeechLine'
-    reader_name = u'FezEngine.Readers.SpeechLineReader'
+    target_type = 'FezEngine.Structure.SpeechLine'
+    reader_name = 'FezEngine.Readers.SpeechLineReader'
 
     def read(self):
         text = self.stream.read_object(StringReader)
@@ -540,8 +540,8 @@ class SpeechLineReader(BaseTypeReader, TypeReaderPlugin):
 
 
 class NpcActionContentReader(BaseTypeReader, TypeReaderPlugin):
-    target_type = u'FezEngine.Structure.NpcActionContent'
-    reader_name = u'FezEngine.Readers.NpcActionContentReader'
+    target_type = 'FezEngine.Structure.NpcActionContent'
+    reader_name = 'FezEngine.Readers.NpcActionContentReader'
 
     def read(self):
         animation_name = self.stream.read_object(StringReader)
@@ -550,8 +550,8 @@ class NpcActionContentReader(BaseTypeReader, TypeReaderPlugin):
 
 
 class CameraNodeDataReader(BaseTypeReader, TypeReaderPlugin):
-    target_type = u'FezEngine.Structure.CameraNodeData'
-    reader_name = u'FezEngine.Readers.CameraNodeDataReader'
+    target_type = 'FezEngine.Structure.CameraNodeData'
+    reader_name = 'FezEngine.Readers.CameraNodeDataReader'
 
     def read(self):
         perspective = self.stream.read_boolean()

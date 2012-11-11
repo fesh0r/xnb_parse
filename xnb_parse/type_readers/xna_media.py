@@ -9,8 +9,8 @@ from xnb_parse.xna_types.xna_media import SoundEffect, Song, Video, VideoSoundtr
 
 
 class SoundEffectReader(BaseTypeReader, TypeReaderPlugin):
-    target_type = u'Microsoft.Xna.Framework.Audio.SoundEffect'
-    reader_name = u'Microsoft.Xna.Framework.Content.SoundEffectReader'
+    target_type = 'Microsoft.Xna.Framework.Audio.SoundEffect'
+    reader_name = 'Microsoft.Xna.Framework.Content.SoundEffectReader'
 
     def read(self):
         format_size = self.stream.read_int32()
@@ -24,8 +24,8 @@ class SoundEffectReader(BaseTypeReader, TypeReaderPlugin):
 
 
 class SongReader(BaseTypeReader, TypeReaderPlugin):
-    target_type = u'Microsoft.Xna.Framework.Media.Song'
-    reader_name = u'Microsoft.Xna.Framework.Content.SongReader'
+    target_type = 'Microsoft.Xna.Framework.Media.Song'
+    reader_name = 'Microsoft.Xna.Framework.Content.SongReader'
 
     def read(self):
         filename = self.stream.read_string()
@@ -34,8 +34,8 @@ class SongReader(BaseTypeReader, TypeReaderPlugin):
 
 
 class VideoReader(BaseTypeReader, TypeReaderPlugin):
-    target_type = u'Microsoft.Xna.Framework.Media.Video'
-    reader_name = u'Microsoft.Xna.Framework.Content.VideoReader'
+    target_type = 'Microsoft.Xna.Framework.Media.Video'
+    reader_name = 'Microsoft.Xna.Framework.Content.VideoReader'
 
     def read(self):
         filename = self.stream.read_object(StringReader)

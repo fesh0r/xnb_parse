@@ -14,8 +14,8 @@ from xnb_parse.xna_types.fez.fez_graphics import (AnimatedTexture, Frame, ArtObj
 
 
 class ArtObjectReader(BaseTypeReader, TypeReaderPlugin):
-    target_type = u'FezEngine.Structure.ArtObject'
-    reader_name = u'FezEngine.Readers.ArtObjectReader'
+    target_type = 'FezEngine.Structure.ArtObject'
+    reader_name = 'FezEngine.Readers.ArtObjectReader'
 
     def read(self):
         name = self.stream.read_string()
@@ -31,8 +31,8 @@ class ArtObjectReader(BaseTypeReader, TypeReaderPlugin):
 
 
 class ShaderInstancedIndexedPrimitivesReader(GenericTypeReader, TypeReaderPlugin):
-    generic_target_type = u'FezEngine.Structure.Geometry.ShaderInstancedIndexedPrimitives`2'
-    generic_reader_name = u'FezEngine.Readers.ShaderInstancedIndexedPrimitivesReader`2'
+    generic_target_type = 'FezEngine.Structure.Geometry.ShaderInstancedIndexedPrimitives`2'
+    generic_reader_name = 'FezEngine.Readers.ShaderInstancedIndexedPrimitivesReader`2'
 
     def read(self):
         primitive_type = self.stream.read_object(PrimitiveTypeReader)
@@ -42,8 +42,8 @@ class ShaderInstancedIndexedPrimitivesReader(GenericTypeReader, TypeReaderPlugin
 
 
 class VertexPositionNormalTextureInstanceReader(ValueTypeReader, TypeReaderPlugin):
-    target_type = u'FezEngine.Structure.Geometry.VertexPositionNormalTextureInstance'
-    reader_name = u'FezEngine.Readers.VertexPositionNormalTextureInstanceReader'
+    target_type = 'FezEngine.Structure.Geometry.VertexPositionNormalTextureInstance'
+    reader_name = 'FezEngine.Readers.VertexPositionNormalTextureInstanceReader'
 
     def read(self):
         position = self.stream.read_vector3()
@@ -53,8 +53,8 @@ class VertexPositionNormalTextureInstanceReader(ValueTypeReader, TypeReaderPlugi
 
 
 class NpcMetadataReader(BaseTypeReader, TypeReaderPlugin):
-    target_type = u'FezEngine.Structure.NpcMetadata'
-    reader_name = u'FezEngine.Readers.NpcMetadataReader'
+    target_type = 'FezEngine.Structure.NpcMetadata'
+    reader_name = 'FezEngine.Readers.NpcMetadataReader'
 
     def read(self):
         walk_speed = self.stream.read_single()
@@ -65,8 +65,8 @@ class NpcMetadataReader(BaseTypeReader, TypeReaderPlugin):
 
 
 class AnimatedTextureReader(BaseTypeReader, TypeReaderPlugin):
-    target_type = u'FezEngine.Structure.AnimatedTexture'
-    reader_name = u'FezEngine.Readers.AnimatedTextureReader'
+    target_type = 'FezEngine.Structure.AnimatedTexture'
+    reader_name = 'FezEngine.Readers.AnimatedTextureReader'
 
     def read(self):
         width = self.stream.read_int32()
@@ -78,8 +78,8 @@ class AnimatedTextureReader(BaseTypeReader, TypeReaderPlugin):
 
 
 class FrameReader(BaseTypeReader, TypeReaderPlugin):
-    target_type = u'FezEngine.Content.FrameContent'
-    reader_name = u'FezEngine.Readers.FrameReader'
+    target_type = 'FezEngine.Content.FrameContent'
+    reader_name = 'FezEngine.Readers.FrameReader'
 
     def read(self):
         duration = self.stream.read_object(TimeSpanReader)

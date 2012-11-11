@@ -8,56 +8,56 @@ from xnb_parse.xna_types.xna_math import Rectangle, Point, Plane, BoundingBox, B
 
 
 class Vector2Reader(ValueTypeReader, TypeReaderPlugin):
-    target_type = u'Microsoft.Xna.Framework.Vector2'
-    reader_name = u'Microsoft.Xna.Framework.Content.Vector2Reader'
+    target_type = 'Microsoft.Xna.Framework.Vector2'
+    reader_name = 'Microsoft.Xna.Framework.Content.Vector2Reader'
 
     def read(self):
         return self.stream.read_vector2()
 
 
 class Vector3Reader(ValueTypeReader, TypeReaderPlugin):
-    target_type = u'Microsoft.Xna.Framework.Vector3'
-    reader_name = u'Microsoft.Xna.Framework.Content.Vector3Reader'
+    target_type = 'Microsoft.Xna.Framework.Vector3'
+    reader_name = 'Microsoft.Xna.Framework.Content.Vector3Reader'
 
     def read(self):
         return self.stream.read_vector3()
 
 
 class Vector4Reader(ValueTypeReader, TypeReaderPlugin):
-    target_type = u'Microsoft.Xna.Framework.Vector4'
-    reader_name = u'Microsoft.Xna.Framework.Content.Vector4Reader'
+    target_type = 'Microsoft.Xna.Framework.Vector4'
+    reader_name = 'Microsoft.Xna.Framework.Content.Vector4Reader'
 
     def read(self):
         return self.stream.read_vector4()
 
 
 class MatrixReader(ValueTypeReader, TypeReaderPlugin):
-    target_type = u'Microsoft.Xna.Framework.Matrix'
-    reader_name = u'Microsoft.Xna.Framework.Content.MatrixReader'
+    target_type = 'Microsoft.Xna.Framework.Matrix'
+    reader_name = 'Microsoft.Xna.Framework.Content.MatrixReader'
 
     def read(self):
         return self.stream.read_matrix()
 
 
 class QuaternionReader(ValueTypeReader, TypeReaderPlugin):
-    target_type = u'Microsoft.Xna.Framework.Quaternion'
-    reader_name = u'Microsoft.Xna.Framework.Content.QuaternionReader'
+    target_type = 'Microsoft.Xna.Framework.Quaternion'
+    reader_name = 'Microsoft.Xna.Framework.Content.QuaternionReader'
 
     def read(self):
         return self.stream.read_quaternion()
 
 
 class ColorReader(ValueTypeReader, TypeReaderPlugin):
-    target_type = u'Microsoft.Xna.Framework.Graphics.Color'
-    reader_name = u'Microsoft.Xna.Framework.Content.ColorReader'
+    target_type = 'Microsoft.Xna.Framework.Graphics.Color'
+    reader_name = 'Microsoft.Xna.Framework.Content.ColorReader'
 
     def read(self):
         return self.stream.read_color()
 
 
 class PlaneReader(ValueTypeReader, TypeReaderPlugin):
-    target_type = u'Microsoft.Xna.Framework.Plane'
-    reader_name = u'Microsoft.Xna.Framework.Content.PlaneReader'
+    target_type = 'Microsoft.Xna.Framework.Plane'
+    reader_name = 'Microsoft.Xna.Framework.Content.PlaneReader'
 
     def read(self):
         plane_normal = self.stream.read_vector3()
@@ -66,8 +66,8 @@ class PlaneReader(ValueTypeReader, TypeReaderPlugin):
 
 
 class PointReader(ValueTypeReader, TypeReaderPlugin):
-    target_type = u'Microsoft.Xna.Framework.Point'
-    reader_name = u'Microsoft.Xna.Framework.Content.PointReader'
+    target_type = 'Microsoft.Xna.Framework.Point'
+    reader_name = 'Microsoft.Xna.Framework.Content.PointReader'
 
     def read(self):
         v_x = self.stream.read_int32()
@@ -76,8 +76,8 @@ class PointReader(ValueTypeReader, TypeReaderPlugin):
 
 
 class RectangleReader(ValueTypeReader, TypeReaderPlugin):
-    target_type = u'Microsoft.Xna.Framework.Rectangle'
-    reader_name = u'Microsoft.Xna.Framework.Content.RectangleReader'
+    target_type = 'Microsoft.Xna.Framework.Rectangle'
+    reader_name = 'Microsoft.Xna.Framework.Content.RectangleReader'
 
     def read(self):
         v_x = self.stream.read_int32()
@@ -88,8 +88,8 @@ class RectangleReader(ValueTypeReader, TypeReaderPlugin):
 
 
 class BoundingBoxReader(ValueTypeReader, TypeReaderPlugin):
-    target_type = u'Microsoft.Xna.Framework.BoundingBox'
-    reader_name = u'Microsoft.Xna.Framework.Content.BoundingBoxReader'
+    target_type = 'Microsoft.Xna.Framework.BoundingBox'
+    reader_name = 'Microsoft.Xna.Framework.Content.BoundingBoxReader'
 
     def read(self):
         v_min = self.stream.read_vector3()
@@ -98,8 +98,8 @@ class BoundingBoxReader(ValueTypeReader, TypeReaderPlugin):
 
 
 class BoundingSphereReader(ValueTypeReader, TypeReaderPlugin):
-    target_type = u'Microsoft.Xna.Framework.BoundingSphere'
-    reader_name = u'Microsoft.Xna.Framework.Content.BoundingSphereReader'
+    target_type = 'Microsoft.Xna.Framework.BoundingSphere'
+    reader_name = 'Microsoft.Xna.Framework.Content.BoundingSphereReader'
 
     def read(self):
         v_centre = self.stream.read_vector3()
@@ -108,8 +108,8 @@ class BoundingSphereReader(ValueTypeReader, TypeReaderPlugin):
 
 
 class BoundingFrustumReader(BaseTypeReader, TypeReaderPlugin):
-    target_type = u'Microsoft.Xna.Framework.BoundingFrustum'
-    reader_name = u'Microsoft.Xna.Framework.Content.BoundingFrustumReader'
+    target_type = 'Microsoft.Xna.Framework.BoundingFrustum'
+    reader_name = 'Microsoft.Xna.Framework.Content.BoundingFrustumReader'
 
     def read(self):
         value = self.stream.read_matrix()
@@ -117,8 +117,8 @@ class BoundingFrustumReader(BaseTypeReader, TypeReaderPlugin):
 
 
 class RayReader(ValueTypeReader, TypeReaderPlugin):
-    target_type = u'Microsoft.Xna.Framework.Ray'
-    reader_name = u'Microsoft.Xna.Framework.Content.RayReader'
+    target_type = 'Microsoft.Xna.Framework.Ray'
+    reader_name = 'Microsoft.Xna.Framework.Content.RayReader'
 
     def read(self):
         v_pos = self.stream.read_vector3()
@@ -127,8 +127,8 @@ class RayReader(ValueTypeReader, TypeReaderPlugin):
 
 
 class CurveReader(BaseTypeReader, TypeReaderPlugin):
-    target_type = u'Microsoft.Xna.Framework.Curve'
-    reader_name = u'Microsoft.Xna.Framework.Content.CurveReader'
+    target_type = 'Microsoft.Xna.Framework.Curve'
+    reader_name = 'Microsoft.Xna.Framework.Content.CurveReader'
 
     def read(self):
         pre_loop = self.stream.read_int32()

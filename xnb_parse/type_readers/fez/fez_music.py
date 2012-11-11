@@ -10,8 +10,8 @@ from xnb_parse.xna_types.fez.fez_music import ShardNotes, AssembleChords, Tracke
 
 
 class TrackedSongReader(BaseTypeReader, TypeReaderPlugin):
-    target_type = u'FezEngine.Structure.TrackedSong'
-    reader_name = u'FezEngine.Readers.TrackedSongReader'
+    target_type = 'FezEngine.Structure.TrackedSong'
+    reader_name = 'FezEngine.Readers.TrackedSongReader'
 
     def read(self):
         loops = self.stream.read_object(ListReader, [LoopReader])
@@ -26,8 +26,8 @@ class TrackedSongReader(BaseTypeReader, TypeReaderPlugin):
 
 
 class LoopReader(BaseTypeReader, TypeReaderPlugin):
-    target_type = u'FezEngine.Structure.Loop'
-    reader_name = u'FezEngine.Readers.LoopReader'
+    target_type = 'FezEngine.Structure.Loop'
+    reader_name = 'FezEngine.Readers.LoopReader'
 
     def read(self):
         duration = self.stream.read_int32()
@@ -49,12 +49,12 @@ class LoopReader(BaseTypeReader, TypeReaderPlugin):
 
 
 class ShardNotesReader(EnumTypeReader, TypeReaderPlugin):
-    target_type = u'FezEngine.Structure.ShardNotes'
-    reader_name = u'FezEngine.Readers.ShardNotesReader'
+    target_type = 'FezEngine.Structure.ShardNotes'
+    reader_name = 'FezEngine.Readers.ShardNotesReader'
     enum_type = ShardNotes
 
 
 class AssembleChordsReader(EnumTypeReader, TypeReaderPlugin):
-    target_type = u'FezEngine.Structure.AssembleChords'
-    reader_name = u'FezEngine.Readers.AssembleChordsReader'
+    target_type = 'FezEngine.Structure.AssembleChords'
+    reader_name = 'FezEngine.Readers.AssembleChordsReader'
     enum_type = AssembleChords

@@ -12,16 +12,16 @@ from xnb_parse.type_readers.xna_primitive import CharReader, StringReader, Objec
 
 
 class TextureReader(BaseTypeReader, TypeReaderPlugin):
-    target_type = u'Microsoft.Xna.Framework.Graphics.Texture'
-    reader_name = u'Microsoft.Xna.Framework.Content.TextureReader'
+    target_type = 'Microsoft.Xna.Framework.Graphics.Texture'
+    reader_name = 'Microsoft.Xna.Framework.Content.TextureReader'
 
     def read(self):
         raise ReaderError("TextureReader should never be invoked directly")
 
 
 class Texture2DReader(BaseTypeReader, TypeReaderPlugin):
-    target_type = u'Microsoft.Xna.Framework.Graphics.Texture2D'
-    reader_name = u'Microsoft.Xna.Framework.Content.Texture2DReader'
+    target_type = 'Microsoft.Xna.Framework.Graphics.Texture2D'
+    reader_name = 'Microsoft.Xna.Framework.Content.Texture2DReader'
 
     def read(self):
         surface_format_raw = self.stream.read_int32()
@@ -38,8 +38,8 @@ class Texture2DReader(BaseTypeReader, TypeReaderPlugin):
 
 
 class Texture3DReader(BaseTypeReader, TypeReaderPlugin):
-    target_type = u'Microsoft.Xna.Framework.Graphics.Texture3D'
-    reader_name = u'Microsoft.Xna.Framework.Content.Texture3DReader'
+    target_type = 'Microsoft.Xna.Framework.Graphics.Texture3D'
+    reader_name = 'Microsoft.Xna.Framework.Content.Texture3DReader'
 
     def read(self):
         surface_format_raw = self.stream.read_int32()
@@ -57,8 +57,8 @@ class Texture3DReader(BaseTypeReader, TypeReaderPlugin):
 
 
 class TextureCubeReader(BaseTypeReader, TypeReaderPlugin):
-    target_type = u'Microsoft.Xna.Framework.Graphics.TextureCube'
-    reader_name = u'Microsoft.Xna.Framework.Content.TextureCubeReader'
+    target_type = 'Microsoft.Xna.Framework.Graphics.TextureCube'
+    reader_name = 'Microsoft.Xna.Framework.Content.TextureCubeReader'
 
     def read(self):
         surface_format_raw = self.stream.read_int32()
@@ -77,8 +77,8 @@ class TextureCubeReader(BaseTypeReader, TypeReaderPlugin):
 
 
 class IndexBufferReader(BaseTypeReader, TypeReaderPlugin):
-    target_type = u'Microsoft.Xna.Framework.Graphics.IndexBuffer'
-    reader_name = u'Microsoft.Xna.Framework.Content.IndexBufferReader'
+    target_type = 'Microsoft.Xna.Framework.Graphics.IndexBuffer'
+    reader_name = 'Microsoft.Xna.Framework.Content.IndexBufferReader'
 
     def read(self):
         index_16 = self.stream.read_boolean()
@@ -88,8 +88,8 @@ class IndexBufferReader(BaseTypeReader, TypeReaderPlugin):
 
 
 class VertexBufferReader(BaseTypeReader, TypeReaderPlugin):
-    target_type = u'Microsoft.Xna.Framework.Graphics.VertexBuffer'
-    reader_name = u'Microsoft.Xna.Framework.Content.VertexBufferReader'
+    target_type = 'Microsoft.Xna.Framework.Graphics.VertexBuffer'
+    reader_name = 'Microsoft.Xna.Framework.Content.VertexBufferReader'
 
     def read(self):
         size = self.stream.read_int32()
@@ -98,8 +98,8 @@ class VertexBufferReader(BaseTypeReader, TypeReaderPlugin):
 
 
 class VertexDeclarationReader(BaseTypeReader, TypeReaderPlugin):
-    target_type = u'Microsoft.Xna.Framework.Graphics.VertexDeclaration'
-    reader_name = u'Microsoft.Xna.Framework.Content.VertexDeclarationReader'
+    target_type = 'Microsoft.Xna.Framework.Graphics.VertexDeclaration'
+    reader_name = 'Microsoft.Xna.Framework.Content.VertexDeclarationReader'
 
     def read(self):
         element_count = self.stream.read_int32()
@@ -117,8 +117,8 @@ class VertexDeclarationReader(BaseTypeReader, TypeReaderPlugin):
 
 
 class EffectReader(BaseTypeReader, TypeReaderPlugin):
-    target_type = u'Microsoft.Xna.Framework.Graphics.Effect'
-    reader_name = u'Microsoft.Xna.Framework.Content.EffectReader'
+    target_type = 'Microsoft.Xna.Framework.Graphics.Effect'
+    reader_name = 'Microsoft.Xna.Framework.Content.EffectReader'
 
     def read(self):
         size = self.stream.read_int32()
@@ -127,8 +127,8 @@ class EffectReader(BaseTypeReader, TypeReaderPlugin):
 
 
 class EffectMaterialReader(BaseTypeReader, TypeReaderPlugin):
-    target_type = u'Microsoft.Xna.Framework.Graphics.EffectMaterial'
-    reader_name = u'Microsoft.Xna.Framework.Content.EffectMaterialReader'
+    target_type = 'Microsoft.Xna.Framework.Graphics.EffectMaterial'
+    reader_name = 'Microsoft.Xna.Framework.Content.EffectMaterialReader'
 
     def read(self):
         effect = self.stream.read_external_reference(EffectReader)
@@ -137,8 +137,8 @@ class EffectMaterialReader(BaseTypeReader, TypeReaderPlugin):
 
 
 class BasicEffectReader(BaseTypeReader, TypeReaderPlugin):
-    target_type = u'Microsoft.Xna.Framework.Graphics.BasicEffect'
-    reader_name = u'Microsoft.Xna.Framework.Content.BasicEffectReader'
+    target_type = 'Microsoft.Xna.Framework.Graphics.BasicEffect'
+    reader_name = 'Microsoft.Xna.Framework.Content.BasicEffectReader'
 
     def read(self):
         texture = self.stream.read_external_reference(TextureReader)
@@ -152,8 +152,8 @@ class BasicEffectReader(BaseTypeReader, TypeReaderPlugin):
 
 
 class SpriteFontReader(BaseTypeReader, TypeReaderPlugin):
-    target_type = u'Microsoft.Xna.Framework.Graphics.SpriteFont'
-    reader_name = u'Microsoft.Xna.Framework.Content.SpriteFontReader'
+    target_type = 'Microsoft.Xna.Framework.Graphics.SpriteFont'
+    reader_name = 'Microsoft.Xna.Framework.Content.SpriteFontReader'
 
     def read(self):
         texture = self.stream.read_object(Texture2DReader)
@@ -171,11 +171,11 @@ class SpriteFontReader(BaseTypeReader, TypeReaderPlugin):
 
 
 class ModelReader(BaseTypeReader, TypeReaderPlugin):
-    target_type = u'Microsoft.Xna.Framework.Graphics.Model'
-    reader_name = u'Microsoft.Xna.Framework.Content.ModelReader'
+    target_type = 'Microsoft.Xna.Framework.Graphics.Model'
+    reader_name = 'Microsoft.Xna.Framework.Content.ModelReader'
 
 
 class PrimitiveTypeReader(EnumTypeReader, TypeReaderPlugin):
-    target_type = u'Microsoft.Xna.Framework.Graphics.PrimitiveType'
-    reader_name = u'Microsoft.Xna.Framework.Content.PrimitiveTypeReader'
+    target_type = 'Microsoft.Xna.Framework.Graphics.PrimitiveType'
+    reader_name = 'Microsoft.Xna.Framework.Content.PrimitiveTypeReader'
     enum_type = PrimitiveType
