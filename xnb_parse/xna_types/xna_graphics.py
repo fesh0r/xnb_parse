@@ -3,6 +3,8 @@
 graphics types
 """
 
+from __future__ import absolute_import
+
 import os
 
 from xnb_parse.xnb_reader import VERSION_40, XNBReader

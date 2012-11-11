@@ -28,6 +28,8 @@ Mouse movements adjust the modelview projection matrix directly.
 
 """
 
+from __future__ import absolute_import
+
 __version__ = "1.0"
 
 # Code derived from the GLUT trackball.c, but now quite different and

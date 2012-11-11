@@ -3,6 +3,8 @@
 media types
 """
 
+from __future__ import absolute_import
+
 from xnb_parse.file_formats.xml_utils import E
 from xnb_parse.file_formats.wav import write_wav
 from xnb_parse.xna_types.xna_primitive import Enum

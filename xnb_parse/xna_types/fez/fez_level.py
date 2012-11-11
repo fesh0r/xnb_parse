@@ -3,6 +3,8 @@
 FEZ level types
 """
 
+from __future__ import absolute_import
+
 from collections import namedtuple
 
 from xnb_parse.file_formats.xml_utils import E

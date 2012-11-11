@@ -3,6 +3,8 @@
 .net type parser
 """
 
+from __future__ import absolute_import
+
 import re
 from collections import namedtuple
 

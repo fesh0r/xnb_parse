@@ -3,6 +3,8 @@
 math type readers
 """
 
+from __future__ import absolute_import
+
 from xnb_parse.type_reader_manager import TypeReaderPlugin
 from xnb_parse.type_reader import BaseTypeReader, ValueTypeReader
 from xnb_parse.xna_types.xna_math import Rectangle, Point, Plane, BoundingBox, BoundingSphere, Ray, BoundingFrustum

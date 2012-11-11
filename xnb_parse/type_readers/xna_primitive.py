@@ -3,6 +3,8 @@
 primitive type readers
 """
 
+from __future__ import absolute_import
+
 from xnb_parse.type_reader_manager import TypeReaderPlugin
 from xnb_parse.type_reader import BaseTypeReader, ValueTypeReader, ReaderError
 

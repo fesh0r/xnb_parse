@@ -3,6 +3,8 @@
 XML utils
 """
 
+from __future__ import absolute_import
+
 try:
     import lxml.etree as ET
     from lxml.builder import ElementMaker

@@ -3,6 +3,8 @@
 FEZ basic types
 """
 
+from __future__ import absolute_import
+
 from xnb_parse.xna_types.xna_primitive import Enum
 
 

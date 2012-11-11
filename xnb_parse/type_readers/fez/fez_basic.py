@@ -3,6 +3,8 @@
 FEZ basic type readers
 """
 
+from __future__ import absolute_import
+
 from xnb_parse.type_reader import GenericTypeReader, EnumTypeReader
 from xnb_parse.type_reader_manager import TypeReaderPlugin
 from xnb_parse.xna_types.xna_system import XNASet

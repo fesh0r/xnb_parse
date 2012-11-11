@@ -3,6 +3,8 @@
 FEZ graphics types
 """
 
+from __future__ import absolute_import
+
 from xnb_parse.binstream import BinaryWriter
 from xnb_parse.xnb_reader import VERSION_31
 from xnb_parse.file_formats.xml_utils import E
