@@ -1,3 +1,4 @@
+# coding=utf-8
 """
 Extract FEZ .pak files
 """

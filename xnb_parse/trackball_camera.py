@@ -1,3 +1,4 @@
+# coding=utf-8
 """trackball_camera.py - An OpenGL Trackball Camera Class for Pyglet
 
 by Roger Allen, July 2008

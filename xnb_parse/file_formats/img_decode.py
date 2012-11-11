@@ -1,3 +1,4 @@
+# coding=utf-8
 """
 Decode DXT/other textures to RGBA
 """

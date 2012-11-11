@@ -1,3 +1,4 @@
+# coding=utf-8
 """
 Dump info from directory of XNBs
 """
