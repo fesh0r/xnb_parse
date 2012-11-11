@@ -3,7 +3,7 @@
 FEZ level types
 """
 
-from __future__ import absolute_import, division
+from __future__ import absolute_import, division, unicode_literals
 
 from collections import namedtuple
 

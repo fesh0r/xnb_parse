@@ -3,7 +3,7 @@
 Decode DXT/other textures to RGBA
 """
 
-from __future__ import absolute_import, division
+from __future__ import absolute_import, division, unicode_literals
 
 import struct
 

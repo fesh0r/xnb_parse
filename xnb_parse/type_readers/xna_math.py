@@ -3,7 +3,7 @@
 math type readers
 """
 
-from __future__ import absolute_import, division
+from __future__ import absolute_import, division, unicode_literals
 
 from xnb_parse.type_reader_manager import TypeReaderPlugin
 from xnb_parse.type_reader import BaseTypeReader, ValueTypeReader
