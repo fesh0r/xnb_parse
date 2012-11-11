@@ -3,7 +3,7 @@
 Dump info from XACT files
 """
 
-from __future__ import absolute_import, division, unicode_literals
+from __future__ import absolute_import, division, unicode_literals, print_function
 
 import sys
 import os
@@ -14,7 +14,7 @@ from xnb_parse.xact.xwb import XWB
 
 def read_xact(in_file, out_dir=None):
     in_file = os.path.normpath(in_file)
-    print in_file
+    print(in_file)
     with open(in_file, 'rb') as in_handle:
         in_data = in_handle.read()
     xwb = XWB(in_data)
@@ -30,6 +30,6 @@ def main():
         if len(sys.argv) > 2:
             out_dir = sys.argv[2]
         read_xact(in_file, out_dir)
-        print '> Done in %.2f seconds' % (time.time() - totaltime)
+        print('> Done in %.2f seconds' % (time.time() - totaltime))
     else:
-        print 'read_xact.py file.xwb export_dir'
+        print('read_xact.py file.xwb export_dir')

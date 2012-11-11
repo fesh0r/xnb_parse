@@ -3,7 +3,7 @@
 wrapper for native XNA functions
 """
 
-from __future__ import absolute_import, division, unicode_literals
+from __future__ import absolute_import, division, unicode_literals, print_function
 
 import os
 import platform

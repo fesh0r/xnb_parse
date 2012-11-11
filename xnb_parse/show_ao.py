@@ -3,7 +3,7 @@
 Display ArtObject
 """
 
-from __future__ import absolute_import, division, unicode_literals
+from __future__ import absolute_import, division, unicode_literals, print_function
 
 import os
 import sys
@@ -204,4 +204,4 @@ def main():
         AOWindow(filename=sys.argv[1], config=config)
         pyglet.app.run()
     else:
-        print 'show_ao.py art_object.xnb'
+        print('show_ao.py art_object.xnb')

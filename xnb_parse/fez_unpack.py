@@ -3,7 +3,7 @@
 Extract FEZ .pak files
 """
 
-from __future__ import absolute_import, division, unicode_literals
+from __future__ import absolute_import, division, unicode_literals, print_function
 
 import sys
 import os
@@ -21,7 +21,7 @@ def unpack(in_file, out_dir):
         filename = stream.read_string()
         size = stream.read_int32()
         data = stream.read_bytes(size)
-        print filename
+        print(filename)
         filename = os.path.normpath(filename + '.xnb')
         filename = os.path.join(out_dir, filename)
         filedir = os.path.dirname(filename)
@@ -36,6 +36,6 @@ def main():
     if len(sys.argv) == 3:
         totaltime = time.time()
         unpack(os.path.normpath(sys.argv[1]), os.path.normpath(sys.argv[2]))
-        print '> Done in %.2f seconds' % (time.time() - totaltime)
+        print('> Done in %.2f seconds' % (time.time() - totaltime))
     else:
-        print 'fez_unpack.py in.pak out_dir'
+        print('fez_unpack.py in.pak out_dir')

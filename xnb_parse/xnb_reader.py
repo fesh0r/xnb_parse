@@ -3,7 +3,7 @@
 XNB parser
 """
 
-from __future__ import absolute_import, division, unicode_literals
+from __future__ import absolute_import, division, unicode_literals, print_function
 
 import os
 
@@ -72,7 +72,7 @@ class XNBReader(BinaryReader):
             self.type_readers.append(reader)
 
         if verbose:
-            print "Type: '%s'" % str(self.type_readers[0])
+            print("Type: '%s'" % str(self.type_readers[0]))
 
         for reader in self.type_readers:
             reader.init_reader()
@@ -84,13 +84,13 @@ class XNBReader(BinaryReader):
 
         self.content = self.read_object(self.expected_type_reader)
         if verbose:
-            print "Asset: '%s'" % str(self.content)
+            print("Asset: '%s'" % str(self.content))
 
         for i in range(shared_count):
             obj = self.read_object()
             self.shared_objects.append(obj)
             if verbose:
-                print "Shared resource %d: '%s'" % (i, str(obj))
+                print("Shared resource %d: '%s'" % (i, str(obj)))
 
         if self.remaining():
             raise ReaderError("remaining: %d" % self.remaining())

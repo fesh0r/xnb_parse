@@ -3,7 +3,7 @@
 WAV file writer
 """
 
-from __future__ import absolute_import, division, unicode_literals
+from __future__ import absolute_import, division, unicode_literals, print_function
 
 from uuid import UUID
 
@@ -102,7 +102,7 @@ class PyWavWriter(object):
         elif self.h_format_tag == WAVE_FORMAT_EXTENSIBLE:
             out_str += 'wValidBitsPerSample:%d dwChannelMask:%08x\n' % (
                 self.he_valid_bits_per_sample, self.he_channel_mask)
-        print out_str
+        print(out_str)
 
     def write(self, filename):
         h_s = BinaryWriter()

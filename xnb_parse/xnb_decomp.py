@@ -4,7 +4,7 @@ Decompress XNB files.
 Requires win32
 """
 
-from __future__ import absolute_import, division, unicode_literals
+from __future__ import absolute_import, division, unicode_literals, print_function
 
 import sys
 import time
@@ -23,7 +23,7 @@ def read_xnb(in_dir, out_dir):
             if not os.path.isdir(os.path.dirname(out_file)):
                 os.makedirs(os.path.dirname(out_file))
 
-            print in_file
+            print(in_file)
             with open(in_file, 'rb') as in_handle:
                 in_data = in_handle.read()
             xnb = XNBReader.load(in_data, parse=False)
@@ -36,6 +36,6 @@ def main():
     if len(sys.argv) == 3:
         totaltime = time.time()
         read_xnb(os.path.normpath(sys.argv[1]), os.path.normpath(sys.argv[2]))
-        print '> Done in %.2f seconds' % (time.time() - totaltime)
+        print('> Done in %.2f seconds' % (time.time() - totaltime))
     else:
-        print 'xnb_decomp.py in_dir out_dir'
+        print('xnb_decomp.py in_dir out_dir')

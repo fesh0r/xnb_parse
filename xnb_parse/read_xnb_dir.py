@@ -3,7 +3,7 @@
 Dump info from directory of XNBs
 """
 
-from __future__ import absolute_import, division, unicode_literals
+from __future__ import absolute_import, division, unicode_literals, print_function
 
 import sys
 import os
@@ -27,7 +27,7 @@ def read_xnb_dir(in_dir, out_dir=None, type_reader_manager=None):
             out_file = None
             if out_dir is not None:
                 out_file = os.path.normpath(os.path.join(out_dir, short_name).replace('.xnb', ''))
-            print in_file
+            print(in_file)
             with open(in_file, 'rb') as in_handle:
                 in_data = in_handle.read()
             xnb = XNBReader.load(in_data, type_reader_manager, parse=False)
@@ -36,10 +36,10 @@ def read_xnb_dir(in_dir, out_dir=None, type_reader_manager=None):
                 if out_file is not None:
                     xnb.export(out_file)
             except ReaderError as ex:
-                print "ReaderError in '%s'" % short_name
-                print ex
+                print("ReaderError in '%s'" % short_name)
+                print(ex)
             except Exception:
-                print "Unexpected error in '%s'" % short_name
+                print("Unexpected error in '%s'" % short_name)
                 raise
 
 
@@ -52,6 +52,6 @@ def main():
         if len(sys.argv) > 2:
             out_dir = sys.argv[2]
         read_xnb_dir(in_dir, out_dir, type_reader_manager)
-        print '> Done in %.2f seconds' % (time.time() - totaltime)
+        print('> Done in %.2f seconds' % (time.time() - totaltime))
     else:
-        print 'read_xnb_dir.py content_dir [export_dir]'
+        print('read_xnb_dir.py content_dir [export_dir]')
