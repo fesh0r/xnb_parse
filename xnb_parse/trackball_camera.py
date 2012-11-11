@@ -28,7 +28,7 @@ Mouse movements adjust the modelview projection matrix directly.
 
 """
 
-from __future__ import absolute_import
+from __future__ import absolute_import, division
 
 __version__ = "1.0"
 

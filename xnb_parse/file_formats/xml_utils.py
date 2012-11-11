@@ -3,7 +3,7 @@
 XML utils
 """
 
-from __future__ import absolute_import
+from __future__ import absolute_import, division
 
 try:
     import lxml.etree as ET

@@ -4,7 +4,7 @@ Decompress XNB files.
 Requires win32
 """
 
-from __future__ import absolute_import
+from __future__ import absolute_import, division
 
 import sys
 import time

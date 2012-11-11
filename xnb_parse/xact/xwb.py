@@ -3,7 +3,7 @@
 parse XWB files
 """
 
-from __future__ import absolute_import
+from __future__ import absolute_import, division
 
 import os
 import datetime
@@ -75,7 +75,7 @@ _FILETIME_NULL = datetime.datetime(1601, 1, 1, 0, 0, 0)
 
 def filetime_to_datetime(ftl, fth):
     timestamp = ftl | fth << 32
-    return _FILETIME_NULL + datetime.timedelta(microseconds=timestamp / 10)
+    return _FILETIME_NULL + datetime.timedelta(microseconds=timestamp / 10.0)
 
 
 class XWB(object):

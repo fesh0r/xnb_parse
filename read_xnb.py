@@ -4,7 +4,7 @@
 Dump info from XNB
 """
 
-from __future__ import absolute_import
+from __future__ import absolute_import, division
 
 from xnb_parse.read_xnb import main
 

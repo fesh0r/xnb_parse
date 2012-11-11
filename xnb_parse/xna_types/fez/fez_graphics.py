@@ -3,7 +3,7 @@
 FEZ graphics types
 """
 
-from __future__ import absolute_import
+from __future__ import absolute_import, division
 
 from xnb_parse.binstream import BinaryWriter
 from xnb_parse.xnb_reader import VERSION_31

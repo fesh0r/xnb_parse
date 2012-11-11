@@ -3,7 +3,7 @@
 FEZ graphics type readers
 """
 
-from __future__ import absolute_import
+from __future__ import absolute_import, division
 
 from xnb_parse.type_reader import BaseTypeReader, ValueTypeReader, GenericTypeReader, generic_reader_type
 from xnb_parse.type_reader_manager import TypeReaderPlugin

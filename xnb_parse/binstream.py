@@ -3,7 +3,7 @@
 .NET BinaryStream reader
 """
 
-from __future__ import absolute_import
+from __future__ import absolute_import, division
 
 from struct import Struct, calcsize
 from io import BytesIO

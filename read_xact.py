@@ -4,7 +4,7 @@
 Dump info from XACT files
 """
 
-from __future__ import absolute_import
+from __future__ import absolute_import, division
 
 from xnb_parse.read_xact import main
 

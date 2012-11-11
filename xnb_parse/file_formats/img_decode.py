@@ -3,7 +3,7 @@
 Decode DXT/other textures to RGBA
 """
 
-from __future__ import absolute_import
+from __future__ import absolute_import, division
 
 import struct
 
@@ -158,18 +158,18 @@ class DxtDecoder(object):
         color1_b = c_b << 3 | c_b >> 2
         colors.append([color1_r, color1_g, color1_b, 255])
         if color0_raw > color1_raw or not dxt1:
-            c_r = (2 * color0_r + color1_r) / 3
-            c_g = (2 * color0_g + color1_g) / 3
-            c_b = (2 * color0_b + color1_b) / 3
+            c_r = (2 * color0_r + color1_r) // 3
+            c_g = (2 * color0_g + color1_g) // 3
+            c_b = (2 * color0_b + color1_b) // 3
             colors.append([c_r, c_g, c_b, 255])
-            c_r = (color0_r + 2 * color1_r) / 3
-            c_g = (color0_g + 2 * color1_g) / 3
-            c_b = (color0_b + 2 * color1_b) / 3
+            c_r = (color0_r + 2 * color1_r) // 3
+            c_g = (color0_g + 2 * color1_g) // 3
+            c_b = (color0_b + 2 * color1_b) // 3
             colors.append([c_r, c_g, c_b, 255])
         else:
-            c_r = (color0_r + color1_r) / 2
-            c_g = (color0_g + color1_g) / 2
-            c_b = (color0_b + color1_b) / 2
+            c_r = (color0_r + color1_r) // 2
+            c_g = (color0_g + color1_g) // 2
+            c_b = (color0_b + color1_b) // 2
             colors.append([c_r, c_g, c_b, 255])
             colors.append([0, 0, 0, 0])
         for b_y in range(4):
@@ -194,17 +194,17 @@ class DxtDecoder(object):
         alpha1 = alpha_raw >> 8
         alphas.append(alpha1)
         if alpha0 > alpha1:
-            alphas.append((6 * alpha0 + 1 * alpha1) / 7)
-            alphas.append((5 * alpha0 + 2 * alpha1) / 7)
-            alphas.append((4 * alpha0 + 3 * alpha1) / 7)
-            alphas.append((3 * alpha0 + 4 * alpha1) / 7)
-            alphas.append((2 * alpha0 + 5 * alpha1) / 7)
-            alphas.append((1 * alpha0 + 6 * alpha1) / 7)
+            alphas.append((6 * alpha0 + 1 * alpha1) // 7)
+            alphas.append((5 * alpha0 + 2 * alpha1) // 7)
+            alphas.append((4 * alpha0 + 3 * alpha1) // 7)
+            alphas.append((3 * alpha0 + 4 * alpha1) // 7)
+            alphas.append((2 * alpha0 + 5 * alpha1) // 7)
+            alphas.append((1 * alpha0 + 6 * alpha1) // 7)
         else:
-            alphas.append((4 * alpha0 + 1 * alpha1) / 5)
-            alphas.append((3 * alpha0 + 2 * alpha1) / 5)
-            alphas.append((2 * alpha0 + 3 * alpha1) / 5)
-            alphas.append((1 * alpha0 + 4 * alpha1) / 5)
+            alphas.append((4 * alpha0 + 1 * alpha1) // 5)
+            alphas.append((3 * alpha0 + 2 * alpha1) // 5)
+            alphas.append((2 * alpha0 + 3 * alpha1) // 5)
+            alphas.append((1 * alpha0 + 4 * alpha1) // 5)
             alphas.append(0)
             alphas.append(255)
         for b_y in range(4):
