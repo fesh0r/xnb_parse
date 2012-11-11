@@ -39,7 +39,7 @@ class XNBReader(BinaryReader):
 
     def __init__(self, data, file_platform=PLATFORM_WINDOWS, file_version=VERSION_40, graphics_profile=PROFILE_REACH,
                  compressed=False, type_reader_manager=None, parse=True, expected_type_reader=None):
-        BinaryReader.__init__(self, data, big_endian=False)
+        BinaryReader.__init__(self, data)
         self.file_platform = file_platform
         self.file_version = file_version
         self.graphics_profile = graphics_profile
@@ -107,7 +107,7 @@ class XNBReader(BinaryReader):
 
     @classmethod
     def load(cls, data, type_reader_manager=None, parse=True):
-        stream = BinaryReader(data, big_endian=False)
+        stream = BinaryReader(data)
         (sig, platform, version, attribs, size) = stream.unpack(cls._header)
         if sig != XNB_SIGNATURE:
             raise ValueError("bad sig: '%s'" % repr(sig))
@@ -152,7 +152,7 @@ class XNBReader(BinaryReader):
             if compress:
                 do_compress = True
                 attribs |= self._compress_mask
-        stream = BinaryWriter(big_endian=False)
+        stream = BinaryWriter()
         if do_compress:
             raise ValueError("Recompression not supported")
         else:

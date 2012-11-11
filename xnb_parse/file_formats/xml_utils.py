@@ -13,8 +13,10 @@ try:
         ET.ElementTree(xml).write(filename, encoding='utf-8', xml_declaration=True, pretty_print=True)
 except ImportError:
     import functools
+    #noinspection PyRedeclaration
     import xml.etree.cElementTree as ET
 
+    #noinspection PyRedeclaration
     class ElementMaker(object):
         def __call__(self, tag, *children, **attrib):
             elem = ET.Element(tag, attrib)
@@ -50,6 +52,7 @@ except ImportError:
             if level and (not elem.tail or not elem.tail.strip()):
                 elem.tail = i
 
+    #noinspection PyRedeclaration
     def output_xml(xml, filename):
         indent(xml)
         ET.ElementTree(xml).write(filename, encoding='utf-8')
