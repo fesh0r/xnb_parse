@@ -224,6 +224,7 @@ def norm1(val, max_val):
 
 class TrackballCamera(object):
     """Trackball Camera Class"""
+
     def __init__(self, radius=2.0):
         """ initialize the camera, giving a radius from the focal point for
         the camera eye.  Update focal point & up via the update_modelview call.
