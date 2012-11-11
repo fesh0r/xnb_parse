@@ -84,7 +84,7 @@ class XWB(object):
     _wb_data = 'I I 64s I I I I II'
     _wb_entry = 'I I II II'
     _regions = ['BANKDATA', 'ENTRYMETADATA', 'SEEKTABLES', 'ENTRYNAMES', 'ENTRYWAVEDATA']
-    _waveformatex = Struct('<H H I I H H H')
+    _waveformatex = Struct(str('<H H I I H H H'))
 
     #noinspection PyUnusedLocal
     # pylint: disable-msg=W0612

@@ -34,10 +34,10 @@ class BinaryStream(object):
             self._fmt_end = '<'
         self._types = {}
         for name, type_ in self._type_fmt.items():
-            self._types[name] = Struct(self._fmt_end + type_)
+            self._types[name] = Struct(str(self._fmt_end + type_))
 
     def calc_size(self, fmt):
-        return calcsize(self._fmt_end + fmt)
+        return calcsize(str(self._fmt_end + fmt))
 
     def size(self, type_):
         return self._types[type_].size
@@ -68,7 +68,7 @@ class BinaryWriter(BinaryStream):
         self.stream.write(struct_.pack(value))
 
     def pack(self, fmt, *values):
-        local_struct = Struct(self._fmt_end + fmt)
+        local_struct = Struct(str(self._fmt_end + fmt))
         self.stream.write(local_struct.pack(*values))
 
     def extend(self, value):
@@ -136,7 +136,7 @@ class BinaryWriter(BinaryStream):
         self.stream.write(raw_value)
 
     def write_bytes(self, value):
-        self.extend(value)
+        self.extend(str(value))
 
 
 class BinaryReader(BinaryStream):
@@ -193,7 +193,7 @@ class BinaryReader(BinaryStream):
         return len(self.data) - self._index
 
     def unpack(self, fmt):
-        local_struct = Struct(self._fmt_end + fmt)
+        local_struct = Struct(str(self._fmt_end + fmt))
         values = local_struct.unpack_from(self.data, self._index)
         self._index += local_struct.size
         return values

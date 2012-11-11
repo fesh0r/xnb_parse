@@ -158,7 +158,7 @@ class XNBReader(BinaryReader):
         else:
             data = self.data
             size = len(data) + stream.calc_size(self._header)
-        stream.pack(self._header, XNB_SIGNATURE, self.file_platform, self.file_version, attribs, size)
+        stream.pack(self._header, str(XNB_SIGNATURE), self.file_platform, self.file_version, attribs, size)
         stream.write_bytes(data)
         return stream.serial()
 

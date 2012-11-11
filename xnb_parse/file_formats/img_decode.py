@@ -103,9 +103,9 @@ class DxtDecoder(object):
         self.out_rows = [bytearray([0] * self.width * 4), bytearray([0] * self.width * 4),
                          bytearray([0] * self.width * 4), bytearray([0] * self.width * 4)]
         if needs_swap:
-            self.swap_struct = struct.Struct('>HHHH')
+            self.swap_struct = struct.Struct(str('>HHHH'))
         else:
-            self.swap_struct = struct.Struct('<HHHH')
+            self.swap_struct = struct.Struct(str('<HHHH'))
 
         self.explicit_alphas = []
         for cur_a in range(16):
