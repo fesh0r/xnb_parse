@@ -33,7 +33,7 @@ def _find_native():
         except WindowsError:
             pass
     if native_path is None:
-        raise IOError("%s not found" % _DLL_NAME)
+        raise IOError("{} not found".format(_DLL_NAME))
     return native_path
 
 
@@ -64,7 +64,7 @@ def decompress(in_buf, out_size):
         r_decompressed_size = int(s_decompressed_size.value)
 
         if err:
-            raise IOError("Decompress failed: %d" % err)
+            raise IOError("Decompress failed: {}".format(err))
         if r_compressed_size == 0 and r_decompressed_size == 0:
             raise IOError("Decompress failed")
 

@@ -30,6 +30,6 @@ def main():
         if len(sys.argv) > 2:
             out_dir = sys.argv[2]
         read_xact(in_file, out_dir)
-        print('> Done in %.2f seconds' % (time.time() - totaltime))
+        print('> Done in {:.2f} seconds'.format(time.time() - totaltime))
     else:
         print('read_xact.py file.xwb export_dir')

@@ -36,6 +36,6 @@ def main():
     if len(sys.argv) == 3:
         totaltime = time.time()
         unpack(os.path.normpath(sys.argv[1]), os.path.normpath(sys.argv[2]))
-        print('> Done in %.2f seconds' % (time.time() - totaltime))
+        print('> Done in {:.2f} seconds'.format(time.time() - totaltime))
     else:
         print('fez_unpack.py in.pak out_dir')

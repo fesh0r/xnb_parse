@@ -36,10 +36,10 @@ def read_xnb_dir(in_dir, out_dir=None, type_reader_manager=None):
                 if out_file is not None:
                     xnb.export(out_file)
             except ReaderError as ex:
-                print("ReaderError in '%s'" % short_name)
+                print("ReaderError in '{}'".format(short_name))
                 print(ex)
             except Exception:
-                print("Unexpected error in '%s'" % short_name)
+                print("Unexpected error in '{}'".format(short_name))
                 raise
 
 
@@ -52,6 +52,6 @@ def main():
         if len(sys.argv) > 2:
             out_dir = sys.argv[2]
         read_xnb_dir(in_dir, out_dir, type_reader_manager)
-        print('> Done in %.2f seconds' % (time.time() - totaltime))
+        print('> Done in {:.2f} seconds'.format(time.time() - totaltime))
     else:
         print('read_xnb_dir.py content_dir [export_dir]')

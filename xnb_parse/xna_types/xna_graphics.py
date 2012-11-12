@@ -123,7 +123,7 @@ def get_surface_format(xna_version, surface_format):
         else:
             return SurfaceFormat(surface_format)
     except KeyError:
-        raise ReaderError("Invalid surface format for V%s: %d" % (XNBReader.versions[xna_version], surface_format))
+        raise ReaderError("Invalid surface format for V{}: {}".format(XNBReader.versions[xna_version], surface_format))
 
 
 class Texture2D(object):
@@ -135,12 +135,12 @@ class Texture2D(object):
         self.needs_swap = needs_swap
 
     def __str__(self):
-        return "Texture2D f:%s d:%dx%d m:%d s:%d" % (self.surface_format, self.width, self.height,
-                                                     len(self.mip_levels), len(self.mip_levels[0]))
+        return "Texture2D f:{} d:{}x{} m:{} s:{}".format(self.surface_format, self.width, self.height,
+                                                         len(self.mip_levels), len(self.mip_levels[0]))
 
     def export(self, filename):
         if not self.surface_format.reader:
-            raise ReaderError("No decoder found: '%s'" % self.surface_format)
+            raise ReaderError("No decoder found: '{}'".format(self.surface_format))
         dirname = os.path.dirname(filename)
         if not os.path.isdir(dirname):
             os.makedirs(dirname)
@@ -157,7 +157,7 @@ class Texture2D(object):
 
     def full_data(self, alpha='yes'):
         if not self.surface_format.reader:
-            raise ReaderError("No decoder found: '%s'" % self.surface_format)
+            raise ReaderError("No decoder found: '{}'".format(self.surface_format))
 
         rows = self.surface_format.reader(self.mip_levels[0], self.width, self.height, self.needs_swap, alpha=alpha)
         data = bytearray()
@@ -176,8 +176,8 @@ class Texture3D(object):
         self.needs_swap = needs_swap
 
     def __str__(self):
-        return "Texture3D f:%s d:%dx%dx%d m:%d s:%d" % (self.surface_format, self.width, self.height, self.depth,
-                                                        len(self.mip_levels), len(self.mip_levels[0]))
+        return "Texture3D f:{} d:{}x{}x{} m:{} s:{}".format(self.surface_format, self.width, self.height, self.depth,
+                                                            len(self.mip_levels), len(self.mip_levels[0]))
 
 
 class TextureCube(object):
@@ -188,8 +188,8 @@ class TextureCube(object):
         self.needs_swap = needs_swap
 
     def __str__(self):
-        return "TextureCube f:%s d:%d m:%d s:%d" % (self.surface_format, self.texture_size, len(self.sides['+x']),
-                                                    len(self.sides['+x'][0]))
+        return "TextureCube f:{} d:{} m:{} s:{}".format(self.surface_format, self.texture_size, len(self.sides['+x']),
+                                                        len(self.sides['+x'][0]))
 
 
 class IndexBuffer(object):
@@ -198,7 +198,7 @@ class IndexBuffer(object):
         self.index_data = index_data
 
     def __str__(self):
-        return "IndexBuffer t:%d s:%d" % (16 if self.index_16 else 32, len(self.index_data))
+        return "IndexBuffer t:{} s:{}".format(16 if self.index_16 else 32, len(self.index_data))
 
 
 class Effect(object):
@@ -206,7 +206,7 @@ class Effect(object):
         self.effect_data = effect_data
 
     def __str__(self):
-        return "Effect s:%d" % len(self.effect_data)
+        return "Effect s:{}".format(len(self.effect_data))
 
     def export(self, filename):
         out_dir = os.path.dirname(filename)
@@ -227,7 +227,7 @@ class BasicEffect(object):
         self.colour_v = colour_v
 
     def __str__(self):
-        return "BasicEffectReader '%s'" % self.texture
+        return "BasicEffectReader '{}'".format(self.texture)
 
     def xml(self):
         root = E.BasicEffect(spec=str(self.spec), alpha=str(self.alpha), colorV=str(self.colour_v))
@@ -250,8 +250,8 @@ class SpriteFont(object):
         self.default_char = default_char
 
     def __str__(self):
-        return 'SpriteFont c:%d f:%s d:%dx%d' % (len(self.glyphs), self.texture.surface_format, self.texture.width,
-                                                 self.texture.height)
+        return 'SpriteFont c:{} f:{} d:{}x{}'.format(len(self.glyphs), self.texture.surface_format, self.texture.width,
+                                                     self.texture.height)
 
     def xml(self):
         root = E.SpriteFont(width=str(self.texture.width), height=str(self.texture.height), hSpace=str(self.h_space),

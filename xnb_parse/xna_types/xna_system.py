@@ -61,7 +61,7 @@ class ExternalReference(object):
         self.expected_type = expected_type
 
     def __str__(self):
-        return "ExternalReference '%s'" % self.filename
+        return "ExternalReference '{}'".format(self.filename)
 
     def xml(self):
         root = E.ExternalReference(filename=self.filename)

@@ -22,8 +22,8 @@ class ArtObject(object):
         self.laser_outlets = laser_outlets
 
     def __str__(self):
-        return "ArtObject '%s' t:'%s' s:%s g:%d" % (self.name, self.cubemap_path, self.size,
-                                                    len(self.geometry.vertices))
+        return "ArtObject '{}' t:'{}' s:{} g:{}".format(self.name, self.cubemap_path, self.size,
+                                                        len(self.geometry.vertices))
 
     def xml(self):
         root = E.ArtObject(name=self.name, cubemapPath=self.cubemap_path, noSilhouette=str(self.no_silhouette))
@@ -46,8 +46,8 @@ class ShaderInstancedIndexedPrimitives(object):
         self.indices = indices
 
     def __str__(self):
-        return "ShaderInstancedIndexedPrimitives t:%s v:%d i:%d" % (self.primitive_type, len(self.vertices),
-                                                                    len(self.indices))
+        return "ShaderInstancedIndexedPrimitives t:{} v:{} i:{}".format(self.primitive_type, len(self.vertices),
+                                                                        len(self.indices))
 
     def xml(self):
         root = E.ShaderInstancedIndexedPrimitives()
@@ -69,7 +69,8 @@ class VertexPositionNormalTextureInstance(object):
         self.texture_coord = texture_coord
 
     def __str__(self):
-        return "VertexPositionNormalTextureInstance p:%s n:%d c:%s" % (self.position, self.normal, self.texture_coord)
+        return "VertexPositionNormalTextureInstance p:{} n:{} c:{}".format(self.position, self.normal,
+                                                                           self.texture_coord)
 
     def xml(self):
         root = E.VertexPositionNormalTextureInstance()
@@ -87,7 +88,7 @@ class NpcMetadata(object):
         self.sound_actions = sound_actions
 
     def __str__(self):
-        return "NpcMetadata s:%s a:%d" % (self.sound_path, len(self.sound_actions))
+        return "NpcMetadata s:{} a:{}".format(self.sound_path, len(self.sound_actions))
 
     def xml(self):
         root = E.NpcMetadata(avoidsGomez=str(self.avoids_gomez), walkSpeed=str(self.walk_speed))
@@ -109,8 +110,8 @@ class AnimatedTexture(object):
         self.frames = frames
 
     def __str__(self):
-        return "AnimatedTexture d:%dx%d a:%dx%d f:%d" % (self.width, self.height, self.actual_width,
-                                                         self.actual_height, len(self.frames))
+        return "AnimatedTexture d:{}x{} a:{}x{} f:{}".format(self.width, self.height, self.actual_width,
+                                                             self.actual_height, len(self.frames))
 
     def xml(self):
         root = E.AnimatedTexture(width=str(self.width), height=str(self.height), actualWidth=str(self.actual_width),
@@ -126,7 +127,7 @@ class AnimatedTexture(object):
     def export_each(self, filename):
         for i, cur_frame in enumerate(self.frames):
             texture = Texture2D(self.surface_format, self.width, self.height, [cur_frame.data])
-            cur_filename = "%s_ani\\%d" % (filename, i)
+            cur_filename = "{}_ani\\{}".format(filename, i)
             texture.export(cur_filename)
 
     def export_single(self, filename):
@@ -146,7 +147,7 @@ class Frame(object):
         self.data = raw_stream.serial()
 
     def __str__(self):
-        return "Frame d:%d s:%d" % (self.duration, len(self.data))
+        return "Frame d:{} s:{}".format(self.duration, len(self.data))
 
     def xml(self):
         root = E.Frame()

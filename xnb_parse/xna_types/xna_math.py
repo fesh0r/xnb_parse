@@ -34,7 +34,7 @@ class Color(namedtuple('Color', ['r', 'g', 'b', 'a'])):
         if len(clean_data) == 6:
             clean_data = 'ff' + clean_data
         if len(clean_data) != 8:
-            raise ValueError("Invalid color: '%s'" % data)
+            raise ValueError("Invalid color: '{}'".format(data))
         v_a = int(clean_data[0:2], 16)
         v_r = int(clean_data[2:4], 16)
         v_g = int(clean_data[4:6], 16)
@@ -42,7 +42,7 @@ class Color(namedtuple('Color', ['r', 'g', 'b', 'a'])):
         return Color(v_r, v_g, v_b, v_a)
 
     def attrib(self):
-        return "#%02X%02X%02X%02X" % (self.a & 0xff, self.r & 0xff, self.g & 0xff, self.b & 0xff)
+        return "#{:02X}{:02X}{:02X}{:02X}".format(self.a, self.r, self.g, self.b)
 
     def xml(self):
         root = E.Color(c=self.attrib())

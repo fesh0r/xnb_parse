@@ -93,7 +93,7 @@ class TypeSpec(object):
             raise TypeSpecError("type_name empty")
         res, pos = TypeSpec._parse(type_name)
         if pos < len(type_name):
-            raise TypeSpecError("Could not parse the whole type name: %d < %d" % (pos, len(type_name)))
+            raise TypeSpecError("Could not parse the whole type name: {} < {}".format(pos, len(type_name)))
         return res
 
     def add_name(self, type_name):
@@ -190,7 +190,7 @@ class TypeSpec(object):
                             if name[pos] == ',':
                                 pos += 1
                             else:
-                                raise TypeSpecError("Invalid generic arguments separator: '%s'" % name[pos])
+                                raise TypeSpecError("Invalid generic arguments separator: '{}'".format(name[pos]))
                         if pos >= len(name) or name[pos] != ']':
                             raise TypeSpecError("Error parsing generic params spec")
                         data.generic_params = args
@@ -204,7 +204,7 @@ class TypeSpec(object):
                                     raise TypeSpecError("Array spec cannot have 2 bound dimensions")
                                 bound = True
                             elif name[pos] != ',':
-                                raise TypeSpecError("Invalid character in array spec: '%s'" % name[pos])
+                                raise TypeSpecError("Invalid character in array spec: '{}'".format(name[pos]))
                             else:
                                 dimensions += 1
                             pos += 1
@@ -220,7 +220,7 @@ class TypeSpec(object):
                         return data, pos
                     raise TypeSpecError("Unmatched ]")
                 else:
-                    raise TypeSpecError("Bad type def, can't handle '%s' at %d" % (name[pos], pos))
+                    raise TypeSpecError("Bad type def, can't handle '{}' at {}".format(name[pos], pos))
                 pos += 1
         if pos > len(name):
             raise TypeSpecError("Fell off end of name")

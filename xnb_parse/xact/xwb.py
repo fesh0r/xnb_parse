@@ -96,7 +96,7 @@ class XWB(object):
         elif h_sig == XWB_B_SIGNATURE:
             big_endian = True
         else:
-            raise ValueError('bad sig: %s' % repr(h_sig))
+            raise ValueError("bad sig: {!r}".format(h_sig))
         stream = BinaryReader(data, big_endian=big_endian)
         (h_sig, h_version, h_header_version) = stream.unpack(self._wb_header)
         self.h_version = h_version
@@ -108,7 +108,8 @@ class XWB(object):
         # check if we have a valid BANKDATA region and parse it
         bankdata_size = stream.calc_size(self._wb_data)
         if regions['BANKDATA'].length != bankdata_size:
-            raise ReaderError("Invalid BANKDATA region size: %d != %d", regions['BANKDATA'].length, bankdata_size)
+            raise ReaderError("Invalid BANKDATA region size: {} != {}".format(regions['BANKDATA'].length,
+                                                                              bankdata_size))
         stream.seek(regions['BANKDATA'].offset)
         (h_flags, h_entry_count, h_bank_name_raw, h_entry_metadata_element_size, h_entry_name_element_size,
          h_alignment, h_compact_format, h_buildtime_raw_low, h_buildtime_raw_high) = stream.unpack(self._wb_data)
@@ -123,11 +124,11 @@ class XWB(object):
             raise ReaderError("Compact format not supported")
         bankentry_size = stream.calc_size(self._wb_entry)
         if bankentry_size != h_entry_metadata_element_size:
-            raise ReaderError("Unknown EntryMetaDataElementSize: %d != %d", bankentry_size,
-                              h_entry_metadata_element_size)
+            raise ReaderError("Unknown EntryMetaDataElementSize: {} != {}".format(bankentry_size,
+                                                                                  h_entry_metadata_element_size))
         if regions['ENTRYMETADATA'].length != bankentry_size * h_entry_count:
-            raise ReaderError("Invalid ENTRYMETADATA region size: %d != %d", regions['ENTRYMETADATA'].length,
-                              bankentry_size * h_entry_count)
+            raise ReaderError("Invalid ENTRYMETADATA region size: {} != {}".format(regions['ENTRYMETADATA'].length,
+                              bankentry_size * h_entry_count))
         stream.seek(regions['ENTRYMETADATA'].offset)
         # pylint: disable-msg=W0212
         entry_metadata = [XWBEntry._make(stream.unpack(self._wb_entry)) for _ in range(h_entry_count)]
@@ -137,8 +138,8 @@ class XWB(object):
         entry_names = None
         if h_flags & WAVEBANK_FLAGS_ENTRYNAMES:
             if regions['ENTRYNAMES'].length != h_entry_name_element_size * h_entry_count:
-                raise ReaderError("Invalid ENTRYNAMES region size: %d != %d", regions['ENTRYNAMES'].length,
-                                  h_entry_name_element_size * h_entry_count)
+                raise ReaderError("Invalid ENTRYNAMES region size: {} != {}".format(regions['ENTRYNAMES'].length,
+                                  h_entry_name_element_size * h_entry_count))
             stream.seek(regions['ENTRYNAMES'].offset)
             entry_names = [stream.read_bytes(h_entry_name_element_size).rstrip('\x00') for _ in range(h_entry_count)]
 
@@ -189,7 +190,7 @@ class XWB(object):
                     raise ReaderError("No SEEKTABLES found for xWMA format")
                 entry_dpds = entry_seektables[i]
             else:
-                raise ReaderError("Unhandled entry format: %d" % c_format_tag)
+                raise ReaderError("Unhandled entry format: {}".format(c_format_tag))
 
             # read entry wave data
             stream.seek(regions['ENTRYWAVEDATA'].offset + cur_meta.play_offset)

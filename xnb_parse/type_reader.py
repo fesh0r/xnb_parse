@@ -33,7 +33,7 @@ class BaseTypeReader(object):
         return self.reader_name
 
     def read(self):
-        raise ReaderError("Unimplemented type reader: '%s'" % self.reader_name)
+        raise ReaderError("Unimplemented type reader: '{}'".format(self.reader_name))
 
     def init_reader(self):
         pass
@@ -95,7 +95,7 @@ def generic_reader_name(main_type, args=None):
     try:
         return main_type.generic_reader_name + '[' + ','.join(full_args) + ']'
     except AttributeError:
-        raise ReaderError("Not generic type: '%s'" % main_type)
+        raise ReaderError("Not generic type: '{}'".format(main_type))
 
 
 def generic_reader_type(main_type, args=None):
@@ -108,4 +108,4 @@ def generic_reader_type(main_type, args=None):
     try:
         return main_type.generic_target_type + '[' + ','.join(full_args) + ']'
     except AttributeError:
-        raise NotGenericError("Not generic type: '%s'" % main_type.complete_name)
+        raise NotGenericError("Not generic type: '{}'".format(main_type.complete_name))

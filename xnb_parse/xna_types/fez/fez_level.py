@@ -15,7 +15,7 @@ class MapTree(object):
         self.map_node = map_node
 
     def __str__(self):
-        return "MapTree %s" % self.map_node
+        return "MapTree {}".format(self.map_node)
 
     def xml(self):
         root = E.MapTree()
@@ -34,7 +34,7 @@ class MapNode(object):
         self.has_warp_gate = has_warp_gate
 
     def __str__(self):
-        return "MapNode '%s' t:%s c:%d" % (self.level_name, self.node_type, len(self.connections))
+        return "MapNode '{}' t:{} c:{}".format(self.level_name, self.node_type, len(self.connections))
 
     def xml(self):
         root = E.Node(name=self.level_name, hasLesserGate=str(self.has_lesser_gate),
@@ -55,7 +55,7 @@ class MapNodeConnection(object):
         self.branch_oversize = branch_oversize
 
     def __str__(self):
-        return "MapNodeConnection f:%s" % self.face
+        return "MapNodeConnection f:{}".format(self.face)
 
     def xml(self):
         root = E.Connection(branchOversize=str(self.branch_oversize))
@@ -124,7 +124,7 @@ class Sky(object):
         self.layer_base_x_offset = layer_base_x_offset
 
     def __str__(self):
-        return "Sky '%s' b:'%s' l:%d" % (self.name, self.background, len(self.layers))
+        return "Sky '{}' b:'{}' l:{}".format(self.name, self.background, len(self.layers))
 
     def xml(self):
         root = E.Sky(name=self.name, background=self.background, windSpeed=str(self.wind_speed),
@@ -160,7 +160,7 @@ class SkyLayer(object):
         self.fog_tint = fog_tint
 
     def __str__(self):
-        return "SkyLayer '%s' o:%f" % (self.name, self.opacity)
+        return "SkyLayer '{}' o:{}".format(self.name, self.opacity)
 
     def xml(self):
         root = E.SkyLayer(name=self.name, opacity=str(self.opacity), fogTint=str(self.fog_tint),
@@ -175,7 +175,7 @@ class TrileSet(object):
         self.texture_atlas = texture_atlas
 
     def __str__(self):
-        return "TrileSet '%s' c:%d" % (self.name, len(self.triles))
+        return "TrileSet '{}' c:{}".format(self.name, len(self.triles))
 
     def xml(self):
         root = E.TrileSet(name=self.name)
@@ -210,7 +210,7 @@ class Trile(object):
         self.atlas_offset = atlas_offset
 
     def __str__(self):
-        return "Trile '%s' c:'%s' s:%d" % (self.name, self.cubemap_path, self.size)
+        return "Trile '{}' c:'{}' s:{}".format(self.name, self.cubemap_path, self.size)
 
     def xml(self):
         root = E.Trile(name=self.name, cubemapPath=self.cubemap_path, immaterial=str(self.immaterial),
@@ -276,7 +276,7 @@ class Level(object):
         self.quantum = quantum
 
     def __str__(self):
-        return "Level '%s'" % self.name
+        return "Level '{}'".format(self.name)
 
     def xml(self):
         root = E.Level(flat=str(self.flat),
@@ -369,7 +369,7 @@ class TrileInstance(object):
         self.overlapped_triles = overlapped_triles
 
     def __str__(self):
-        return "TrileInstance t:%d p:%f,%f,%f" % (self.trile_id, self.position.x, self.position.y, self.position.z)
+        return "TrileInstance t:{} p:{},{},{}".format(self.trile_id, self.position.x, self.position.y, self.position.z)
 
     def xml(self):
         root = E.TrileInstance(trileId=str(self.trile_id), orientation=str(self.orientation))
@@ -390,7 +390,7 @@ class ArtObjectInstance(object):
         self.actor_settings = actor_settings
 
     def __str__(self):
-        return "ArtObjectInstance '%s'" % self.name
+        return "ArtObjectInstance '{}'".format(self.name)
 
     def xml(self):
         root = E.ArtObjectInstance(name=self.name)
@@ -439,7 +439,7 @@ class BackgroundPlane(object):
         self.parallax_factor = parallax_factor
 
     def __str__(self):
-        return "BackgroundPlane t:'%s'" % self.texture_name
+        return "BackgroundPlane t:'{}'".format(self.texture_name)
 
     def xml(self):
         root = E.BackgroundPlane(textureName=self.texture_name, lightMap=str(self.light_map),
@@ -514,7 +514,7 @@ class TrileFace(object):
         self.face = face
 
     def __str__(self):
-        return "TrileFace f:%s t:%d,%d,%d" % (self.face, self.trile_id.x, self.trile_id.y, self.trile_id.z)
+        return "TrileFace f:{} t:{},{},{}".format(self.face, self.trile_id.x, self.trile_id.y, self.trile_id.z)
 
     def xml(self):
         root = E.TrileFace()
@@ -540,7 +540,7 @@ class NpcInstance(object):
         self.actions = actions
 
     def __str__(self):
-        return "NpcInstance '%s'" % self.name
+        return "NpcInstance '{}'".format(self.name)
 
     def xml(self):
         root = E.NpcInstance(name=self.name, walkSpeed=str(self.walk_speed), randomizeSpeed=str(self.randomize_speech),
@@ -593,7 +593,7 @@ class AmbienceTrack(object):
         self.night = night
 
     def __str__(self):
-        return "AmbienceTrack '%s'" % self.name
+        return "AmbienceTrack '{}'".format(self.name)
 
     def xml(self):
         root = E.AmbienceTrack(dawn=str(self.dawn), day=str(self.day), dusk=str(self.dusk), night=str(self.night))
@@ -635,7 +635,7 @@ class DotDialogueLine(object):
         self.grouped = grouped
 
     def __str__(self):
-        return "DotDialogueLine '%s'" % self.resource_text
+        return "DotDialogueLine '{}'".format(self.resource_text)
 
     def xml(self):
         root = E.Line(grouped=str(self.grouped))
@@ -660,7 +660,7 @@ class Script(object):
         self.is_win_condition = is_win_condition
 
     def __str__(self):
-        return "Script '%s'" % self.name
+        return "Script '{}'".format(self.name)
 
     def xml(self):
         root = E.Script(name=self.name, oneTime=str(self.one_time), triggerless=str(self.triggerless),
@@ -701,7 +701,7 @@ class ScriptAction(object):
         self.blocking = blocking
 
     def __str__(self):
-        return "ScriptAction a:%s" % self.operation
+        return "ScriptAction a:{}".format(self.operation)
 
     def xml(self):
         root = E.ScriptAction(operation=self.operation, killswitch=str(self.killswitch), blocking=str(self.blocking))
@@ -720,7 +720,7 @@ class ScriptCondition(object):
         self.value = value
 
     def __str__(self):
-        return "ScriptCondition o:%s" % self.operator
+        return "ScriptCondition o:{}".format(self.operator)
 
     def xml(self):
         root = E.ScriptCondition(property=self.property_, value=self.value)
@@ -737,7 +737,7 @@ class Entity(object):
         self.identifier = identifier
 
     def __str__(self):
-        return "Entity i:%d" % self.identifier
+        return "Entity i:{}".format(self.identifier)
 
     def xml(self):
         root = E.Entity(entityType=self.entity_type)
@@ -869,7 +869,7 @@ class SpeechLine(object):
         self.override_content = override_content
 
     def __str__(self):
-        return "SpeechLine '%s'" % self.text
+        return "SpeechLine '{}'".format(self.text)
 
     def xml(self):
         root = E.SpeechLine()

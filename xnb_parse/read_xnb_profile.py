@@ -34,6 +34,6 @@ def main():
         type_reader_manager = TypeReaderManager()
         for filename in sys.argv[1:]:
             read_xnb(filename, type_reader_manager)
-        print('> Done in %.2f seconds' % (time.time() - totaltime))
+        print('> Done in {:.2f} seconds'.format(time.time() - totaltime))
     else:
         print('read_xnb.py file1.xnb ...')

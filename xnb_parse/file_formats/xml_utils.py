@@ -31,7 +31,7 @@ except ImportError:
                 elif ET.iselement(item):
                     elem.append(item)
                 else:
-                    raise TypeError("bad argument: %r" % item)
+                    raise TypeError("bad argument: '{!r}".format(item))
             return elem
 
         def __getattr__(self, tag):

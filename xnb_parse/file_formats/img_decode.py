@@ -28,13 +28,13 @@ def decode_rgba(data, width, height, needs_swap, alpha='yes'):
 
 def decode32(data, width, height, conv, alpha='yes'):
     if conv not in ('rgba_rgba', 'abgr_rgba', 'bgra_rgba', 'argb_rgba'):
-        raise ReaderError("Unknown conversion: '%s'" % conv)
+        raise ReaderError("Unknown conversion: '{}'".format(conv))
     if alpha not in ('yes', 'no', 'only'):
-        raise ValueError("Invalid alpha parameter: '%s'", alpha)
+        raise ValueError("Invalid alpha parameter: '{}'".format(alpha))
     stride = width * 4
     expected_len = stride * height
     if len(data) != expected_len:
-        raise ReaderError("Invalid data size: %d != %d", (len(data), expected_len))
+        raise ReaderError("Invalid data size: {} != {}".format(len(data), expected_len))
     full_row_ff = bytearray([0xff] * width)
     for pos in xrange(0, len(data), stride):
         row = bytearray(data[pos:pos + stride])
@@ -60,11 +60,11 @@ def decode_a(data, width, height, needs_swap, alpha='yes'):  # pylint: disable-m
 
 def decode8(data, width, height, conv):
     if conv not in ('a_xxxa',):
-        raise ReaderError("Unknown conversion: '%s'" % conv)
+        raise ReaderError("Unknown conversion: '{}'".format(conv))
     stride = width
     expected_len = stride * height
     if len(data) != expected_len:
-        raise ReaderError("Invalid data size: %d != %d", (len(data), expected_len))
+        raise ReaderError("Invalid data size: {} != {}".format(len(data), expected_len))
     for pos in xrange(0, len(data), stride):
         row = bytearray([0xff] * width * 4)
         row[3::4] = data[pos:pos + stride]
@@ -88,9 +88,9 @@ class DxtDecoder(object):
 
     def __init__(self, width, height, surface_format, data, needs_swap=False):
         if surface_format not in self._FORMATS:
-            raise ReaderError("Unknown DXT format: '%s'", surface_format)
+            raise ReaderError("Unknown DXT format: '{}'".format(surface_format))
         if (width | height) & 3:
-            raise ReaderError("Bad dimensions for DXT: %dx%d" % (width, height))
+            raise ReaderError("Bad dimensions for DXT: {}x{}".format(width, height))
         self.width = width
         self.height = height
         self.surface_format = surface_format
@@ -99,7 +99,7 @@ class DxtDecoder(object):
         stride = (self.width >> 2) * self.block_size
         expected_len = stride * (self.height >> 2)
         if len(self.data) != expected_len:
-            raise ReaderError("Invalid data size for DXT: %d != %d", (len(data), expected_len))
+            raise ReaderError("Invalid data size for DXT: {} != {}".format(len(data), expected_len))
         self.out_rows = [bytearray([0] * self.width * 4), bytearray([0] * self.width * 4),
                          bytearray([0] * self.width * 4), bytearray([0] * self.width * 4)]
         if needs_swap:
@@ -113,7 +113,7 @@ class DxtDecoder(object):
 
     def decode(self, alpha='yes'):
         if alpha not in ('yes', 'no', 'only'):
-            raise ValueError("Invalid alpha parameter: '%s'", alpha)
+            raise ValueError("Invalid alpha parameter: '{}'".format(alpha))
         source_offset = 0
         full_row_ff = bytearray([0xff] * self.width)
         for _ in xrange(0, self.height, 4):

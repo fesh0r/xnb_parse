@@ -20,8 +20,8 @@ class SoundEffect(object):
         self.needs_swap = needs_swap
 
     def __str__(self):
-        return "SoundEffect fs:%d ds:%d d:%dms ls:%d ll:%d" % (len(self.sound_format), len(self.sound_data),
-                                                               self.duration, self.loop_start, self.loop_length)
+        return "SoundEffect fs:{} ds:{} d:{}ms ls:{} ll:{}".format(len(self.sound_format), len(self.sound_data),
+                                                                   self.duration, self.loop_start, self.loop_length)
 
     def export(self, filename):
         write_wav(filename, self.sound_format, self.sound_data, self.needs_swap)
@@ -38,7 +38,7 @@ class Song(object):
         self.duration = duration
 
     def __str__(self):
-        return "Song f:'%s' d:%dms" % (self.filename, self.duration)
+        return "Song f:'{}' d:{}ms".format(self.filename, self.duration)
 
     def xml(self):
         root = E.Song(filename=self.filename, duration=str(self.duration))
@@ -55,8 +55,8 @@ class Video(object):
         self.video_soundtrack_type = video_soundtrack_type
 
     def __str__(self):
-        return "Video f:'%s' d:%dms s:%dx%d f:%d t:%s" % (self.filename, self.duration, self.width, self.height,
-                                                          self.fps, self.video_soundtrack_type)
+        return "Video f:'{}' d:{}ms s:{}x{} f:{:.2f} t:{}".format(self.filename, self.duration, self.width, self.height,
+                                                                  self.fps, self.video_soundtrack_type)
 
     def xml(self):
         root = E.Video()

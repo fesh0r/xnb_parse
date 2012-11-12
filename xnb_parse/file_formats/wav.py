@@ -55,7 +55,7 @@ class PyWavWriter(object):
             if self.h_format_tag == WAVE_FORMAT_XMA2:
                 waveformat_xma2_size = h_s.calc_size(self._waveformat_xma2)
                 if self.h_size != waveformat_xma2_size:
-                    raise ReaderError("Unknown cbSize for XMA2WAVEFORMATEX: %d" % self.h_size)
+                    raise ReaderError("Unknown cbSize for XMA2WAVEFORMATEX: {}".format(self.h_size))
                 (self.hx_num_streams, self.hx_channel_mask, self.hx_samples_encoded, self.hx_bytes_per_block,
                  self.hx_play_begin, self.hx_play_length, self.hx_loop_begin, self.hx_loop_length, self.hx_loop_count,
                  self.hx_encoder_version, self.hx_block_count) = h_s.unpack(self._waveformat_xma2)
@@ -63,7 +63,7 @@ class PyWavWriter(object):
             elif self.h_format_tag == WAVE_FORMAT_EXTENSIBLE:
                 waveformat_extensible_size = h_s.calc_size(self._waveformat_extensible)
                 if self.h_size < waveformat_extensible_size:
-                    raise ReaderError("Invalid cbSize for WAVEFORMATEXTENSIBLE: %d", self.h_size)
+                    raise ReaderError("Invalid cbSize for WAVEFORMATEXTENSIBLE: {}".format(self.h_size))
                 (self.he_valid_bits_per_sample, self.he_channel_mask,
                  he_subformat_bytes) = h_s.unpack(self._waveformat_extensible)
                 self.he_subformat = UUID(bytes_le=he_subformat_bytes)
@@ -72,35 +72,35 @@ class PyWavWriter(object):
                 if self.h_size > waveformat_extensible_size:
                     self.he_remainder = h_s.read_bytes(self.h_size - waveformat_extensible_size)
                     header_size += self.h_size - waveformat_extensible_size
-                    raise ReaderError("Extra bytes in WAVEFORMATEXTENSIBLE: %d", h_s.remaining)
+                    raise ReaderError("Extra bytes in WAVEFORMATEXTENSIBLE: {}".format(h_s.remaining))
             self.h_remainder = None
             if h_s.remaining():
                 self.h_remainder = h_s.remainder()
                 header_size += len(self.h_remainder)
-                raise ReaderError("Trailing bytes in header: %d", len(self.h_remainder))
+                raise ReaderError("Trailing bytes in header: {}".format(len(self.h_remainder)))
         if header_size != len(self.header_raw):
-            raise ReaderError("Header size mismatch: %d != %d" % (header_size, len(self.header_raw)))
+            raise ReaderError("Header size mismatch: {} != {}".format(header_size, len(self.header_raw)))
 
     def dump(self):
         if self.needs_swap:
             out_str = 'RIFX '
         else:
             out_str = 'RIFF '
-        out_str += 'h:%d d:%d %s\n' % (len(self.header_raw), len(self.data_raw),
-                                       WAVE_FORMAT.get(self.h_format_tag, 'UNKNOWN'))
-        out_str += 'wFormatTag:0x%04x nChannels:%d nSamplesPerSec:%d nAvgBytesPerSec:%d\n' % (
+        out_str += 'h:{} d:{} {}\n'.format(len(self.header_raw), len(self.data_raw),
+                                           WAVE_FORMAT.get(self.h_format_tag, 'UNKNOWN'))
+        out_str += 'wFormatTag:0x{:04x} nChannels:{} nSamplesPerSec:{} nAvgBytesPerSec:{}\n'.format(
             self.h_format_tag, self.h_channels, self.h_avg_bytes_per_sec, self.h_samples_per_sec)
-        out_str += 'nBlockAlign:%d wBitsPerSample:%d cbSize:%d\n' % (
+        out_str += 'nBlockAlign:{} wBitsPerSample:{} cbSize:{}\n'.format(
             self.h_block_align, self.h_bits_per_sample, self.h_size)
         if self.h_format_tag == WAVE_FORMAT_XMA2:
-            out_str += 'NumStreams:%d ChannelMask:%08x SamplesEncoded:%d BytesPerBlock:%d\n' % (
+            out_str += 'NumStreams:{} ChannelMask:0x{:08x} SamplesEncoded:{} BytesPerBlock:{}\n'.format(
                 self.hx_num_streams, self.hx_channel_mask, self.hx_samples_encoded, self.hx_play_begin)
-            out_str += 'PlayBegin:%d PlayLength:%d LoopBegin:%d LoopLength:%d\n' % (
+            out_str += 'PlayBegin:{} PlayLength:{} LoopBegin:{} LoopLength:{}\n'.format(
                 self.hx_play_begin, self.hx_play_length, self.hx_loop_begin, self.hx_loop_length)
-            out_str += 'LoopCount:%d EncoderVersion:%d BlockCount:%d\n' % (
+            out_str += 'LoopCount:{} EncoderVersion:{} BlockCount:{}\n'.format(
                 self.hx_loop_count, self.hx_encoder_version, self.hx_block_count)
         elif self.h_format_tag == WAVE_FORMAT_EXTENSIBLE:
-            out_str += 'wValidBitsPerSample:%d dwChannelMask:%08x\n' % (
+            out_str += 'wValidBitsPerSample:{} dwChannelMask:0x{:08x}\n'.format(
                 self.he_valid_bits_per_sample, self.he_channel_mask)
         print(out_str)
 

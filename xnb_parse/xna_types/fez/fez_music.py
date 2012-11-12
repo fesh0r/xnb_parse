@@ -36,7 +36,7 @@ class TrackedSong(object):
         self.custom_ordering = custom_ordering
 
     def __str__(self):
-        return "TrackedSong '%s'" % self.name
+        return "TrackedSong '{}'".format(self.name)
 
     def xml(self):
         root = E.TrackedSong(name=self.name, tempo=str(self.tempo), timeSignature=str(self.time_signature))
@@ -72,7 +72,7 @@ class Loop(object):
         self.cut_off_tail = cut_off_tail
 
     def __str__(self):
-        return "Loop '%s' d:%d" % (self.name, self.duration)
+        return "Loop '{}' d:{}".format(self.name, self.duration)
 
     def xml(self):
         root = E.Loop(name=self.name, duration=str(self.duration), loopTimesFrom=str(self.loop_times_from),

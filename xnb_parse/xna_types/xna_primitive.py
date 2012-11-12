@@ -31,7 +31,7 @@ class Enum(object):
         return self._name
 
     def __repr__(self):
-        return '%s(%d)' % (self.__class__.__name__, self._value)
+        return '{}({})'.format(self.__class__.__name__, self._value)
 
     def xml(self):
         xml_tag = self.xml_tag if self.xml_tag else self.__class__.__name__

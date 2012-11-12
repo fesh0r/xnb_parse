@@ -17,7 +17,7 @@ class EnumReader(GenericValueTypeReader, TypeReaderPlugin):
     def init_reader(self):
         GenericValueTypeReader.init_reader(self)
         if not self.readers[0].is_enum_type:
-            ReaderError("Not enum type reader: '%s'" % self.readers[0])
+            ReaderError("Not enum type reader: '{}'".format(self.readers[0]))
 
     def read(self):
         return self.readers[0].read()

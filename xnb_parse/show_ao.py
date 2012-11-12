@@ -181,7 +181,7 @@ def read_xnb(filename, expected_type=None, type_reader_manager=None):
         data = handle.read()
     xnb_content = XNBReader.load(data, type_reader_manager).content
     if expected_type is not None and type(xnb_content) != expected_type:
-        raise ReaderError("Unexpected XNB type: %s != %s" % (type(xnb_content).__name__, expected_type.__name__))
+        raise ReaderError("Unexpected XNB type: {} != {}".format(type(xnb_content).__name__, expected_type.__name__))
     return xnb_content
 
 
