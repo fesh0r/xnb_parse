@@ -12,7 +12,7 @@ import zlib
 class PyPngWriter(object):
     # The PNG signature.
     # http://www.w3.org/TR/PNG/#5PNG-file-signature
-    _SIGNATURE = struct.pack(str('8B'), 137, 80, 78, 71, 13, 10, 26, 10)
+    _SIGNATURE = struct.pack('8B', 137, 80, 78, 71, 13, 10, 26, 10)
 
     def __init__(self, width=None, height=None):
         if width <= 0 or height <= 0:
@@ -35,8 +35,8 @@ class PyPngWriter(object):
         outfile.write(PyPngWriter._SIGNATURE)
 
         # http://www.w3.org/TR/PNG/#11IHDR
-        PyPngWriter._write_chunk(outfile, 'IHDR', struct.pack(str('!2I5B'), self.width, self.height, 8, self.color_type,
-                                                              0, 0, 0))
+        PyPngWriter._write_chunk(outfile, 'IHDR', struct.pack("!2I5B", self.width, self.height, 8, self.color_type, 0,
+                                                              0, 0))
 
         # http://www.w3.org/TR/PNG/#11IDAT
         compressor = zlib.compressobj()
@@ -64,13 +64,13 @@ class PyPngWriter(object):
     @staticmethod
     def _write_chunk(outfile, tag, data=''):
         # http://www.w3.org/TR/PNG/#5Chunk-layout
-        outfile.write(struct.pack(str('!I'), len(data)))
+        outfile.write(struct.pack("!I", len(data)))
         outfile.write(tag)
         outfile.write(data)
         checksum = zlib.crc32(tag)
         checksum = zlib.crc32(data, checksum)
         checksum &= 2 ** 32 - 1
-        outfile.write(struct.pack(str('!I'), checksum))
+        outfile.write(struct.pack("!I", checksum))
 
 
 def write_png(filename, width, height, rows):
