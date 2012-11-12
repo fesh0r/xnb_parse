@@ -3,8 +3,6 @@
 graphics type readers
 """
 
-from __future__ import absolute_import, division, unicode_literals, print_function
-
 from xnb_parse.type_reader import BaseTypeReader, ReaderError, EnumTypeReader
 from xnb_parse.type_reader_manager import TypeReaderPlugin
 from xnb_parse.xna_types.xna_graphics import (Texture2D, Texture3D, TextureCube, CUBE_SIDES, IndexBuffer, Effect,

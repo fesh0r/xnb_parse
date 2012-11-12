@@ -3,8 +3,6 @@
 WAV file writer
 """
 
-from __future__ import absolute_import, division, unicode_literals, print_function
-
 from uuid import UUID
 
 from xnb_parse.type_reader import ReaderError

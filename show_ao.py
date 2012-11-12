@@ -4,8 +4,6 @@
 Show ArtObject from XNB
 """
 
-from __future__ import absolute_import, division, unicode_literals, print_function
-
 from xnb_parse.show_ao import main
 
 

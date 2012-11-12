@@ -3,8 +3,6 @@
 FEZ music types
 """
 
-from __future__ import absolute_import, division, unicode_literals, print_function
-
 from xnb_parse.xna_types.xna_primitive import Enum
 from xnb_parse.file_formats.xml_utils import E
 

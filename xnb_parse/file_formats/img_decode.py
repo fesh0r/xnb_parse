@@ -3,8 +3,6 @@
 Decode DXT/other textures to RGBA
 """
 
-from __future__ import absolute_import, division, unicode_literals, print_function
-
 import struct
 
 from xnb_parse.type_reader import ReaderError

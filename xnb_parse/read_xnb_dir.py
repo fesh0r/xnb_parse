@@ -3,8 +3,6 @@
 Dump info from directory of XNBs
 """
 
-from __future__ import absolute_import, division, unicode_literals, print_function
-
 import sys
 import os
 import time
