@@ -86,19 +86,19 @@ class PyWavWriter(object):
             out_str = 'RIFF '
         out_str += 'h:{} d:{} {}\n'.format(len(self.header_raw), len(self.data_raw),
                                            WAVE_FORMAT.get(self.h_format_tag, 'UNKNOWN'))
-        out_str += 'wFormatTag:0x{:04x} nChannels:{} nSamplesPerSec:{} nAvgBytesPerSec:{}\n'.format(
+        out_str += 'wFormatTag:{:#04x} nChannels:{} nSamplesPerSec:{} nAvgBytesPerSec:{}\n'.format(
             self.h_format_tag, self.h_channels, self.h_avg_bytes_per_sec, self.h_samples_per_sec)
         out_str += 'nBlockAlign:{} wBitsPerSample:{} cbSize:{}\n'.format(
             self.h_block_align, self.h_bits_per_sample, self.h_size)
         if self.h_format_tag == WAVE_FORMAT_XMA2:
-            out_str += 'NumStreams:{} ChannelMask:0x{:08x} SamplesEncoded:{} BytesPerBlock:{}\n'.format(
+            out_str += 'NumStreams:{} ChannelMask:{:#08x} SamplesEncoded:{} BytesPerBlock:{}\n'.format(
                 self.hx_num_streams, self.hx_channel_mask, self.hx_samples_encoded, self.hx_play_begin)
             out_str += 'PlayBegin:{} PlayLength:{} LoopBegin:{} LoopLength:{}\n'.format(
                 self.hx_play_begin, self.hx_play_length, self.hx_loop_begin, self.hx_loop_length)
             out_str += 'LoopCount:{} EncoderVersion:{} BlockCount:{}\n'.format(
                 self.hx_loop_count, self.hx_encoder_version, self.hx_block_count)
         elif self.h_format_tag == WAVE_FORMAT_EXTENSIBLE:
-            out_str += 'wValidBitsPerSample:{} dwChannelMask:0x{:08x}\n'.format(
+            out_str += 'wValidBitsPerSample:{} dwChannelMask:{:#08x}\n'.format(
                 self.he_valid_bits_per_sample, self.he_channel_mask)
         print(out_str)
 

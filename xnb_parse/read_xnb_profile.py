@@ -6,6 +6,8 @@ Dump info from XNB
 import sys
 import os
 import time
+
+#noinspection PyUnresolvedReferences
 from guppy import hpy  # pylint: disable-msg=F0401
 
 from xnb_parse.xnb_reader import XNBReader

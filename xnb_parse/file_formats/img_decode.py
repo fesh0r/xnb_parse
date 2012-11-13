@@ -3,7 +3,7 @@
 Decode DXT/other textures to RGBA
 """
 
-import struct
+from struct import Struct
 
 from xnb_parse.type_reader import ReaderError
 
@@ -101,9 +101,9 @@ class DxtDecoder(object):
         self.out_rows = [bytearray([0] * self.width * 4), bytearray([0] * self.width * 4),
                          bytearray([0] * self.width * 4), bytearray([0] * self.width * 4)]
         if needs_swap:
-            self.swap_struct = struct.Struct('>HHHH')
+            self.swap_struct = Struct('>HHHH')
         else:
-            self.swap_struct = struct.Struct('<HHHH')
+            self.swap_struct = Struct('<HHHH')
 
         self.explicit_alphas = []
         for cur_a in range(16):
