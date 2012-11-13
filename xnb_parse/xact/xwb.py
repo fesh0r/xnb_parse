@@ -136,8 +136,8 @@ class XWB(object):
         entry_names = None
         if h_flags & WAVEBANK_FLAGS_ENTRYNAMES:
             if regions['ENTRYNAMES'].length != h_entry_name_element_size * h_entry_count:
-                raise ReaderError("Invalid ENTRYNAMES region size: {} != {}".format(regions['ENTRYNAMES'].length,
-                                  h_entry_name_element_size * h_entry_count))
+                raise ReaderError("Invalid ENTRYNAMES region size: {} != {}".format(
+                    regions['ENTRYNAMES'].length, h_entry_name_element_size * h_entry_count))
             stream.seek(regions['ENTRYNAMES'].offset)
             entry_names = [stream.read_bytes(h_entry_name_element_size).rstrip(b'\x00').decode('utf-8')
                            for _ in range(h_entry_count)]

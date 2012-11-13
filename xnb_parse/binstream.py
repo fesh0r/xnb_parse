@@ -5,7 +5,6 @@
 
 import struct
 from io import BytesIO
-from array import array
 
 
 _TYPE_FMT = {
