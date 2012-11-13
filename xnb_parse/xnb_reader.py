@@ -23,18 +23,16 @@ PROFILE_HIDEF = 1
 VERSION_30 = 3
 VERSION_31 = 4
 VERSION_40 = 5
+XNB_PLATFORMS = {PLATFORM_WINDOWS: 'W', PLATFORM_XBOX: 'X', PLATFORM_MOBILE: 'M'}
+XNB_VERSIONS = {VERSION_30: '30', VERSION_31: '31', VERSION_40: '40'}
+XNB_PROFILES = {PROFILE_REACH: 'r', PROFILE_HIDEF: 'h'}
+
+_PROFILE_MASK = 0x7f
+_COMPRESS_MASK = 0x80
+_XNB_HEADER = '3s c B B I'
 
 
 class XNBReader(BinaryReader):
-    platforms = {PLATFORM_WINDOWS: 'W', PLATFORM_XBOX: 'X', PLATFORM_MOBILE: 'M'}
-    versions = {VERSION_30: '30', VERSION_31: '31', VERSION_40: '40'}
-    profiles = {PROFILE_REACH: 'r', PROFILE_HIDEF: 'h'}
-
-    _profile_mask = 0x7f
-    _compress_mask = 0x80
-
-    _header = '3s c B B I'
-
     def __init__(self, data, file_platform=PLATFORM_WINDOWS, file_version=VERSION_40, graphics_profile=PROFILE_REACH,
                  compressed=False, type_reader_manager=None, parse=True, expected_type_reader=None):
         BinaryReader.__init__(self, data)
@@ -53,8 +51,8 @@ class XNBReader(BinaryReader):
             self.parse()
 
     def __str__(self):
-        return 'XNB {}{}{} s:{}'.format(self.platforms[self.file_platform], self.versions[self.file_version],
-                                        self.profiles[self.graphics_profile], self.length)
+        return 'XNB {}{}{} s:{}'.format(XNB_PLATFORMS[self.file_platform], XNB_VERSIONS[self.file_version],
+                                        XNB_PROFILES[self.graphics_profile], self.length)
 
     def parse(self, verbose=False):
         if self.type_reader_manager is None:
@@ -106,24 +104,24 @@ class XNBReader(BinaryReader):
     @classmethod
     def load(cls, data, type_reader_manager=None, parse=True):
         stream = BinaryReader(data)
-        (sig, platform, version, attribs, size) = stream.unpack(cls._header)
+        (sig, platform, version, attribs, size) = stream.unpack(_XNB_HEADER)
         if sig != XNB_SIGNATURE:
             raise ValueError("bad sig: '{!r}'".format(sig))
-        if platform not in cls.platforms:
+        if platform not in XNB_PLATFORMS:
             raise ValueError("bad platform: '{!r}'".format(platform))
-        if version not in cls.versions:
+        if version not in XNB_VERSIONS:
             raise ValueError("bad version: {}".format(version))
         if len(data) != size:
             raise ValueError("bad size: {} != {}".format(len(data), size))
         compressed = False
         profile = 0
         if version >= VERSION_40:
-            profile = attribs & cls._profile_mask
-            if profile not in cls.profiles:
+            profile = attribs & _PROFILE_MASK
+            if profile not in XNB_PROFILES:
                 raise ValueError("bad profile: {}".format(profile))
         if version >= VERSION_30:
-            compressed = bool(attribs & cls._compress_mask)
-            size -= stream.calc_size(cls._header)
+            compressed = bool(attribs & _COMPRESS_MASK)
+            size -= stream.calc_size(_XNB_HEADER)
         if compressed:
             uncomp = stream.read_int32()
             size -= 4
@@ -136,27 +134,27 @@ class XNBReader(BinaryReader):
     def save(self, compress=False):
         if not hasattr(self, 'data'):
             raise ValueError("XNB data deleted")
-        if self.file_platform not in self.platforms:
+        if self.file_platform not in XNB_PLATFORMS:
             raise ValueError("bad platform: '{!r}'".format(self.file_platform))
-        if self.file_version not in self.versions:
+        if self.file_version not in XNB_VERSIONS:
             raise ValueError("bad version: {}".format(self.file_version))
         attribs = 0
         if self.file_version >= VERSION_40:
-            if self.graphics_profile not in self.profiles:
+            if self.graphics_profile not in XNB_PROFILES:
                 raise ValueError("bad profile: {}".format(self.graphics_profile))
-            attribs |= self.graphics_profile & self._profile_mask
+            attribs |= self.graphics_profile & _PROFILE_MASK
         do_compress = False
         if self.file_version >= VERSION_30:
             if compress:
                 do_compress = True
-                attribs |= self._compress_mask
+                attribs |= _COMPRESS_MASK
         stream = BinaryWriter()
         if do_compress:
             raise ValueError("Recompression not supported")
         else:
             data = self.data
-            size = len(data) + stream.calc_size(self._header)
-        stream.pack(self._header, XNB_SIGNATURE, self.file_platform, self.file_version, attribs, size)
+            size = len(data) + stream.calc_size(_XNB_HEADER)
+        stream.pack(_XNB_HEADER, XNB_SIGNATURE, self.file_platform, self.file_version, attribs, size)
         stream.write_bytes(data)
         return stream.serial()
 

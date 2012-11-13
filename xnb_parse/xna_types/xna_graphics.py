@@ -5,7 +5,7 @@ graphics types
 
 import os
 
-from xnb_parse.xnb_reader import VERSION_40, XNBReader
+from xnb_parse.xnb_reader import VERSION_40, XNB_VERSIONS
 from xnb_parse.type_reader import ReaderError
 from xnb_parse.xna_types.xna_primitive import Enum
 from xnb_parse.file_formats.png import write_png
@@ -121,7 +121,7 @@ def get_surface_format(xna_version, surface_format):
         else:
             return SurfaceFormat(surface_format)
     except KeyError:
-        raise ReaderError("Invalid surface format for V{}: {}".format(XNBReader.versions[xna_version], surface_format))
+        raise ReaderError("Invalid surface format for V{}: {}".format(XNB_VERSIONS[xna_version], surface_format))
 
 
 class Texture2D(object):

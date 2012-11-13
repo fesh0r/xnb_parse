@@ -28,8 +28,8 @@ def read_xnb_dir(in_dir, out_dir=None, type_reader_manager=None):
             print(in_file)
             with open(in_file, 'rb') as in_handle:
                 in_data = in_handle.read()
-            xnb = XNBReader.load(in_data, type_reader_manager, parse=False)
             try:
+                xnb = XNBReader.load(in_data, type_reader_manager, parse=False)
                 xnb.parse()
                 if out_file is not None:
                     xnb.export(out_file)

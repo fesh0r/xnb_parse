@@ -8,31 +8,30 @@ from io import BytesIO
 from array import array
 
 
-class BinaryStream(object):
-    _type_fmt = {
-        'u8': 'Q',
-        's8': 'q',
-        'u4': 'I',
-        's4': 'i',
-        'u2': 'H',
-        's2': 'h',
-        'u1': 'B',
-        's1': 'b',
-        'c1': 'c',
-        'f': 'f',
-        'd': 'd',
-        '?': '?'
-    }
+_TYPE_FMT = {
+    'u8': 'Q',
+    's8': 'q',
+    'u4': 'I',
+    's4': 'i',
+    'u2': 'H',
+    's2': 'h',
+    'u1': 'B',
+    's1': 'b',
+    'c1': 'c',
+    'f': 'f',
+    'd': 'd',
+    '?': '?'
+}
 
+
+class BinaryStream(object):
     def __init__(self, big_endian=False):
         self.big_endian = big_endian
         if self.big_endian:
             self._fmt_end = '>'
         else:
             self._fmt_end = '<'
-        self._types = {}
-        for name, type_ in self._type_fmt.items():
-            self._types[name] = struct.Struct(self._fmt_end + type_)
+        self._types = {k: struct.Struct(self._fmt_end + v) for k, v in _TYPE_FMT.items()}
 
     def calc_size(self, fmt):
         return struct.calcsize(self._fmt_end + fmt)

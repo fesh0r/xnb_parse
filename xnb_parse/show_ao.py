@@ -137,10 +137,6 @@ class AO(object):
         ao_filename = os.path.normpath(ao_filename)
         ao_dir = os.path.dirname(ao_filename)
         ao_xnb = read_xnb(ao_filename, expected_type=ArtObject, type_reader_manager=type_reader_manager)
-        cm_filename = os.path.join(ao_dir, ao_xnb.cubemap_path.lower() + '.xnb')
-        cm_xnb = read_xnb(cm_filename, expected_type=Texture2D, type_reader_manager=type_reader_manager)
-        cm_image = pyglet.image.ImageData(cm_xnb.width, cm_xnb.height, 'RGBA', str(cm_xnb.full_data()))
-        self.texture = cm_image.get_texture()
 
         indices = ao_xnb.geometry.indices
         vertices = []
@@ -160,6 +156,11 @@ class AO(object):
                                                        ('v3f', vertices),
                                                        ('n3f', normals),
                                                        ('t2f', texture_coords))
+
+        cm_filename = os.path.join(ao_dir, ao_xnb.cubemap_path.lower() + '.xnb')
+        cm_xnb = read_xnb(cm_filename, expected_type=Texture2D, type_reader_manager=type_reader_manager)
+        cm_image = pyglet.image.ImageData(cm_xnb.width, cm_xnb.height, 'RGBA', bytes(cm_xnb.full_data()))
+        self.texture = cm_image.get_texture()
 
         glDisable(self.texture.target)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)

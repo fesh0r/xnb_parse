@@ -29,7 +29,7 @@ class XNADict(dict):
 
     def xml(self, xml_tag='Dict', xml_entry='Entry', attrib=None):
         root = E(xml_tag)
-        for cur_key, cur_value in list(self.items()):
+        for cur_key, cur_value in self.items():
             cur_tag = E(xml_entry)
             if hasattr(cur_key, 'xml') and not isinstance(cur_key, Enum):
                 cur_tag.append(cur_key.xml())
