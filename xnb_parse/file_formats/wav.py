@@ -135,16 +135,16 @@ class PyWavWriter(object):
             seek_size = None
         o_s = BinaryWriter()
         if self.h_format_tag == WAVE_FORMAT_WMAUDIO2 or self.h_format_tag == WAVE_FORMAT_WMAUDIO3:
-            riff_type = 'XWMA'
+            riff_type = b'XWMA'
         else:
-            riff_type = 'WAVE'
+            riff_type = b'WAVE'
         self.write_header(o_s, riff_type, len(header_raw), len(self.data_raw), dpds_size, seek_size)
-        self.write_chunk(o_s, 'fmt ', header_raw)
+        self.write_chunk(o_s, b'fmt ', header_raw)
         if self.dpds_raw:
-            self.write_chunk(o_s, 'dpds', self.dpds_raw)
+            self.write_chunk(o_s, b'dpds', self.dpds_raw)
         if self.seek_raw:
-            self.write_chunk(o_s, 'seek', self.seek_raw)
-        self.write_chunk(o_s, 'data', self.data_raw)
+            self.write_chunk(o_s, b'seek', self.seek_raw)
+        self.write_chunk(o_s, b'data', self.data_raw)
         wav_data = o_s.serial()
         if self.h_format_tag == WAVE_FORMAT_XMA2:
             full_filename = filename + '.xma'
@@ -162,7 +162,7 @@ class PyWavWriter(object):
             full_size += 8 + dpds_size
         if seek_size:
             full_size += 8 + seek_size
-        o_s.write_bytes('RIFF')
+        o_s.write_bytes(b'RIFF')
         o_s.write_uint32(full_size)
         o_s.write_bytes(riff_type)
 

@@ -13,8 +13,8 @@ from xnb_parse.type_reader import ReaderError
 from xnb_parse.binstream import BinaryReader, BinaryWriter
 
 
-XWB_L_SIGNATURE = 'WBND'
-XWB_B_SIGNATURE = 'DNBW'
+XWB_L_SIGNATURE = b'WBND'
+XWB_B_SIGNATURE = b'DNBW'
 WAVEBANK_TYPE_BUFFER = 0x00000000
 WAVEBANK_TYPE_STREAMING = 0x00000001
 WAVEBANK_TYPE_MASK = 0x00000001
@@ -112,7 +112,7 @@ class XWB(object):
         stream.seek(regions['BANKDATA'].offset)
         (h_flags, h_entry_count, h_bank_name_raw, h_entry_metadata_element_size, h_entry_name_element_size,
          h_alignment, h_compact_format, h_buildtime_raw_low, h_buildtime_raw_high) = stream.unpack(self._wb_data)
-        h_bank_name = h_bank_name_raw.rstrip('\x00')
+        h_bank_name = h_bank_name_raw.rstrip(b'\x00')
         h_buildtime = filetime_to_datetime(h_buildtime_raw_low, h_buildtime_raw_high)
         self.h_flags = h_flags
         self.h_bank_name = h_bank_name
@@ -140,7 +140,7 @@ class XWB(object):
                 raise ReaderError("Invalid ENTRYNAMES region size: {} != {}".format(regions['ENTRYNAMES'].length,
                                   h_entry_name_element_size * h_entry_count))
             stream.seek(regions['ENTRYNAMES'].offset)
-            entry_names = [stream.read_bytes(h_entry_name_element_size).rstrip('\x00') for _ in range(h_entry_count)]
+            entry_names = [stream.read_bytes(h_entry_name_element_size).rstrip(b'\x00') for _ in range(h_entry_count)]
 
         # read SEEKTABLES if present
         entry_seektables = None
