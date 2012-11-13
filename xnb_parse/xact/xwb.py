@@ -100,7 +100,7 @@ class XWB(object):
         self.h_version = h_version
         self.h_header_version = h_header_version
         # pylint: disable-msg=W0212
-        regions = dict(zip(self._regions, [XWBRegion._make(stream.unpack(self._wb_region)) for _ in self._regions]))
+        regions = dict(list(zip(self._regions, [XWBRegion._make(stream.unpack(self._wb_region)) for _ in self._regions])))
         # pylint: enable-msg=W0212
 
         # check if we have a valid BANKDATA region and parse it

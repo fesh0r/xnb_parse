@@ -31,7 +31,7 @@ class BinaryStream(object):
         else:
             self._fmt_end = '<'
         self._types = {}
-        for name, type_ in self._type_fmt.items():
+        for name, type_ in list(self._type_fmt.items()):
             self._types[name] = Struct(self._fmt_end + type_)
 
     def calc_size(self, fmt):
@@ -255,7 +255,7 @@ class BinaryReader(BinaryStream):
             raw_value <<= 6
             raw_value |= ord(self.pull(1)) & 0x3f
             byte_count -= 1
-        value = unichr(raw_value)
+        value = chr(raw_value)
         return value
 
     def read_string(self):

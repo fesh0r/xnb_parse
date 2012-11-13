@@ -17,9 +17,9 @@ class XNAList(list):
                 cur_tag = cur_value.xml()
             elif attrib:
                 cur_tag = E(xml_entry)
-                cur_tag.set(attrib, unicode(cur_value))
+                cur_tag.set(attrib, str(cur_value))
             else:
-                cur_tag = E(xml_entry, unicode(cur_value))
+                cur_tag = E(xml_entry, str(cur_value))
             root.append(cur_tag)
         return root
 
@@ -29,18 +29,18 @@ class XNADict(dict):
 
     def xml(self, xml_tag='Dict', xml_entry='Entry', attrib=None):
         root = E(xml_tag)
-        for cur_key, cur_value in self.items():
+        for cur_key, cur_value in list(self.items()):
             cur_tag = E(xml_entry)
             if hasattr(cur_key, 'xml') and not isinstance(cur_key, Enum):
                 cur_tag.append(cur_key.xml())
             else:
-                cur_tag.set('key', unicode(cur_key))
+                cur_tag.set('key', str(cur_key))
             if hasattr(cur_value, 'xml'):
                 cur_tag.append(cur_value.xml())
             elif attrib:
-                cur_tag.set(attrib, unicode(cur_value))
+                cur_tag.set(attrib, str(cur_value))
             else:
-                cur_tag.text = unicode(cur_value)
+                cur_tag.text = str(cur_value)
             root.append(cur_tag)
         return root
 

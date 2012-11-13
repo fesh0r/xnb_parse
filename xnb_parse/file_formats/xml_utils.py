@@ -21,7 +21,7 @@ except ImportError:
             for item in children:
                 if isinstance(item, dict):
                     elem.attrib.update(item)
-                elif isinstance(item, basestring):
+                elif isinstance(item, str):
                     if len(elem):
                         elem[-1].tail = (elem[-1].tail or "") + item
                     else:

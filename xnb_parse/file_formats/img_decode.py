@@ -34,7 +34,7 @@ def decode32(data, width, height, conv, alpha='yes'):
     if len(data) != expected_len:
         raise ReaderError("Invalid data size: {} != {}".format(len(data), expected_len))
     full_row_ff = bytearray([0xff] * width)
-    for pos in xrange(0, len(data), stride):
+    for pos in range(0, len(data), stride):
         row = bytearray(data[pos:pos + stride])
         if conv == 'bgra_rgba':
             row[2::4], row[1::4], row[0::4], row[3::4] = row[0::4], row[1::4], row[2::4], row[3::4]
@@ -63,7 +63,7 @@ def decode8(data, width, height, conv):
     expected_len = stride * height
     if len(data) != expected_len:
         raise ReaderError("Invalid data size: {} != {}".format(len(data), expected_len))
-    for pos in xrange(0, len(data), stride):
+    for pos in range(0, len(data), stride):
         row = bytearray([0xff] * width * 4)
         row[3::4] = data[pos:pos + stride]
         yield row
@@ -114,8 +114,8 @@ class DxtDecoder(object):
             raise ValueError("Invalid alpha parameter: '{}'".format(alpha))
         source_offset = 0
         full_row_ff = bytearray([0xff] * self.width)
-        for _ in xrange(0, self.height, 4):
-            for cur_x in xrange(0, self.width, 4):
+        for _ in range(0, self.height, 4):
+            for cur_x in range(0, self.width, 4):
                 if self.surface_format == 'DXT3':
                     self.decode_rgb_block(source_offset + 8, cur_x)
                     self.decode_explicit_alpha_block(source_offset, cur_x)

@@ -16,13 +16,13 @@ _DLL_NAME = 'XnaNative.dll'
 def _find_native():
     if not sys.platform == 'win32' or not platform.architecture()[0] == '32bit':
         raise IOError("win32 required for decompression")
-    import _winreg
+    import winreg
 
     native_path = None
     for ver in _XNA_VERSIONS:
         try:
-            key = _winreg.OpenKey(_winreg.HKEY_LOCAL_MACHINE, 'SOFTWARE\\Microsoft\\XNA\\Framework\\' + ver)
-            lib_path, _ = _winreg.QueryValueEx(key, 'NativeLibraryPath')
+            key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, 'SOFTWARE\\Microsoft\\XNA\\Framework\\' + ver)
+            lib_path, _ = winreg.QueryValueEx(key, 'NativeLibraryPath')
             if lib_path:
                 lib_path = os.path.join(os.path.normpath(lib_path), _DLL_NAME)
                 if os.path.isfile(lib_path):
