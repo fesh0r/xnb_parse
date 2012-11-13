@@ -14,10 +14,10 @@ from xnb_parse.xna_types.xna_system import XNAList, ExternalReference
 from xnb_parse.file_formats.xml_utils import output_xml
 
 
-XNB_SIGNATURE = 'XNB'
-PLATFORM_WINDOWS = 'w'
-PLATFORM_XBOX = 'x'
-PLATFORM_MOBILE = 'm'
+XNB_SIGNATURE = b'XNB'
+PLATFORM_WINDOWS = b'w'
+PLATFORM_XBOX = b'x'
+PLATFORM_MOBILE = b'm'
 PROFILE_REACH = 0
 PROFILE_HIDEF = 1
 VERSION_30 = 3
@@ -156,7 +156,7 @@ class XNBReader(BinaryReader):
         else:
             data = self.data
             size = len(data) + stream.calc_size(self._header)
-        stream.pack(self._header, str(XNB_SIGNATURE), self.file_platform, self.file_version, attribs, size)
+        stream.pack(self._header, XNB_SIGNATURE, self.file_platform, self.file_version, attribs, size)
         stream.write_bytes(data)
         return stream.serial()
 
