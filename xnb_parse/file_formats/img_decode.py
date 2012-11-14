@@ -3,7 +3,7 @@
 Decode DXT/other textures to RGBA
 """
 
-from __future__ import absolute_import, division, unicode_literals, print_function
+from __future__ import print_function
 
 from struct import Struct
 
@@ -103,9 +103,9 @@ class DxtDecoder(object):
         self.out_rows = [bytearray([0] * self.width * 4), bytearray([0] * self.width * 4),
                          bytearray([0] * self.width * 4), bytearray([0] * self.width * 4)]
         if needs_swap:
-            self.swap_struct = Struct(str('>HHHH'))
+            self.swap_struct = Struct('>HHHH')
         else:
-            self.swap_struct = Struct(str('<HHHH'))
+            self.swap_struct = Struct('<HHHH')
 
         self.explicit_alphas = []
         for cur_a in range(16):

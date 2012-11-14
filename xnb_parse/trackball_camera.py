@@ -28,7 +28,7 @@ Mouse movements adjust the modelview projection matrix directly.
 
 """
 
-from __future__ import absolute_import, division, unicode_literals, print_function
+from __future__ import print_function
 
 __version__ = "1.0"
 
@@ -197,10 +197,10 @@ def project_z(rad, x_c, y_c):
     if we are away from the center of the sphere.
     """
     dist = math.sqrt(x_c * x_c + y_c * y_c)
-    if dist < rad * (math.sqrt(2) / 2):  # Inside sphere
+    if dist < rad * (math.sqrt(2.0) / 2.0):  # Inside sphere
         z_c = math.sqrt(rad * rad - dist * dist)
     else:                                # On hyperbola
-        t = rad / math.sqrt(2)
+        t = rad / math.sqrt(2.0)
         z_c = t * t / dist
     return z_c
 
@@ -230,14 +230,14 @@ class TrackballCamera(object):
         the camera eye.  Update focal point & up via the update_modelview call.
         """
         # the quaternion storing the rotation
-        self.rot_quat = [0., 0., 0., 1.]
+        self.rot_quat = [0.0, 0.0, 0.0, 1.0]
         # the last mouse update
         self.last_x = 0
         self.last_y = 0
         # camera vars
-        self.cam_eye = [0., 0., radius]
-        self.cam_focus = [0., 0., 0.]
-        self.cam_up = [0., 1., 0.]
+        self.cam_eye = [0.0, 0.0, radius]
+        self.cam_focus = [0.0, 0.0, 0.0]
+        self.cam_up = [0.0, 1.0, 0.0]
         # in add_quat routine, renormalize "sometimes"
         self.renorm_count = 97
         self.count = 0

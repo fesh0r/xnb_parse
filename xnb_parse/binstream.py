@@ -3,7 +3,7 @@
 .NET BinaryStream reader
 """
 
-from __future__ import absolute_import, division, unicode_literals, print_function
+from __future__ import print_function
 
 import struct
 from io import BytesIO
@@ -32,10 +32,10 @@ class BinaryStream(object):
             self._fmt_end = '>'
         else:
             self._fmt_end = '<'
-        self._types = {k: struct.Struct(str(self._fmt_end + v)) for k, v in _TYPE_FMT.items()}
+        self._types = {k: struct.Struct(self._fmt_end + v) for k, v in _TYPE_FMT.items()}
 
     def calc_size(self, fmt):
-        return struct.calcsize(str(self._fmt_end + fmt))
+        return struct.calcsize(self._fmt_end + fmt)
 
     def size(self, type_):
         return self._types[type_].size
@@ -50,7 +50,7 @@ class BinaryWriter(BinaryStream):
         self.stream.write(struct_.pack(value))
 
     def pack(self, fmt, *values):
-        local_struct = struct.Struct(str(self._fmt_end + fmt))
+        local_struct = struct.Struct(self._fmt_end + fmt)
         self.stream.write(local_struct.pack(*values))
 
     def serial(self):
@@ -138,7 +138,7 @@ class BinaryReader(BinaryStream):
         return len(self.data) - self._index
 
     def unpack(self, fmt):
-        local_struct = struct.Struct(str(self._fmt_end + fmt))
+        local_struct = struct.Struct(self._fmt_end + fmt)
         values = local_struct.unpack_from(self.data, self._index)
         self._index += local_struct.size
         return values

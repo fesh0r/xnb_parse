@@ -3,7 +3,7 @@
 parse XWB files
 """
 
-from __future__ import absolute_import, division, unicode_literals, print_function
+from __future__ import print_function
 
 import os
 import datetime
@@ -83,7 +83,7 @@ _WB_REGION = 'II'
 _WB_DATA = 'I I 64s I I I I II'
 _WB_ENTRY = 'I I II II'
 _REGIONS = ['BANKDATA', 'ENTRYMETADATA', 'SEEKTABLES', 'ENTRYNAMES', 'ENTRYWAVEDATA']
-_WAVEFORMATEX = Struct(str('<H H I I H H H'))
+_WAVEFORMATEX = Struct('<H H I I H H H')
 
 
 class XWB(object):

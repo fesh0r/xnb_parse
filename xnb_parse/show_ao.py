@@ -3,7 +3,7 @@
 Display ArtObject
 """
 
-from __future__ import absolute_import, division, unicode_literals, print_function
+from __future__ import print_function
 
 import os
 import sys
@@ -19,8 +19,8 @@ from xnb_parse.xna_types.xna_graphics import Texture2D
 from xnb_parse.xna_types.fez.fez_graphics import ArtObject
 
 
-NORMALS = [Vector3(-1., 0., 0.), Vector3(0., -1., 0.), Vector3(0., 0., -1.),
-           Vector3(1., 0., 0.), Vector3(0., 1., 0.), Vector3(0., 0., 1.)]
+NORMALS = [Vector3(-1.0, 0.0, 0.0), Vector3(0.0, -1.0, 0.0), Vector3(0.0, 0.0, -1.0),
+           Vector3(1.0, 0.0, 0.0), Vector3(0.0, 1.0, 0.0), Vector3(0.0, 0.0, 1.0)]
 
 
 #noinspection PyMethodOverriding
