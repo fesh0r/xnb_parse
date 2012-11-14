@@ -21,7 +21,11 @@ _DLL_NAME = 'XnaNative.dll'
 def _find_native():
     if not sys.platform == 'win32' or not platform.architecture()[0] == '32bit':
         raise IOError("win32 required for decompression")
-    import _winreg as winreg
+    try:
+        import winreg  # pylint: disable-msg=F0401
+    except ImportError:
+        #noinspection PyUnresolvedReferences
+        import _winreg as winreg  # pylint: disable-msg=F0401
 
     native_path = None
     for ver in _XNA_VERSIONS:
