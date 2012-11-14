@@ -68,7 +68,7 @@ Entry = namedtuple('Entry', ['name', 'header', 'data', 'dpds', 'seek'])
 # pylint: enable-msg=C0103
 
 
-_FILETIME_NULL = datetime.datetime(1601, 1, 1)
+_FILETIME_NULL = datetime.datetime(1601, 1, 1, 0, 0, 0)
 
 
 def filetime_to_datetime(ftl, fth):

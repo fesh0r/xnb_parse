@@ -17,8 +17,8 @@ from xnb_parse.xna_types.xna_graphics import Texture2D
 from xnb_parse.xna_types.fez.fez_graphics import ArtObject
 
 
-NORMALS = [Vector3(-1., 0., 0.), Vector3(0., -1., 0.), Vector3(0., 0., -1.),
-           Vector3(1., 0., 0.), Vector3(0., 1., 0.), Vector3(0., 0., 1.)]
+NORMALS = [Vector3(-1.0, 0.0, 0.0), Vector3(0.0, -1.0, 0.0), Vector3(0.0, 0.0, -1.0),
+           Vector3(1.0, 0.0, 0.0), Vector3(0.0, 1.0, 0.0), Vector3(0.0, 0.0, 1.0)]
 
 
 #noinspection PyMethodOverriding
