@@ -46,7 +46,7 @@ class PyPngWriter(object):
         if len(data):
             compressed = compressor.compress(bytes(data))
         else:
-            compressed = bytearray()
+            compressed = bytes()
         flushed = compressor.flush()
         if len(compressed) or len(flushed):
             PyPngWriter._write_chunk(outfile, b'IDAT', compressed + flushed)
