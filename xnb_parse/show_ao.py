@@ -139,10 +139,6 @@ class AO(object):
         ao_filename = os.path.normpath(ao_filename)
         ao_dir = os.path.dirname(ao_filename)
         ao_xnb = read_xnb(ao_filename, expected_type=ArtObject, type_reader_manager=type_reader_manager)
-        cm_filename = os.path.join(ao_dir, ao_xnb.cubemap_path.lower() + '.xnb')
-        cm_xnb = read_xnb(cm_filename, expected_type=Texture2D, type_reader_manager=type_reader_manager)
-        cm_image = pyglet.image.ImageData(cm_xnb.width, cm_xnb.height, 'RGBA', str(cm_xnb.full_data()))
-        self.texture = cm_image.get_texture()
 
         indices = ao_xnb.geometry.indices
         vertices = []
@@ -163,6 +159,11 @@ class AO(object):
                                                        ('n3f', normals),
                                                        ('t2f', texture_coords))
 
+        cm_filename = os.path.join(ao_dir, ao_xnb.cubemap_path.lower() + '.xnb')
+        cm_xnb = read_xnb(cm_filename, expected_type=Texture2D, type_reader_manager=type_reader_manager)
+        cm_image = pyglet.image.ImageData(cm_xnb.width, cm_xnb.height, 'RGBA', bytes(cm_xnb.full_data()))
+        self.texture = cm_image.get_texture()
+
         glDisable(self.texture.target)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
@@ -180,7 +181,7 @@ def read_xnb(filename, expected_type=None, type_reader_manager=None):
     with open(filename, 'rb') as handle:
         data = handle.read()
     xnb_content = XNBReader.load(data, type_reader_manager).content
-    if expected_type is not None and type(xnb_content) != expected_type:
+    if expected_type is not None and not isinstance(xnb_content, expected_type):
         raise ReaderError("Unexpected XNB type: {} != {}".format(type(xnb_content).__name__, expected_type.__name__))
     return xnb_content
 

@@ -12,7 +12,7 @@ import zlib
 class PyPngWriter(object):
     # The PNG signature.
     # http://www.w3.org/TR/PNG/#5PNG-file-signature
-    _SIGNATURE = struct.pack(str('8B'), 137, 80, 78, 71, 13, 10, 26, 10)
+    _SIGNATURE = b'\x89PNG\x0d\x0a\x1a\x0a'
 
     def __init__(self, width=None, height=None):
         if width <= 0 or height <= 0:
@@ -26,17 +26,13 @@ class PyPngWriter(object):
         self.height = height
         self.chunk_limit = 2 ** 20
 
-        self.color_type = 6
-        self.planes = 4
-        self.stride = self.width * self.planes
-
     def write_bytearray(self, outfile, rows):
         # http://www.w3.org/TR/PNG/#5PNG-file-signature
         outfile.write(PyPngWriter._SIGNATURE)
 
         # http://www.w3.org/TR/PNG/#11IHDR
-        PyPngWriter._write_chunk(outfile, 'IHDR', struct.pack(str('!2I5B'), self.width, self.height, 8, self.color_type,
-                                                              0, 0, 0))
+        PyPngWriter._write_chunk(outfile, b'IHDR', struct.pack(str('!II B B BBB'), self.width, self.height, 8, 6,
+                                                               0, 0, 0))
 
         # http://www.w3.org/TR/PNG/#11IDAT
         compressor = zlib.compressobj()
@@ -46,23 +42,23 @@ class PyPngWriter(object):
             data.append(0)
             data.extend(row)
             if len(data) > self.chunk_limit:
-                compressed = compressor.compress(str(data))
+                compressed = compressor.compress(bytes(data))
                 if len(compressed):
-                    PyPngWriter._write_chunk(outfile, 'IDAT', compressed)
+                    PyPngWriter._write_chunk(outfile, b'IDAT', compressed)
                 data = bytearray()
         if len(data):
-            compressed = compressor.compress(str(data))
+            compressed = compressor.compress(bytes(data))
         else:
             compressed = bytearray()
         flushed = compressor.flush()
         if len(compressed) or len(flushed):
-            PyPngWriter._write_chunk(outfile, 'IDAT', str(compressed + flushed))
+            PyPngWriter._write_chunk(outfile, b'IDAT', bytes(compressed + flushed))
 
         # http://www.w3.org/TR/PNG/#11IEND
-        PyPngWriter._write_chunk(outfile, 'IEND')
+        PyPngWriter._write_chunk(outfile, b'IEND')
 
     @staticmethod
-    def _write_chunk(outfile, tag, data=''):
+    def _write_chunk(outfile, tag, data=b''):
         # http://www.w3.org/TR/PNG/#5Chunk-layout
         outfile.write(struct.pack(str('!I'), len(data)))
         outfile.write(tag)

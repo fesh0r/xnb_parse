@@ -15,8 +15,8 @@ from xnb_parse.type_reader import ReaderError
 from xnb_parse.binstream import BinaryReader, BinaryWriter
 
 
-XWB_L_SIGNATURE = 'WBND'
-XWB_B_SIGNATURE = 'DNBW'
+XWB_L_SIGNATURE = b'WBND'
+XWB_B_SIGNATURE = b'DNBW'
 WAVEBANK_TYPE_BUFFER = 0x00000000
 WAVEBANK_TYPE_STREAMING = 0x00000001
 WAVEBANK_TYPE_MASK = 0x00000001
@@ -78,14 +78,15 @@ def filetime_to_datetime(ftl, fth):
     return _FILETIME_NULL + datetime.timedelta(microseconds=timestamp / 10.0)
 
 
-class XWB(object):
-    _wb_header = '4s I I'
-    _wb_region = 'II'
-    _wb_data = 'I I 64s I I I I II'
-    _wb_entry = 'I I II II'
-    _regions = ['BANKDATA', 'ENTRYMETADATA', 'SEEKTABLES', 'ENTRYNAMES', 'ENTRYWAVEDATA']
-    _waveformatex = Struct(str('<H H I I H H H'))
+_WB_HEADER = '4s I I'
+_WB_REGION = 'II'
+_WB_DATA = 'I I 64s I I I I II'
+_WB_ENTRY = 'I I II II'
+_REGIONS = ['BANKDATA', 'ENTRYMETADATA', 'SEEKTABLES', 'ENTRYNAMES', 'ENTRYWAVEDATA']
+_WAVEFORMATEX = Struct(str('<H H I I H H H'))
 
+
+class XWB(object):
     #noinspection PyUnusedLocal
     # pylint: disable-msg=W0612
     def __init__(self, data):
@@ -98,22 +99,21 @@ class XWB(object):
         else:
             raise ValueError("bad sig: {!r}".format(h_sig))
         stream = BinaryReader(data, big_endian=big_endian)
-        (h_sig, h_version, h_header_version) = stream.unpack(self._wb_header)
+        (h_sig, h_version, h_header_version) = stream.unpack(_WB_HEADER)
         self.h_version = h_version
         self.h_header_version = h_header_version
         # pylint: disable-msg=W0212
-        regions = dict(zip(self._regions, [XWBRegion._make(stream.unpack(self._wb_region)) for _ in self._regions]))
+        regions = {k: XWBRegion._make(stream.unpack(_WB_REGION)) for k in _REGIONS}
         # pylint: enable-msg=W0212
 
         # check if we have a valid BANKDATA region and parse it
-        bankdata_size = stream.calc_size(self._wb_data)
+        bankdata_size = stream.calc_size(_WB_DATA)
         if regions['BANKDATA'].length != bankdata_size:
-            raise ReaderError("Invalid BANKDATA region size: {} != {}".format(regions['BANKDATA'].length,
-                                                                              bankdata_size))
+            raise ReaderError("Invalid BANKDATA size: {} != {}".format(regions['BANKDATA'].length, bankdata_size))
         stream.seek(regions['BANKDATA'].offset)
         (h_flags, h_entry_count, h_bank_name_raw, h_entry_metadata_element_size, h_entry_name_element_size,
-         h_alignment, h_compact_format, h_buildtime_raw_low, h_buildtime_raw_high) = stream.unpack(self._wb_data)
-        h_bank_name = h_bank_name_raw.rstrip('\x00')
+         h_alignment, h_compact_format, h_buildtime_raw_low, h_buildtime_raw_high) = stream.unpack(_WB_DATA)
+        h_bank_name = h_bank_name_raw.rstrip(b'\x00').decode('utf-8')
         h_buildtime = filetime_to_datetime(h_buildtime_raw_low, h_buildtime_raw_high)
         self.h_flags = h_flags
         self.h_bank_name = h_bank_name
@@ -122,26 +122,27 @@ class XWB(object):
         # check what type of ENTRYMETADATA we have and parse it
         if h_flags & WAVEBANK_FLAGS_COMPACT:
             raise ReaderError("Compact format not supported")
-        bankentry_size = stream.calc_size(self._wb_entry)
+        bankentry_size = stream.calc_size(_WB_ENTRY)
         if bankentry_size != h_entry_metadata_element_size:
             raise ReaderError("Unknown EntryMetaDataElementSize: {} != {}".format(bankentry_size,
                                                                                   h_entry_metadata_element_size))
         if regions['ENTRYMETADATA'].length != bankentry_size * h_entry_count:
-            raise ReaderError("Invalid ENTRYMETADATA region size: {} != {}".format(regions['ENTRYMETADATA'].length,
-                              bankentry_size * h_entry_count))
+            raise ReaderError("Invalid ENTRYMETADATA size: {} != {}".format(regions['ENTRYMETADATA'].length,
+                                                                            bankentry_size * h_entry_count))
         stream.seek(regions['ENTRYMETADATA'].offset)
         # pylint: disable-msg=W0212
-        entry_metadata = [XWBEntry._make(stream.unpack(self._wb_entry)) for _ in range(h_entry_count)]
+        entry_metadata = [XWBEntry._make(stream.unpack(_WB_ENTRY)) for _ in range(h_entry_count)]
         # pylint: enable-msg=W0212
 
         # read ENTRYNAMES if present
         entry_names = None
         if h_flags & WAVEBANK_FLAGS_ENTRYNAMES:
             if regions['ENTRYNAMES'].length != h_entry_name_element_size * h_entry_count:
-                raise ReaderError("Invalid ENTRYNAMES region size: {} != {}".format(regions['ENTRYNAMES'].length,
-                                  h_entry_name_element_size * h_entry_count))
+                raise ReaderError("Invalid ENTRYNAMES region size: {} != {}".format(
+                    regions['ENTRYNAMES'].length, h_entry_name_element_size * h_entry_count))
             stream.seek(regions['ENTRYNAMES'].offset)
-            entry_names = [stream.read_bytes(h_entry_name_element_size).rstrip('\x00') for _ in range(h_entry_count)]
+            entry_names = [stream.read_bytes(h_entry_name_element_size).rstrip(b'\x00').decode('utf-8')
+                           for _ in range(h_entry_count)]
 
         # read SEEKTABLES if present
         entry_seektables = None
@@ -184,8 +185,8 @@ class XWB(object):
                 c_bits_per_sample = 16
                 c_avg_bytes_per_sec = WMA_AVG_BYTES_PER_SEC[c_block_align >> 5]
                 c_block_align = WMA_BLOCK_ALIGN[c_block_align & 0x1f]
-                entry_header = self._waveformatex.pack(c_format_tag, c_channels, c_samples_per_sec,
-                                                       c_avg_bytes_per_sec, c_block_align, c_bits_per_sample, 0)
+                entry_header = _WAVEFORMATEX.pack(c_format_tag, c_channels, c_samples_per_sec, c_avg_bytes_per_sec,
+                                                  c_block_align, c_bits_per_sample, 0)
                 if entry_seektables is None:
                     raise ReaderError("No SEEKTABLES found for xWMA format")
                 entry_dpds = entry_seektables[i]

@@ -1,9 +1,12 @@
 # coding=utf-8
 """
 wrapper for native XNA functions
+Requires win32
 """
 
 from __future__ import absolute_import, division, unicode_literals, print_function
+
+from contextlib import contextmanager
 
 import os
 import platform
@@ -18,13 +21,13 @@ _DLL_NAME = 'XnaNative.dll'
 def _find_native():
     if not sys.platform == 'win32' or not platform.architecture()[0] == '32bit':
         raise IOError("win32 required for decompression")
-    import _winreg
+    import _winreg as winreg
 
     native_path = None
     for ver in _XNA_VERSIONS:
         try:
-            key = _winreg.OpenKey(_winreg.HKEY_LOCAL_MACHINE, 'SOFTWARE\\Microsoft\\XNA\\Framework\\' + ver)
-            lib_path, _ = _winreg.QueryValueEx(key, 'NativeLibraryPath')
+            key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, 'SOFTWARE\\Microsoft\\XNA\\Framework\\' + ver)
+            lib_path, _ = winreg.QueryValueEx(key, 'NativeLibraryPath')
             if lib_path:
                 lib_path = os.path.join(os.path.normpath(lib_path), _DLL_NAME)
                 if os.path.isfile(lib_path):
@@ -37,40 +40,46 @@ def _find_native():
     return native_path
 
 
-def decompress(in_buf, out_size):
-    dll = ctypes.CDLL(_find_native())
+@contextmanager
+def decomp_context(dll):
     ctx = dll.CreateDecompressionContext()
     if ctx is None:
         raise IOError("CreateDecompressionContext failed")
-
-    in_size = len(in_buf)
-    compressed_position = 0
-    compressed_todo = in_size
-    decompressed_position = 0
-    decompressed_todo = out_size
-
-    s_in_buf = ctypes.create_string_buffer(in_buf)
-    s_out_buf = ctypes.create_string_buffer(out_size)
-
-    while decompressed_todo > 0 and compressed_todo > 0:
-        compressed_size = in_size - compressed_position
-        decompressed_size = out_size - decompressed_position
-
-        s_compressed_size = ctypes.c_uint(compressed_size)
-        s_decompressed_size = ctypes.c_uint(decompressed_size)
-        err = dll.Decompress(ctx, ctypes.byref(s_out_buf, decompressed_position), ctypes.byref(s_decompressed_size),
-                             ctypes.byref(s_in_buf, compressed_position), ctypes.byref(s_compressed_size))
-        r_compressed_size = int(s_compressed_size.value)
-        r_decompressed_size = int(s_decompressed_size.value)
-
-        if err:
-            raise IOError("Decompress failed: {}".format(err))
-        if r_compressed_size == 0 and r_decompressed_size == 0:
-            raise IOError("Decompress failed")
-
-        compressed_position += r_compressed_size
-        decompressed_position += r_decompressed_size
-        compressed_todo -= r_compressed_size
-        decompressed_todo -= r_decompressed_size
+    yield ctx
     dll.DestroyDecompressionContext(ctx)
+
+
+def decompress(in_buf, out_size):
+    dll = ctypes.CDLL(_find_native())
+
+    with decomp_context(dll) as ctx:
+        in_size = len(in_buf)
+        compressed_position = 0
+        compressed_todo = in_size
+        decompressed_position = 0
+        decompressed_todo = out_size
+
+        s_in_buf = ctypes.create_string_buffer(in_buf, in_size)
+        s_out_buf = ctypes.create_string_buffer(out_size)
+
+        while decompressed_todo > 0 and compressed_todo > 0:
+            compressed_size = in_size - compressed_position
+            decompressed_size = out_size - decompressed_position
+
+            s_compressed_size = ctypes.c_uint(compressed_size)
+            s_decompressed_size = ctypes.c_uint(decompressed_size)
+            err = dll.Decompress(ctx, ctypes.byref(s_out_buf, decompressed_position), ctypes.byref(s_decompressed_size),
+                                 ctypes.byref(s_in_buf, compressed_position), ctypes.byref(s_compressed_size))
+            r_compressed_size = int(s_compressed_size.value)
+            r_decompressed_size = int(s_decompressed_size.value)
+
+            if err:
+                raise IOError("Decompress failed: {}".format(err))
+            if r_compressed_size == 0 and r_decompressed_size == 0:
+                raise IOError("Decompress failed")
+
+            compressed_position += r_compressed_size
+            decompressed_position += r_decompressed_size
+            compressed_todo -= r_compressed_size
+            decompressed_todo -= r_decompressed_size
     return s_out_buf.raw

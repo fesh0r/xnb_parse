@@ -5,7 +5,7 @@ Decode DXT/other textures to RGBA
 
 from __future__ import absolute_import, division, unicode_literals, print_function
 
-import struct
+from struct import Struct
 
 from xnb_parse.type_reader import ReaderError
 
@@ -36,7 +36,7 @@ def decode32(data, width, height, conv, alpha='yes'):
     if len(data) != expected_len:
         raise ReaderError("Invalid data size: {} != {}".format(len(data), expected_len))
     full_row_ff = bytearray([0xff] * width)
-    for pos in xrange(0, len(data), stride):
+    for pos in range(0, len(data), stride):
         row = bytearray(data[pos:pos + stride])
         if conv == 'bgra_rgba':
             row[2::4], row[1::4], row[0::4], row[3::4] = row[0::4], row[1::4], row[2::4], row[3::4]
@@ -65,7 +65,7 @@ def decode8(data, width, height, conv):
     expected_len = stride * height
     if len(data) != expected_len:
         raise ReaderError("Invalid data size: {} != {}".format(len(data), expected_len))
-    for pos in xrange(0, len(data), stride):
+    for pos in range(0, len(data), stride):
         row = bytearray([0xff] * width * 4)
         row[3::4] = data[pos:pos + stride]
         yield row
@@ -103,9 +103,9 @@ class DxtDecoder(object):
         self.out_rows = [bytearray([0] * self.width * 4), bytearray([0] * self.width * 4),
                          bytearray([0] * self.width * 4), bytearray([0] * self.width * 4)]
         if needs_swap:
-            self.swap_struct = struct.Struct(str('>HHHH'))
+            self.swap_struct = Struct(str('>HHHH'))
         else:
-            self.swap_struct = struct.Struct(str('<HHHH'))
+            self.swap_struct = Struct(str('<HHHH'))
 
         self.explicit_alphas = []
         for cur_a in range(16):
@@ -116,8 +116,8 @@ class DxtDecoder(object):
             raise ValueError("Invalid alpha parameter: '{}'".format(alpha))
         source_offset = 0
         full_row_ff = bytearray([0xff] * self.width)
-        for _ in xrange(0, self.height, 4):
-            for cur_x in xrange(0, self.width, 4):
+        for _ in range(0, self.height, 4):
+            for cur_x in range(0, self.width, 4):
                 if self.surface_format == 'DXT3':
                     self.decode_rgb_block(source_offset + 8, cur_x)
                     self.decode_explicit_alpha_block(source_offset, cur_x)

@@ -7,7 +7,7 @@ from __future__ import absolute_import, division, unicode_literals, print_functi
 
 import os
 
-from xnb_parse.xnb_reader import VERSION_40, XNBReader
+from xnb_parse.xnb_reader import VERSION_40, XNB_VERSIONS
 from xnb_parse.type_reader import ReaderError
 from xnb_parse.xna_types.xna_primitive import Enum
 from xnb_parse.file_formats.png import write_png
@@ -100,7 +100,7 @@ SURFACE_FORMAT4 = {
 
 class SurfaceFormat(Enum):
     __slots__ = ()
-    enum_values = dict((k, v[0]) for (k, v) in SURFACE_FORMAT.iteritems())
+    enum_values = dict((k, v[0]) for (k, v) in SURFACE_FORMAT.items())
 
     @property
     def reader(self):
@@ -109,7 +109,7 @@ class SurfaceFormat(Enum):
 
 class SurfaceFormat4(Enum):
     __slots__ = ()
-    enum_values = dict((k, v[0]) for (k, v) in SURFACE_FORMAT4.iteritems())
+    enum_values = dict((k, v[0]) for (k, v) in SURFACE_FORMAT4.items())
 
     @property
     def reader(self):
@@ -123,7 +123,7 @@ def get_surface_format(xna_version, surface_format):
         else:
             return SurfaceFormat(surface_format)
     except KeyError:
-        raise ReaderError("Invalid surface format for V{}: {}".format(XNBReader.versions[xna_version], surface_format))
+        raise ReaderError("Invalid surface format for V{}: {}".format(XNB_VERSIONS[xna_version], surface_format))
 
 
 class Texture2D(object):

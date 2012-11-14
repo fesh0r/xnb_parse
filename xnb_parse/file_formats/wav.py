@@ -88,19 +88,19 @@ class PyWavWriter(object):
             out_str = 'RIFF '
         out_str += 'h:{} d:{} {}\n'.format(len(self.header_raw), len(self.data_raw),
                                            WAVE_FORMAT.get(self.h_format_tag, 'UNKNOWN'))
-        out_str += 'wFormatTag:0x{:04x} nChannels:{} nSamplesPerSec:{} nAvgBytesPerSec:{}\n'.format(
+        out_str += 'wFormatTag:{:#04x} nChannels:{} nSamplesPerSec:{} nAvgBytesPerSec:{}\n'.format(
             self.h_format_tag, self.h_channels, self.h_avg_bytes_per_sec, self.h_samples_per_sec)
         out_str += 'nBlockAlign:{} wBitsPerSample:{} cbSize:{}\n'.format(
             self.h_block_align, self.h_bits_per_sample, self.h_size)
         if self.h_format_tag == WAVE_FORMAT_XMA2:
-            out_str += 'NumStreams:{} ChannelMask:0x{:08x} SamplesEncoded:{} BytesPerBlock:{}\n'.format(
+            out_str += 'NumStreams:{} ChannelMask:{:#08x} SamplesEncoded:{} BytesPerBlock:{}\n'.format(
                 self.hx_num_streams, self.hx_channel_mask, self.hx_samples_encoded, self.hx_play_begin)
             out_str += 'PlayBegin:{} PlayLength:{} LoopBegin:{} LoopLength:{}\n'.format(
                 self.hx_play_begin, self.hx_play_length, self.hx_loop_begin, self.hx_loop_length)
             out_str += 'LoopCount:{} EncoderVersion:{} BlockCount:{}\n'.format(
                 self.hx_loop_count, self.hx_encoder_version, self.hx_block_count)
         elif self.h_format_tag == WAVE_FORMAT_EXTENSIBLE:
-            out_str += 'wValidBitsPerSample:{} dwChannelMask:0x{:08x}\n'.format(
+            out_str += 'wValidBitsPerSample:{} dwChannelMask:{:#08x}\n'.format(
                 self.he_valid_bits_per_sample, self.he_channel_mask)
         print(out_str)
 
@@ -137,16 +137,16 @@ class PyWavWriter(object):
             seek_size = None
         o_s = BinaryWriter()
         if self.h_format_tag == WAVE_FORMAT_WMAUDIO2 or self.h_format_tag == WAVE_FORMAT_WMAUDIO3:
-            riff_type = 'XWMA'
+            riff_type = b'XWMA'
         else:
-            riff_type = 'WAVE'
+            riff_type = b'WAVE'
         self.write_header(o_s, riff_type, len(header_raw), len(self.data_raw), dpds_size, seek_size)
-        self.write_chunk(o_s, 'fmt ', header_raw)
+        self.write_chunk(o_s, b'fmt ', header_raw)
         if self.dpds_raw:
-            self.write_chunk(o_s, 'dpds', self.dpds_raw)
+            self.write_chunk(o_s, b'dpds', self.dpds_raw)
         if self.seek_raw:
-            self.write_chunk(o_s, 'seek', self.seek_raw)
-        self.write_chunk(o_s, 'data', self.data_raw)
+            self.write_chunk(o_s, b'seek', self.seek_raw)
+        self.write_chunk(o_s, b'data', self.data_raw)
         wav_data = o_s.serial()
         if self.h_format_tag == WAVE_FORMAT_XMA2:
             full_filename = filename + '.xma'
@@ -164,7 +164,7 @@ class PyWavWriter(object):
             full_size += 8 + dpds_size
         if seek_size:
             full_size += 8 + seek_size
-        o_s.write_bytes('RIFF')
+        o_s.write_bytes(b'RIFF')
         o_s.write_uint32(full_size)
         o_s.write_bytes(riff_type)
 
