@@ -5,6 +5,8 @@ system types
 
 from __future__ import print_function
 
+import sys
+
 from xnb_parse.file_formats.xml_utils import E
 from xnb_parse.xna_types.xna_primitive import Enum
 
@@ -13,15 +15,20 @@ class XNAList(list):
     __slots__ = ()
 
     def xml(self, xml_tag='List', xml_entry='Entry', attrib=None):
+        if sys.version < '3':
+            #noinspection PyUnresolvedReferences
+            conv = unicode  # pylint: disable-msg=E0602
+        else:
+            conv = str
         root = E(xml_tag)
         for cur_value in self:
             if hasattr(cur_value, 'xml'):
                 cur_tag = cur_value.xml()
             elif attrib:
                 cur_tag = E(xml_entry)
-                cur_tag.set(attrib, unicode(cur_value))
+                cur_tag.set(attrib, conv(cur_value))
             else:
-                cur_tag = E(xml_entry, unicode(cur_value))
+                cur_tag = E(xml_entry, conv(cur_value))
             root.append(cur_tag)
         return root
 
@@ -30,19 +37,24 @@ class XNADict(dict):
     __slots__ = ()
 
     def xml(self, xml_tag='Dict', xml_entry='Entry', attrib=None):
+        if sys.version < '3':
+            #noinspection PyUnresolvedReferences
+            conv = unicode  # pylint: disable-msg=E0602
+        else:
+            conv = str
         root = E(xml_tag)
         for cur_key, cur_value in self.items():
             cur_tag = E(xml_entry)
             if hasattr(cur_key, 'xml') and not isinstance(cur_key, Enum):
                 cur_tag.append(cur_key.xml())
             else:
-                cur_tag.set('key', unicode(cur_key))
+                cur_tag.set('key', conv(cur_key))
             if hasattr(cur_value, 'xml'):
                 cur_tag.append(cur_value.xml())
             elif attrib:
-                cur_tag.set(attrib, unicode(cur_value))
+                cur_tag.set(attrib, conv(cur_value))
             else:
-                cur_tag.text = unicode(cur_value)
+                cur_tag.text = conv(cur_value)
             root.append(cur_tag)
         return root
 
