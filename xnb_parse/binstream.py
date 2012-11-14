@@ -6,6 +6,7 @@
 from __future__ import print_function
 
 import struct
+import sys
 from io import BytesIO
 
 
@@ -207,7 +208,11 @@ class BinaryReader(BinaryStream):
             raw_value <<= 6
             raw_value |= self.read_byte() & 0x3f
             byte_count -= 1
-        value = unichr(raw_value)
+        if sys.version < '3':
+            #noinspection PyUnresolvedReferences
+            value = unichr(raw_value)  # pylint: disable-msg=E0602
+        else:
+            value = chr(raw_value)
         return value
 
     def read_string(self):
