@@ -33,7 +33,7 @@ class Texture2DReader(BaseTypeReader, TypeReaderPlugin):
         mip_levels = []
         for _ in range(mip_count):
             size = self.stream.read_int32()
-            data = self.stream.read_bytes(size)
+            data = self.stream.read(size)
             mip_levels.append(data)
         return Texture2D(surface_format, width, height, mip_levels, self.stream.needs_swap)
 
@@ -52,7 +52,7 @@ class Texture3DReader(BaseTypeReader, TypeReaderPlugin):
         mip_levels = []
         for _ in range(mip_count):
             size = self.stream.read_int32()
-            data = self.stream.read_bytes(size)
+            data = self.stream.read(size)
             mip_levels.append(data)
         return Texture3D(surface_format, width, height, depth, mip_levels, self.stream.needs_swap)
 
@@ -71,7 +71,7 @@ class TextureCubeReader(BaseTypeReader, TypeReaderPlugin):
             mip_levels = []
             for _ in range(mip_count):
                 size = self.stream.read_int32()
-                data = self.stream.read_bytes(size)
+                data = self.stream.read(size)
                 mip_levels.append(data)
             sides[side] = mip_levels
         return TextureCube(surface_format, texture_size, sides, self.stream.needs_swap)
@@ -84,7 +84,7 @@ class IndexBufferReader(BaseTypeReader, TypeReaderPlugin):
     def read(self):
         index_16 = self.stream.read_boolean()
         size = self.stream.read_int32()
-        data = self.stream.read_bytes(size)
+        data = self.stream.read(size)
         return IndexBuffer(index_16, data)
 
 
@@ -94,7 +94,7 @@ class VertexBufferReader(BaseTypeReader, TypeReaderPlugin):
 
     def read(self):
         size = self.stream.read_int32()
-        data = self.stream.read_bytes(size)
+        data = self.stream.read(size)
         return data
 
 
@@ -123,7 +123,7 @@ class EffectReader(BaseTypeReader, TypeReaderPlugin):
 
     def read(self):
         size = self.stream.read_int32()
-        data = self.stream.read_bytes(size)
+        data = self.stream.read(size)
         return Effect(data)
 
 

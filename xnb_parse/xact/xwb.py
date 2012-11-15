@@ -10,7 +10,7 @@ from struct import Struct
 
 from xnb_parse.file_formats.wav import WAVE_FORMAT_WMAUDIO2, WAVE_FORMAT_WMAUDIO3, PyWavWriter
 from xnb_parse.type_reader import ReaderError
-from xnb_parse.binstream import BinaryReader, BinaryWriter
+from xnb_parse.binstream import BinaryStream
 
 
 XWB_L_SIGNATURE = b'WBND'
@@ -96,7 +96,7 @@ class XWB(object):
             big_endian = True
         else:
             raise ValueError("bad sig: {!r}".format(h_sig))
-        stream = BinaryReader(data, big_endian=big_endian)
+        stream = BinaryStream(data, big_endian=big_endian)
         (h_sig, h_version, h_header_version) = stream.unpack(_WB_HEADER)
         self.h_version = h_version
         self.h_header_version = h_header_version
@@ -139,7 +139,7 @@ class XWB(object):
                 raise ReaderError("Invalid ENTRYNAMES region size: {} != {}".format(
                     regions['ENTRYNAMES'].length, h_entry_name_element_size * h_entry_count))
             stream.seek(regions['ENTRYNAMES'].offset)
-            entry_names = [stream.read_bytes(h_entry_name_element_size).rstrip(b'\x00').decode('utf-8')
+            entry_names = [stream.read(h_entry_name_element_size).rstrip(b'\x00').decode('utf-8')
                            for _ in range(h_entry_count)]
 
         # read SEEKTABLES if present
@@ -154,10 +154,10 @@ class XWB(object):
             for cur_offset in seek_offsets:
                 stream.seek(seek_data_offset + cur_offset)
                 packet_count = stream.read_uint32()
-                cur_seek_data = BinaryWriter()
+                cur_seek_data = BinaryStream()
                 for _ in range(packet_count):
                     cur_seek_data.write_uint32(stream.read_uint32())
-                entry_seektables.append(cur_seek_data.serial())
+                entry_seektables.append(cur_seek_data.getvalue())
 
         self.entries = []
         for i, cur_meta in enumerate(entry_metadata):
@@ -193,7 +193,7 @@ class XWB(object):
 
             # read entry wave data
             stream.seek(regions['ENTRYWAVEDATA'].offset + cur_meta.play_offset)
-            entry_data = stream.read_bytes(cur_meta.play_length)
+            entry_data = stream.read(cur_meta.play_length)
             self.entries.append(Entry(entry_name, entry_header, entry_data, entry_dpds, entry_seek))
 
     def export(self, out_dir):
