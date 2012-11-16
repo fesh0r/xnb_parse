@@ -20,6 +20,7 @@ def unpack(in_file, out_dir):
         size = stream.read_int32()
         data = stream.read(size)
         print(filename)
+        filename = filename.replace('\\', os.sep)
         filename = os.path.normpath(filename + '.xnb')
         filename = os.path.join(out_dir, filename)
         filedir = os.path.dirname(filename)
