@@ -55,7 +55,7 @@ class XNBReader(BinaryStream):
 
     def parse(self, verbose=False):
         if self.type_reader_manager is None:
-            raise ValueError("No type reader manager")
+            raise ReaderError("No type reader manager")
         if self.content is not None:
             return self.content
 
@@ -105,20 +105,20 @@ class XNBReader(BinaryStream):
         stream = BinaryStream(data=data, filename=filename)
         (sig, platform, version, attribs, size) = stream.unpack(_XNB_HEADER)
         if sig != XNB_SIGNATURE:
-            raise ValueError("bad sig: '{!r}'".format(sig))
+            raise ReaderError("bad sig: '{!r}'".format(sig))
         if platform not in XNB_PLATFORMS:
-            raise ValueError("bad platform: '{!r}'".format(platform))
+            raise ReaderError("bad platform: '{!r}'".format(platform))
         if version not in XNB_VERSIONS:
-            raise ValueError("bad version: {}".format(version))
+            raise ReaderError("bad version: {}".format(version))
         stream_length = stream.length()
         if stream_length != size:
-            raise ValueError("bad size: {} != {}".format(stream_length, size))
+            raise ReaderError("bad size: {} != {}".format(stream_length, size))
         compressed = False
         profile = 0
         if version >= VERSION_40:
             profile = attribs & _PROFILE_MASK
             if profile not in XNB_PROFILES:
-                raise ValueError("bad profile: {}".format(profile))
+                raise ReaderError("bad profile: {}".format(profile))
         if version >= VERSION_30:
             compressed = bool(attribs & _COMPRESS_MASK)
             size -= stream.calc_size(_XNB_HEADER)
@@ -133,13 +133,13 @@ class XNBReader(BinaryStream):
 
     def save(self, filename=None, compress=False):
         if self.file_platform not in XNB_PLATFORMS:
-            raise ValueError("bad platform: '{!r}'".format(self.file_platform))
+            raise ReaderError("bad platform: '{!r}'".format(self.file_platform))
         if self.file_version not in XNB_VERSIONS:
-            raise ValueError("bad version: {}".format(self.file_version))
+            raise ReaderError("bad version: {}".format(self.file_version))
         attribs = 0
         if self.file_version >= VERSION_40:
             if self.graphics_profile not in XNB_PROFILES:
-                raise ValueError("bad profile: {}".format(self.graphics_profile))
+                raise ReaderError("bad profile: {}".format(self.graphics_profile))
             attribs |= self.graphics_profile & _PROFILE_MASK
         do_compress = False
         if self.file_version >= VERSION_30:
@@ -148,7 +148,7 @@ class XNBReader(BinaryStream):
                 attribs |= _COMPRESS_MASK
         stream = BinaryStream()
         if do_compress:
-            raise ValueError("Recompression not supported")
+            raise ReaderError("Recompression not supported")
         else:
             data = self.getvalue()
             size = len(data) + stream.calc_size(_XNB_HEADER)
@@ -194,9 +194,9 @@ class XNBReader(BinaryStream):
 
     def export(self, filename):
         if not hasattr(self, 'content'):
-            raise ValueError("XNB content deleted")
+            raise ReaderError("XNB content deleted")
         if self.content is None:
-            raise ValueError("XNB content not parsed")
+            raise ReaderError("XNB content not parsed")
         if hasattr(self.content, 'export'):
             filename = os.path.normpath(filename)
             dirname = os.path.dirname(filename)
