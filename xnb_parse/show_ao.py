@@ -156,7 +156,7 @@ class AO(object):
 
         cm_filename = os.path.join(ao_dir, ao_xnb.cubemap_path.lower() + '.xnb')
         cm_xnb = read_xnb(cm_filename, expected_type=Texture2D, type_reader_manager=type_reader_manager)
-        cm_image = pyglet.image.ImageData(cm_xnb.width, cm_xnb.height, 'RGBA', bytes(cm_xnb.full_data()))
+        cm_image = pyglet.image.ImageData(cm_xnb.width, cm_xnb.height, 'RGBA', cm_xnb.full_data())
         self.texture = cm_image.get_texture()
 
         glDisable(self.texture.target)

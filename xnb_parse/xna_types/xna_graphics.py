@@ -161,7 +161,7 @@ class Texture2D(object):
         data = bytearray()
         for row in rows:
             data.extend(row)
-        return data
+        return bytes(data)
 
 
 class Texture3D(object):

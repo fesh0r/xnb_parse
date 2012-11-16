@@ -39,14 +39,14 @@ class PyPngWriter(object):
             data.append(0)
             data.extend(row)
             if len(data) > self.chunk_limit:
-                compressed = compressor.compress(bytes(data))
+                compressed = compressor.compress(data)
                 if len(compressed):
                     PyPngWriter._write_chunk(outfile, b'IDAT', compressed)
                 data = bytearray()
         if len(data):
-            compressed = compressor.compress(bytes(data))
+            compressed = compressor.compress(data)
         else:
-            compressed = bytes()
+            compressed = bytearray()
         flushed = compressor.flush()
         if len(compressed) or len(flushed):
             PyPngWriter._write_chunk(outfile, b'IDAT', compressed + flushed)
