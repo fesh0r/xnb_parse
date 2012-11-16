@@ -8,9 +8,11 @@ from collections import namedtuple
 from xnb_parse.file_formats.xml_utils import E
 
 
-# pylint: disable-msg=E1001,W0232,E1101
-#noinspection PyClassicStyleClass,PyOldStyleClasses,PyUnresolvedReferences
-class Color(namedtuple('Color', ['r', 'g', 'b', 'a'])):
+_Color = namedtuple('Color', ['r', 'g', 'b', 'a'])  # pylint: disable-msg=C0103
+
+
+class Color(_Color):  # pylint: disable-msg=W0232
+    # pylint: disable-msg=E1101
     __slots__ = ()
 
     def to_packed(self):
@@ -47,9 +49,11 @@ class Color(namedtuple('Color', ['r', 'g', 'b', 'a'])):
         return root
 
 
-# pylint: disable-msg=E1001,W0232,E1101
-#noinspection PyClassicStyleClass,PyOldStyleClasses,PyUnresolvedReferences
-class Rectangle(namedtuple('Rectangle', ['x', 'y', 'w', 'h'])):
+_Rectangle = namedtuple('Rectangle', ['x', 'y', 'w', 'h'])  # pylint: disable-msg=C0103
+
+
+class Rectangle(_Rectangle):  # pylint: disable-msg=W0232
+    # pylint: disable-msg=E1101
     __slots__ = ()
 
     def xml(self):
@@ -57,9 +61,11 @@ class Rectangle(namedtuple('Rectangle', ['x', 'y', 'w', 'h'])):
         return root
 
 
-# pylint: disable-msg=E1001,W0232,E1101
-#noinspection PyClassicStyleClass,PyOldStyleClasses,PyUnresolvedReferences
-class Quaternion(namedtuple('Quarternion', ['x', 'y', 'z', 'w'])):
+_Quarternion = namedtuple('Quarternion', ['x', 'y', 'z', 'w'])  # pylint: disable-msg=C0103
+
+
+class Quaternion(_Quarternion):  # pylint: disable-msg=W0232
+    # pylint: disable-msg=E1101
     __slots__ = ()
 
     def xml(self):
@@ -67,9 +73,11 @@ class Quaternion(namedtuple('Quarternion', ['x', 'y', 'z', 'w'])):
         return root
 
 
-# pylint: disable-msg=E1001,W0232,E1101
-#noinspection PyClassicStyleClass,PyOldStyleClasses,PyUnresolvedReferences
-class Vector2(namedtuple('Vector2', ['x', 'y'])):
+_Vector2 = namedtuple('Vector2', ['x', 'y'])  # pylint: disable-msg=C0103
+
+
+class Vector2(_Vector2):  # pylint: disable-msg=W0232
+    # pylint: disable-msg=E1101
     __slots__ = ()
 
     def xml(self):
@@ -77,9 +85,11 @@ class Vector2(namedtuple('Vector2', ['x', 'y'])):
         return root
 
 
-# pylint: disable-msg=E1001,W0232,E1101
-#noinspection PyClassicStyleClass,PyOldStyleClasses,PyUnresolvedReferences
-class Vector3(namedtuple('Vector3', ['x', 'y', 'z'])):
+_Vector3 = namedtuple('Vector3', ['x', 'y', 'z'])  # pylint: disable-msg=C0103
+
+
+class Vector3(_Vector3):  # pylint: disable-msg=W0232
+    # pylint: disable-msg=E1101
     __slots__ = ()
 
     def xml(self):
@@ -87,9 +97,11 @@ class Vector3(namedtuple('Vector3', ['x', 'y', 'z'])):
         return root
 
 
-# pylint: disable-msg=E1001,W0232,E1101
-#noinspection PyClassicStyleClass,PyOldStyleClasses,PyUnresolvedReferences
-class Vector4(namedtuple('Vector4', ['x', 'y', 'z', 'w'])):
+_Vector4 = namedtuple('Vector4', ['x', 'y', 'z', 'w'])  # pylint: disable-msg=C0103
+
+
+class Vector4(_Vector4):  # pylint: disable-msg=W0232
+    # pylint: disable-msg=E1101
     __slots__ = ()
 
     def xml(self):
@@ -97,9 +109,11 @@ class Vector4(namedtuple('Vector4', ['x', 'y', 'z', 'w'])):
         return root
 
 
-# pylint: disable-msg=E1001,W0232,E1101
-#noinspection PyClassicStyleClass,PyOldStyleClasses,PyUnresolvedReferences
-class Point(namedtuple('Point', ['x', 'y'])):
+_Point = namedtuple('Point', ['x', 'y'])  # pylint: disable-msg=C0103
+
+
+class Point(_Point):  # pylint: disable-msg=W0232
+    # pylint: disable-msg=E1101
     __slots__ = ()
 
     def xml(self):
@@ -107,9 +121,11 @@ class Point(namedtuple('Point', ['x', 'y'])):
         return root
 
 
-# pylint: disable-msg=E1001,W0232,E1101
-#noinspection PyClassicStyleClass,PyOldStyleClasses,PyUnresolvedReferences
-class Plane(namedtuple('Plane', ['normal', 'd'])):
+_Plane = namedtuple('Plane', ['normal', 'd'])  # pylint: disable-msg=C0103
+
+
+class Plane(_Plane):  # pylint: disable-msg=W0232
+    # pylint: disable-msg=E1101
     __slots__ = ()
 
     def xml(self):
@@ -117,9 +133,11 @@ class Plane(namedtuple('Plane', ['normal', 'd'])):
         return root
 
 
-# pylint: disable-msg=E1001,W0232,E1101
-#noinspection PyClassicStyleClass,PyOldStyleClasses,PyUnresolvedReferences
-class BoundingBox(namedtuple('BoundingBox', ['min', 'max'])):
+_BoundingBox = namedtuple('BoundingBox', ['min', 'max'])  # pylint: disable-msg=C0103
+
+
+class BoundingBox(_BoundingBox):  # pylint: disable-msg=W0232
+    # pylint: disable-msg=E1101
     __slots__ = ()
 
     def xml(self):
@@ -127,9 +145,11 @@ class BoundingBox(namedtuple('BoundingBox', ['min', 'max'])):
         return root
 
 
-# pylint: disable-msg=E1001,W0232,E1101
-#noinspection PyClassicStyleClass,PyOldStyleClasses,PyUnresolvedReferences
-class BoundingSphere(namedtuple('BoundingSphere', ['center', 'radius'])):
+_BoundingSphere = namedtuple('BoundingSphere', ['center', 'radius'])  # pylint: disable-msg=C0103
+
+
+class BoundingSphere(_BoundingSphere):  # pylint: disable-msg=W0232
+    # pylint: disable-msg=E1101
     __slots__ = ()
 
     def xml(self):
@@ -137,9 +157,11 @@ class BoundingSphere(namedtuple('BoundingSphere', ['center', 'radius'])):
         return root
 
 
-# pylint: disable-msg=E1001,W0232,E1101
-#noinspection PyClassicStyleClass,PyOldStyleClasses,PyUnresolvedReferences
-class Ray(namedtuple('Ray', ['pos', 'dir'])):
+_Ray = namedtuple('Ray', ['pos', 'dir'])  # pylint: disable-msg=C0103
+
+
+class Ray(_Ray):  # pylint: disable-msg=W0232
+    # pylint: disable-msg=E1101
     __slots__ = ()
 
     def xml(self):
@@ -163,9 +185,11 @@ class Matrix(object):
         return root
 
 
-# pylint: disable-msg=E1001,W0232,E1101
-#noinspection PyClassicStyleClass,PyOldStyleClasses,PyUnresolvedReferences
-class BoundingFrustum(namedtuple('BoundingFrustum', ['v'])):
+_BoundingFrustum = namedtuple('BoundingFrustum', ['v'])  # pylint: disable-msg=C0103
+
+
+class BoundingFrustum(_BoundingFrustum):  # pylint: disable-msg=W0232
+    # pylint: disable-msg=E1101
     __slots__ = ()
 
     def xml(self):
