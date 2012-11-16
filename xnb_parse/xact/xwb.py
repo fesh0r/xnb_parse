@@ -87,16 +87,19 @@ _WAVEFORMATEX = Struct('<H H I I H H H')
 class XWB(object):
     #noinspection PyUnusedLocal
     # pylint: disable-msg=W0612
-    def __init__(self, data):
-        # check sig to find file endianess
-        h_sig = data[:4]
+    def __init__(self, data=None, filename=None):
+        # open in little endian initially
+        stream = BinaryStream(data=data, filename=filename)
+        # check sig to find actual endianess
+        h_sig = stream.peek(len(XWB_L_SIGNATURE))
         if h_sig == XWB_L_SIGNATURE:
             big_endian = False
         elif h_sig == XWB_B_SIGNATURE:
             big_endian = True
         else:
             raise ValueError("bad sig: {!r}".format(h_sig))
-        stream = BinaryStream(data, big_endian=big_endian)
+        # switch stream to correct endianess
+        stream.set_endian(big_endian)
         (h_sig, h_version, h_header_version) = stream.unpack(_WB_HEADER)
         self.h_version = h_version
         self.h_header_version = h_header_version

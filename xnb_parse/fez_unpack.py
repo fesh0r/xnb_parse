@@ -11,9 +11,7 @@ from xnb_parse.binstream import BinaryStream
 
 
 def unpack(in_file, out_dir):
-    with open(in_file, 'rb') as in_handle:
-        in_data = in_handle.read()
-    stream = BinaryStream(in_data)
+    stream = BinaryStream(filename=in_file)
     capacity = stream.read_int32()
     for _ in range(capacity):
         filename = stream.read_string()

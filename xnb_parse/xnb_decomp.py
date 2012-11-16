@@ -20,14 +20,9 @@ def read_xnb(in_dir, out_dir):
             out_file = os.path.normpath(os.path.join(out_dir, sub_dir, cur_file))
             if not os.path.isdir(os.path.dirname(out_file)):
                 os.makedirs(os.path.dirname(out_file))
-
             print(in_file)
-            with open(in_file, 'rb') as in_handle:
-                in_data = in_handle.read()
-            xnb = XNBReader.load(in_data, parse=False)
-            out_data = xnb.save()
-            with open(out_file, 'wb') as out_handle:
-                out_handle.write(out_data)
+            xnb = XNBReader.load(filename=in_file, parse=False)
+            xnb.save(filename=out_file)
 
 
 def main():

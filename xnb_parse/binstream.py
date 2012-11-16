@@ -23,15 +23,32 @@ _TYPE_FMT = {
 }
 
 
+# pylint: disable-msg=W0201
 class BinaryStream(BytesIO):
-    def __init__(self, data=None, big_endian=False):
+    def __init__(self, data=None, filename=None, big_endian=False):
+        if filename is not None:
+            with open(filename, 'rb') as file_handle:
+                data = file_handle.read()
         BytesIO.__init__(self, data)
+        self.set_endian(big_endian)
+
+    def set_endian(self, big_endian=False):
         self.big_endian = big_endian
         if self.big_endian:
             self._fmt_end = '>'
         else:
             self._fmt_end = '<'
         self._types = {k: struct.Struct(self._fmt_end + v) for k, v in _TYPE_FMT.items()}
+
+    def peek(self, count):
+        cur_pos = self.tell()
+        value = self.read(count)
+        self.seek(cur_pos)
+        return value
+
+    def write_file(self, filename):
+        with open(filename, 'wb') as file_handle:
+            file_handle.write(self.getvalue())
 
     def length(self):
         cur_pos = self.tell()

@@ -35,7 +35,7 @@ _XNB_HEADER = '3s c B B I'
 class XNBReader(BinaryStream):
     def __init__(self, data, file_platform=PLATFORM_WINDOWS, file_version=VERSION_40, graphics_profile=PROFILE_REACH,
                  compressed=False, type_reader_manager=None, parse=True, expected_type_reader=None):
-        BinaryStream.__init__(self, data)
+        BinaryStream.__init__(self, data=data)
         self.file_platform = file_platform
         self.file_version = file_version
         self.graphics_profile = graphics_profile
@@ -101,8 +101,8 @@ class XNBReader(BinaryStream):
         return reader_type_class(self, version)
 
     @classmethod
-    def load(cls, data, type_reader_manager=None, parse=True):
-        stream = BinaryStream(data)
+    def load(cls, data=None, filename=None, type_reader_manager=None, parse=True):
+        stream = BinaryStream(data=data, filename=filename)
         (sig, platform, version, attribs, size) = stream.unpack(_XNB_HEADER)
         if sig != XNB_SIGNATURE:
             raise ValueError("bad sig: '{!r}'".format(sig))
@@ -110,8 +110,9 @@ class XNBReader(BinaryStream):
             raise ValueError("bad platform: '{!r}'".format(platform))
         if version not in XNB_VERSIONS:
             raise ValueError("bad version: {}".format(version))
-        if len(data) != size:
-            raise ValueError("bad size: {} != {}".format(len(data), size))
+        stream_length = stream.length()
+        if stream_length != size:
+            raise ValueError("bad size: {} != {}".format(stream_length, size))
         compressed = False
         profile = 0
         if version >= VERSION_40:
@@ -130,7 +131,7 @@ class XNBReader(BinaryStream):
             content = stream.read(size)
         return cls(content, platform, version, profile, compressed, type_reader_manager, parse)
 
-    def save(self, compress=False):
+    def save(self, filename=None, compress=False):
         if self.file_platform not in XNB_PLATFORMS:
             raise ValueError("bad platform: '{!r}'".format(self.file_platform))
         if self.file_version not in XNB_VERSIONS:
@@ -153,7 +154,10 @@ class XNBReader(BinaryStream):
             size = len(data) + stream.calc_size(_XNB_HEADER)
         stream.pack(_XNB_HEADER, XNB_SIGNATURE, self.file_platform, self.file_version, attribs, size)
         stream.write(data)
-        return stream.getvalue()
+        if filename is not None:
+            stream.write_file(filename)
+        else:
+            return stream.getvalue()
 
     def read_object(self, expected_type_reader=None, type_params=None):
         type_reader = self.read_type_id()

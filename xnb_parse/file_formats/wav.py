@@ -38,7 +38,7 @@ class PyWavWriter(object):
         self.seek_raw = seek
         self.needs_swap = needs_swap
 
-        h_s = BinaryStream(self.header_raw, big_endian=needs_swap)
+        h_s = BinaryStream(data=self.header_raw, big_endian=needs_swap)
         waveformatex_size = h_s.calc_size(self._waveformatex)
         (self.h_format_tag, self.h_channels, self.h_samples_per_sec, self.h_avg_bytes_per_sec, self.h_block_align,
          self.h_bits_per_sample) = h_s.unpack(self._waveformatex)
@@ -144,15 +144,13 @@ class PyWavWriter(object):
         if self.seek_raw:
             self.write_chunk(o_s, b'seek', self.seek_raw)
         self.write_chunk(o_s, b'data', self.data_raw)
-        wav_data = o_s.getvalue()
         if self.h_format_tag == WAVE_FORMAT_XMA2:
             full_filename = filename + '.xma'
         elif self.h_format_tag == WAVE_FORMAT_WMAUDIO2 or self.h_format_tag == WAVE_FORMAT_WMAUDIO2:
             full_filename = filename + '.xwma'
         else:
             full_filename = filename + '.wav'
-        with open(full_filename, 'wb') as out_file:
-            out_file.write(wav_data)
+        o_s.write_file(full_filename)
 
     @staticmethod
     def write_header(o_s, riff_type, header_size, data_size, dpds_size=None, seek_size=None):
