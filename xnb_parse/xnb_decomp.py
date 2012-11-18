@@ -1,4 +1,3 @@
-# coding=utf-8
 """
 Decompress XNB files.
 Requires win32

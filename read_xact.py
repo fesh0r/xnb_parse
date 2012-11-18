@@ -1,5 +1,4 @@
 #!/usr/bin/python3
-# coding=utf-8
 """
 Dump info from XACT files
 """

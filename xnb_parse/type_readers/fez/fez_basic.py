@@ -1,4 +1,3 @@
-# coding=utf-8
 """
 FEZ basic type readers
 """

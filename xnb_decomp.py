@@ -1,5 +1,4 @@
 #!/usr/bin/python3
-# coding=utf-8
 """
 Decompress XNB files.
 Requires win32
