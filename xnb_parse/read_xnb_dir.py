@@ -9,10 +9,9 @@ import fnmatch
 
 from xnb_parse.xnb_reader import XNBReader
 from xnb_parse.type_reader import ReaderError
-from xnb_parse.type_reader_manager import TypeReaderManager
 
 
-def read_xnb_dir(in_dir, out_dir=None, type_reader_manager=None):
+def read_xnb_dir(in_dir, out_dir=None):
     in_dir = os.path.normpath(in_dir)
     if out_dir is not None:
         out_dir = os.path.normpath(out_dir)
@@ -26,7 +25,7 @@ def read_xnb_dir(in_dir, out_dir=None, type_reader_manager=None):
                 out_file = os.path.normpath(os.path.join(out_dir, short_name).replace('.xnb', ''))
             print(in_file)
             try:
-                xnb = XNBReader.load(filename=in_file, type_reader_manager=type_reader_manager)
+                xnb = XNBReader.load(filename=in_file)
                 if out_file is not None:
                     xnb.export(out_file)
             except ReaderError as ex:
@@ -40,12 +39,11 @@ def read_xnb_dir(in_dir, out_dir=None, type_reader_manager=None):
 def main():
     if 1 < len(sys.argv) <= 3:
         totaltime = time.time()
-        type_reader_manager = TypeReaderManager()
         in_dir = sys.argv[1]
         out_dir = None
         if len(sys.argv) > 2:
             out_dir = sys.argv[2]
-        read_xnb_dir(in_dir, out_dir, type_reader_manager)
+        read_xnb_dir(in_dir, out_dir)
         print('> Done in {:.2f} seconds'.format(time.time() - totaltime))
     else:
         print('read_xnb_dir.py content_dir [export_dir]')

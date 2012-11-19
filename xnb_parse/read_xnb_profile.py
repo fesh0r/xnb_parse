@@ -10,15 +10,14 @@ import time
 from guppy import hpy  # pylint: disable-msg=F0401
 
 from xnb_parse.xnb_reader import XNBReader
-from xnb_parse.type_reader_manager import TypeReaderManager
 
 
-def read_xnb(in_file, type_reader_manager=None):
+def read_xnb(in_file):
     heapy = hpy()
     in_file = os.path.normpath(in_file)
     print(in_file)
     heapy.setrelheap()
-    xnb = XNBReader.load(filename=in_file, type_reader_manager=type_reader_manager, parse=False)
+    xnb = XNBReader.load(filename=in_file, parse=False)
     print(xnb.parse())
     out_filebase = os.path.normpath(os.path.join('../export', in_file.replace('.xnb', '')))
     xnb.export(out_filebase)
@@ -28,9 +27,8 @@ def read_xnb(in_file, type_reader_manager=None):
 def main():
     if len(sys.argv) > 1:
         totaltime = time.time()
-        type_reader_manager = TypeReaderManager()
         for filename in sys.argv[1:]:
-            read_xnb(filename, type_reader_manager)
+            read_xnb(filename)
         print('> Done in {:.2f} seconds'.format(time.time() - totaltime))
     else:
         print('read_xnb.py file1.xnb ...')

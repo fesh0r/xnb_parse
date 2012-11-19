@@ -5,6 +5,7 @@ XNB parser
 import os
 
 from xnb_parse.binstream import BinaryStream
+from xnb_parse.type_reader_manager import TypeReaderManager
 from xnb_parse.xna_native import decompress
 from xnb_parse.type_reader import ReaderError, generic_reader_type
 from xnb_parse.type_readers.xna_system import EnumReader
@@ -32,15 +33,20 @@ _XNB_HEADER = '3s c B B I'
 
 
 class XNBReader(BinaryStream):
+    _type_reader_manager = None
+
     def __init__(self, data, file_platform=PLATFORM_WINDOWS, file_version=VERSION_40, graphics_profile=PROFILE_REACH,
-                 compressed=False, type_reader_manager=None, parse=True, expected_type_reader=None):
+                 compressed=False, parse=True, expected_type_reader=None):
         BinaryStream.__init__(self, data=data)
+        del data
+        if XNBReader._type_reader_manager is None:
+            XNBReader._type_reader_manager = TypeReaderManager()
+        self.type_reader_manager = XNBReader._type_reader_manager
         self.file_platform = file_platform
         self.file_version = file_version
         self.graphics_profile = graphics_profile
         self.compressed = compressed
         self.needs_swap = self.file_platform == PLATFORM_XBOX
-        self.type_reader_manager = type_reader_manager
         self.type_readers = []
         self.shared_objects = []
         self.expected_type_reader = expected_type_reader
@@ -53,8 +59,6 @@ class XNBReader(BinaryStream):
                                         XNB_PROFILES[self.graphics_profile], self.length())
 
     def parse(self, verbose=False):
-        if self.type_reader_manager is None:
-            raise ReaderError("No type reader manager")
         if self.content is not None:
             return self.content
 
@@ -100,7 +104,7 @@ class XNBReader(BinaryStream):
         return reader_type_class(self, version)
 
     @classmethod
-    def load(cls, data=None, filename=None, type_reader_manager=None, parse=True):
+    def load(cls, data=None, filename=None, parse=True):
         stream = BinaryStream(data=data, filename=filename)
         (sig, platform, version, attribs, size) = stream.unpack(_XNB_HEADER)
         if sig != XNB_SIGNATURE:
@@ -128,7 +132,7 @@ class XNBReader(BinaryStream):
             content = decompress(content_comp, uncomp)
         else:
             content = stream.read(size)
-        return cls(content, platform, version, profile, compressed, type_reader_manager, parse)
+        return cls(content, platform, version, profile, compressed, parse)
 
     def save(self, filename=None, compress=False):
         if self.file_platform not in XNB_PLATFORMS:
