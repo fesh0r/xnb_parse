@@ -2,6 +2,8 @@
 system types
 """
 
+from collections import OrderedDict
+
 from xnb_parse.file_formats.xml_utils import E
 from xnb_parse.xna_types.xna_primitive import Enum
 
@@ -23,7 +25,7 @@ class XNAList(list):
         return root
 
 
-class XNADict(dict):
+class XNADict(OrderedDict):
     __slots__ = ()
 
     def xml(self, xml_tag='Dict', xml_entry='Entry', attrib=None):
