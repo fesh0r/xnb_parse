@@ -36,7 +36,7 @@ class XNBReader(BinaryStream):
     _type_reader_manager = None
 
     def __init__(self, data, file_platform=PLATFORM_WINDOWS, file_version=VERSION_40, graphics_profile=PROFILE_REACH,
-                 compressed=False, parse=True, expected_type_reader=None):
+                 compressed=False, parse=True, expected_type=None):
         BinaryStream.__init__(self, data=data)
         del data
         if XNBReader._type_reader_manager is None:
@@ -49,16 +49,15 @@ class XNBReader(BinaryStream):
         self.needs_swap = self.file_platform == PLATFORM_XBOX
         self.type_readers = []
         self.shared_objects = []
-        self.expected_type_reader = expected_type_reader
         self.content = None
         if parse:
-            self.parse()
+            self.parse(expected_type=expected_type)
 
     def __str__(self):
         return 'XNB {}{}{} s:{}'.format(XNB_PLATFORMS[self.file_platform], XNB_VERSIONS[self.file_version],
                                         XNB_PROFILES[self.graphics_profile], self.length())
 
-    def parse(self, verbose=False):
+    def parse(self, expected_type=None, verbose=False):
         if self.content is not None:
             return self.content
 
@@ -80,7 +79,7 @@ class XNBReader(BinaryStream):
         if shared_count:
             raise ReaderError("Shared resources present")
 
-        self.content = self.read_object(self.expected_type_reader)
+        self.content = self.read_object(expected_type=expected_type)
         if verbose:
             print("Asset: {!s}".format(self.content))
 
@@ -104,8 +103,9 @@ class XNBReader(BinaryStream):
         return reader_type_class(self, version)
 
     @classmethod
-    def load(cls, data=None, filename=None, parse=True):
+    def load(cls, data=None, filename=None, parse=True, expected_type=None):
         stream = BinaryStream(data=data, filename=filename)
+        del data
         (sig, platform, version, attribs, size) = stream.unpack(_XNB_HEADER)
         if sig != XNB_SIGNATURE:
             raise ReaderError("bad sig: '{!r}'".format(sig))
@@ -132,7 +132,7 @@ class XNBReader(BinaryStream):
             content = decompress(content_comp, uncomp)
         else:
             content = stream.read(size)
-        return cls(content, platform, version, profile, compressed, parse)
+        return cls(content, platform, version, profile, compressed, parse=parse, expected_type=expected_type)
 
     def save(self, filename=None, compress=False):
         if self.file_platform not in XNB_PLATFORMS:
@@ -162,7 +162,7 @@ class XNBReader(BinaryStream):
         else:
             return stream.getvalue()
 
-    def read_object(self, expected_type_reader=None, type_params=None):
+    def read_object(self, expected_type_reader=None, type_params=None, expected_type=None):
         type_reader = self.read_type_id()
         if type_reader is None:
             return None
@@ -176,6 +176,9 @@ class XNBReader(BinaryStream):
                     expected_type = expected_type_reader.target_type
             except AttributeError:
                 raise ReaderError("bad expected_type_reader: '{}'".format(expected_type_reader))
+            if type_reader.target_type != expected_type:
+                raise ReaderError("Unexpected type: '{}' != '{}'".format(type_reader.target_type, expected_type))
+        elif expected_type is not None:
             if type_reader.target_type != expected_type:
                 raise ReaderError("Unexpected type: '{}' != '{}'".format(type_reader.target_type, expected_type))
         return type_reader.read()
