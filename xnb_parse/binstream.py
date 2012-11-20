@@ -109,73 +109,73 @@ class BinaryStream(BytesIO):
         return self._types[fmt].size
 
     def read_byte(self):
-        return self.unpack('B')[0]
+        return self._types['B'].unpack(self.read(1))[0]
 
     def write_byte(self, value):
-        return self.pack('B', value)
+        return self.write(self._types['B'].pack(value))
 
     def read_sbyte(self):
-        return self.unpack('b')[0]
+        return self._types['b'].unpack(self.read(1))[0]
 
     def write_sbyte(self, value):
-        return self.pack('b', value)
+        return self.write(self._types['b'].pack(value))
 
     def read_cbyte(self):
-        return self.unpack('c')[0]
+        return self._types['c'].unpack(self.read(1))[0]
 
     def write_cbyte(self, value):
-        return self.pack('c', value)
+        return self.write(self._types['c'].pack(value))
 
     def read_int16(self):
-        return self.unpack('h')[0]
+        return self._types['h'].unpack(self.read(2))[0]
 
     def write_int16(self, value):
-        return self.pack('h', value)
+        return self.write(self._types['h'].pack(value))
 
     def read_uint16(self):
-        return self.unpack('H')[0]
+        return self._types['H'].unpack(self.read(2))[0]
 
     def write_uint16(self, value):
-        return self.pack('H', value)
+        return self.write(self._types['H'].pack(value))
 
     def read_int32(self):
-        return self.unpack('i')[0]
+        return self._types['i'].unpack(self.read(4))[0]
 
     def write_int32(self, value):
-        return self.pack('i', value)
+        return self.write(self._types['i'].pack(value))
 
     def read_uint32(self):
-        return self.unpack('I')[0]
+        return self._types['I'].unpack(self.read(4))[0]
 
     def write_uint32(self, value):
-        return self.pack('I', value)
+        return self.write(self._types['I'].pack(value))
 
     def read_int64(self):
-        return self.unpack('q')[0]
+        return self._types['q'].unpack(self.read(8))[0]
 
     def write_int64(self, value):
-        return self.pack('q', value)
+        return self.write(self._types['q'].pack(value))
 
     def read_uint64(self):
-        return self.unpack('Q')[0]
+        return self._types['Q'].unpack(self.read(8))[0]
 
     def write_uint64(self, value):
-        return self.pack('Q', value)
+        return self.write(self._types['Q'].pack(value))
 
     def read_boolean(self):
-        return self.unpack('?')[0]
+        return self._types['?'].unpack(self.read(1))[0]
 
     def write_boolean(self, value):
-        return self.pack('?', value)
+        return self.write(self._types['?'].pack(value))
 
     def read_single(self):
-        return self.unpack('f')[0]
+        return self._types['f'].unpack(self.read(4))[0]
 
     def write_single(self, value):
-        return self.pack('f', value)
+        return self.write(self._types['f'].pack(value))
 
     def read_double(self):
-        return self.unpack('d')[0]
+        return self._types['d'].unpack(self.read(8))[0]
 
     def write_double(self, value):
-        return self.pack('d', value)
+        return self.write(self._types['d'].pack(value))
