@@ -4,9 +4,7 @@ math type readers
 
 from xnb_parse.type_reader_manager import TypeReaderPlugin
 from xnb_parse.type_reader import BaseTypeReader, ValueTypeReader
-from xnb_parse.xna_types.xna_math import (Rectangle, Point, Plane, BoundingBox, BoundingSphere, Ray, BoundingFrustum,
-                                          Vector2, Vector3, Vector4, Matrix, Quaternion, Color)
-from xnb_parse.xna_types.xna_system import XNAList
+from xnb_parse.xna_types.xna_math import Rectangle, Point, Plane, BoundingBox, BoundingSphere, Ray, BoundingFrustum
 
 
 class Vector2Reader(ValueTypeReader, TypeReaderPlugin):
@@ -14,7 +12,7 @@ class Vector2Reader(ValueTypeReader, TypeReaderPlugin):
     reader_name = 'Microsoft.Xna.Framework.Content.Vector2Reader'
 
     def read(self):
-        return Vector2._make(self.stream.unpack('2f'))
+        return self.stream.read_vector2()
 
 
 class Vector3Reader(ValueTypeReader, TypeReaderPlugin):
@@ -22,7 +20,7 @@ class Vector3Reader(ValueTypeReader, TypeReaderPlugin):
     reader_name = 'Microsoft.Xna.Framework.Content.Vector3Reader'
 
     def read(self):
-        return Vector3._make(self.stream.unpack('3f'))
+        return self.stream.read_vector3()
 
 
 class Vector4Reader(ValueTypeReader, TypeReaderPlugin):
@@ -30,7 +28,7 @@ class Vector4Reader(ValueTypeReader, TypeReaderPlugin):
     reader_name = 'Microsoft.Xna.Framework.Content.Vector4Reader'
 
     def read(self):
-        return Vector4._make(self.stream.unpack('4f'))
+        return self.stream.read_vector4()
 
 
 class MatrixReader(ValueTypeReader, TypeReaderPlugin):
@@ -38,7 +36,7 @@ class MatrixReader(ValueTypeReader, TypeReaderPlugin):
     reader_name = 'Microsoft.Xna.Framework.Content.MatrixReader'
 
     def read(self):
-        return Matrix(XNAList(self.stream.unpack('16f')))
+        return self.stream.read_matrix()
 
 
 class QuaternionReader(ValueTypeReader, TypeReaderPlugin):
@@ -46,7 +44,7 @@ class QuaternionReader(ValueTypeReader, TypeReaderPlugin):
     reader_name = 'Microsoft.Xna.Framework.Content.QuaternionReader'
 
     def read(self):
-        return Quaternion._make(self.stream.unpack('4f'))
+        return self.stream.read_quaternion()
 
 
 class ColorReader(ValueTypeReader, TypeReaderPlugin):
@@ -54,7 +52,7 @@ class ColorReader(ValueTypeReader, TypeReaderPlugin):
     reader_name = 'Microsoft.Xna.Framework.Content.ColorReader'
 
     def read(self):
-        return Color._make(self.stream.unpack('4B'))
+        return self.stream.read_color()
 
 
 class PlaneReader(ValueTypeReader, TypeReaderPlugin):
@@ -62,8 +60,9 @@ class PlaneReader(ValueTypeReader, TypeReaderPlugin):
     reader_name = 'Microsoft.Xna.Framework.Content.PlaneReader'
 
     def read(self):
-        values = self.stream.unpack('3f f')
-        return Plane._make(Vector3._make(values[0:3]), values[3])
+        plane_normal = self.stream.read_vector3()
+        plane_d = self.stream.read_single()
+        return Plane(plane_normal, plane_d)
 
 
 class PointReader(ValueTypeReader, TypeReaderPlugin):
@@ -71,7 +70,9 @@ class PointReader(ValueTypeReader, TypeReaderPlugin):
     reader_name = 'Microsoft.Xna.Framework.Content.PointReader'
 
     def read(self):
-        return Point._make(self.stream.unpack('2i'))
+        v_x = self.stream.read_int32()
+        v_y = self.stream.read_int32()
+        return Point(v_x, v_y)
 
 
 class RectangleReader(ValueTypeReader, TypeReaderPlugin):
@@ -79,7 +80,11 @@ class RectangleReader(ValueTypeReader, TypeReaderPlugin):
     reader_name = 'Microsoft.Xna.Framework.Content.RectangleReader'
 
     def read(self):
-        return Rectangle._make(self.stream.unpack('4i'))
+        v_x = self.stream.read_int32()
+        v_y = self.stream.read_int32()
+        v_w = self.stream.read_int32()
+        v_h = self.stream.read_int32()
+        return Rectangle(v_x, v_y, v_w, v_h)
 
 
 class BoundingBoxReader(ValueTypeReader, TypeReaderPlugin):
@@ -87,8 +92,9 @@ class BoundingBoxReader(ValueTypeReader, TypeReaderPlugin):
     reader_name = 'Microsoft.Xna.Framework.Content.BoundingBoxReader'
 
     def read(self):
-        values = self.stream.unpack('3f 3f')
-        return BoundingBox._make(Vector3._make(values[0:3]), Vector3._make(values[3:6]))
+        v_min = self.stream.read_vector3()
+        v_max = self.stream.read_vector3()
+        return BoundingBox(v_min, v_max)
 
 
 class BoundingSphereReader(ValueTypeReader, TypeReaderPlugin):
@@ -96,8 +102,9 @@ class BoundingSphereReader(ValueTypeReader, TypeReaderPlugin):
     reader_name = 'Microsoft.Xna.Framework.Content.BoundingSphereReader'
 
     def read(self):
-        values = self.stream.unpack('3f f')
-        return BoundingSphere._make(Vector3._make(values[0:3]), values[3])
+        v_centre = self.stream.read_vector3()
+        v_radius = self.stream.read_single()
+        return BoundingSphere(v_centre, v_radius)
 
 
 class BoundingFrustumReader(BaseTypeReader, TypeReaderPlugin):
@@ -105,7 +112,8 @@ class BoundingFrustumReader(BaseTypeReader, TypeReaderPlugin):
     reader_name = 'Microsoft.Xna.Framework.Content.BoundingFrustumReader'
 
     def read(self):
-        return BoundingFrustum._make(Matrix(XNAList(self.stream.unpack('16f'))))
+        value = self.stream.read_matrix()
+        return BoundingFrustum(value)
 
 
 class RayReader(ValueTypeReader, TypeReaderPlugin):
@@ -113,8 +121,9 @@ class RayReader(ValueTypeReader, TypeReaderPlugin):
     reader_name = 'Microsoft.Xna.Framework.Content.RayReader'
 
     def read(self):
-        values = self.stream.unpack('3f 3f')
-        return Ray._make(Vector3._make(values[0:3]), Vector3._make(values[3:6]))
+        v_pos = self.stream.read_vector3()
+        v_dir = self.stream.read_vector3()
+        return Ray(v_pos, v_dir)
 
 
 class CurveReader(BaseTypeReader, TypeReaderPlugin):
@@ -122,8 +131,16 @@ class CurveReader(BaseTypeReader, TypeReaderPlugin):
     reader_name = 'Microsoft.Xna.Framework.Content.CurveReader'
 
     def read(self):
-        pre_loop, post_loop, key_count = self.stream.unpack('3i')
+        pre_loop = self.stream.read_int32()
+        post_loop = self.stream.read_int32()
+        key_count = self.stream.read_int32()
         keys = []
         for _ in range(key_count):
-            keys.append(self.stream.unpack('f f f f i'))
+            pos = self.stream.read_single()
+            value = self.stream.read_single()
+            tangent_in = self.stream.read_single()
+            tangent_out = self.stream.read_single()
+            cont = self.stream.read_int32()
+            key = (pos, value, tangent_in, tangent_out, cont)
+            keys.append(key)
         return pre_loop, post_loop, keys

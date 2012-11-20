@@ -25,7 +25,7 @@ class XNAList(list):
         return root
 
 
-class XNADict(dict):
+class XNADict(OrderedDict):
     __slots__ = ()
 
     def xml(self, xml_tag='Dict', xml_entry='Entry', attrib=None):

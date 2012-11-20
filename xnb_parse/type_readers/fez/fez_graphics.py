@@ -11,7 +11,6 @@ from xnb_parse.type_readers.xna_primitive import StringReader, UInt16Reader
 from xnb_parse.type_readers.fez.fez_basic import NpcActionReader, ActorTypeReader, SetReader, FaceOrientationReader
 from xnb_parse.xna_types.fez.fez_graphics import (AnimatedTexture, Frame, ArtObject, ShaderInstancedIndexedPrimitives,
                                                   VertexPositionNormalTextureInstance, NpcMetadata)
-from xnb_parse.xna_types.xna_math import Vector3, Vector2
 
 
 class ArtObjectReader(BaseTypeReader, TypeReaderPlugin):
@@ -47,8 +46,10 @@ class VertexPositionNormalTextureInstanceReader(ValueTypeReader, TypeReaderPlugi
     reader_name = 'FezEngine.Readers.VertexPositionNormalTextureInstanceReader'
 
     def read(self):
-        values = self.stream.unpack('3f B 2f')
-        return VertexPositionNormalTextureInstance(Vector3._make(values[0:3]), values[3], Vector2._make(values[4:6]))
+        position = self.stream.read_vector3()
+        normal = self.stream.read_byte()
+        texture_coord = self.stream.read_vector2()
+        return VertexPositionNormalTextureInstance(position, normal, texture_coord)
 
 
 class NpcMetadataReader(BaseTypeReader, TypeReaderPlugin):

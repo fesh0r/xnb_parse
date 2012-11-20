@@ -47,7 +47,7 @@ class BinaryStream(BytesIO):
         value = 0
         shift = 0
         while shift < 32:
-            val = self._types['B'].unpack(self.read(1))[0]
+            val = self.read_byte()
             value |= (val & 0x7F) << shift
             if val & 128 == 0:
                 break
@@ -60,22 +60,22 @@ class BinaryStream(BytesIO):
         temp = value
         bytes_written = 0
         while temp >= 128:
-            self.write(self._types['B'].pack(temp & 0xff | 0x80))
+            self.write_byte(temp & 0xff | 0x80)
             bytes_written += 1
             temp >>= 7
-        self.write(self._types['B'].pack(temp))
+        self.write_byte(temp)
         bytes_written += 1
         return bytes_written
 
     def read_char(self):
-        raw_value = self._types['B'].unpack(self.read(1))[0]
+        raw_value = self.read_byte()
         byte_count = 0
         while raw_value & (0x80 >> byte_count):
             byte_count += 1
         raw_value &= (1 << (8 - byte_count)) - 1
         while byte_count > 1:
             raw_value <<= 6
-            raw_value |= self._types['B'].unpack(self.read(1))[0] & 0x3f
+            raw_value |= self.read_byte() & 0x3f
             byte_count -= 1
         return chr(raw_value)
 
