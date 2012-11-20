@@ -21,6 +21,7 @@ from xnb_parse.xna_types.fez.fez_level import (MapTree, MapNode, MapNodeConnecti
                                                ArtObjectInstance, ArtObjectActorSettings, PathSegment, CameraNodeData,
                                                SpeechLine, NpcActionContent, NpcInstance, BackgroundPlane, TrileGroup,
                                                MovementPath, AmbienceTrack)
+from xnb_parse.xna_types.xna_math import Vector3, Quaternion
 
 
 class MapTreeReader(BaseTypeReader, TypeReaderPlugin):
@@ -221,10 +222,7 @@ class TrileEmplacementReader(ValueTypeReader, TypeReaderPlugin):
     reader_name = 'FezEngine.Readers.TrileEmplacementReader'
 
     def read(self):
-        v_x = self.stream.read_int32()
-        v_y = self.stream.read_int32()
-        v_z = self.stream.read_int32()
-        return TrileEmplacement(v_x, v_y, v_z)
+        return TrileEmplacement._make(self.stream.unpack('3i'))
 
 
 class TrileInstanceReader(BaseTypeReader, TypeReaderPlugin):
@@ -232,11 +230,12 @@ class TrileInstanceReader(BaseTypeReader, TypeReaderPlugin):
     reader_name = 'FezEngine.Readers.TrileInstanceReader'
 
     def read(self):
-        position = self.stream.read_vector3()
-        trile_id = self.stream.read_int32()
-        orientation = self.stream.read_byte()
+        values = self.stream.unpack('3f i B ?')
+        position = Vector3._make(values[0:3])
+        trile_id = values[3]
+        orientation = values[4]
         actor_settings = None
-        has_actor_settings = self.stream.read_boolean()
+        has_actor_settings = values[5]
         if has_actor_settings:
             actor_settings = self.stream.read_object(InstanceActorSettingsReader)
         overlapped_triles = self.stream.read_object(ListReader, [TrileInstanceReader])
@@ -249,9 +248,10 @@ class ArtObjectInstanceReader(BaseTypeReader, TypeReaderPlugin):
 
     def read(self):
         name = self.stream.read_string()
-        position = self.stream.read_vector3()
-        rotation = self.stream.read_quaternion()
-        scale = self.stream.read_vector3()
+        values = self.stream.unpack('3f 4f 3f')
+        position = Vector3._make(values[0:3])
+        rotation = Quaternion._make(values[3:7])
+        scale = Vector3._make(values[7:10])
         actor_settings = self.stream.read_object(ArtObjectActorSettingsReader)
         return ArtObjectInstance(name, position, rotation, scale, actor_settings)
 
@@ -513,16 +513,17 @@ class PathSegmentReader(BaseTypeReader, TypeReaderPlugin):
     reader_name = 'FezEngine.Readers.PathSegmentReader'
 
     def read(self):
-        destination = self.stream.read_vector3()
-        duration = self.stream.read_object(TimeSpanReader)
-        wait_time_on_start = self.stream.read_object(TimeSpanReader)
-        wait_time_on_finish = self.stream.read_object(TimeSpanReader)
-        acceleration = self.stream.read_single()
-        deceleration = self.stream.read_single()
-        jitter_factor = self.stream.read_single()
-        orientation = self.stream.read_quaternion()
+        values = self.stream.unpack('3f qqq ff f 4f ?')
+        destination = Vector3._make(values[0:3])
+        duration = values[3]
+        wait_time_on_start = values[4]
+        wait_time_on_finish = values[5]
+        acceleration = values[6]
+        deceleration = values[7]
+        jitter_factor = values[8]
+        orientation = Quaternion._make(values[9:14])
         custom_data = None
-        has_custom_data = self.stream.read_boolean()
+        has_custom_data = values[14]
         if has_custom_data:
             custom_data = self.stream.read_object(CameraNodeDataReader)
         return PathSegment(destination, duration, wait_time_on_start, wait_time_on_finish, acceleration, deceleration,
