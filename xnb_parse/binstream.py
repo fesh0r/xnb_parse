@@ -6,20 +6,7 @@ import struct
 from io import BytesIO, SEEK_END
 
 
-_TYPE_FMT = {
-    'u8': 'Q',
-    's8': 'q',
-    'u4': 'I',
-    's4': 'i',
-    'u2': 'H',
-    's2': 'h',
-    'u1': 'B',
-    's1': 'b',
-    'c1': 'c',
-    'f': 'f',
-    'd': 'd',
-    '?': '?'
-}
+_TYPE_FMT = ['Q', 'q', 'I', 'i', 'H', 'h', 'B', 'b', 'c', 'f', 'd', '?']
 
 
 # pylint: disable-msg=W0201
@@ -29,6 +16,7 @@ class BinaryStream(BytesIO):
             with open(filename, 'rb') as file_handle:
                 data = file_handle.read()
         BytesIO.__init__(self, data)
+        self._types = {k: None for k in _TYPE_FMT}
         self.set_endian(big_endian)
 
     def set_endian(self, big_endian=False):
@@ -37,7 +25,7 @@ class BinaryStream(BytesIO):
             self._fmt_end = '>'
         else:
             self._fmt_end = '<'
-        self._types = {k: struct.Struct(self._fmt_end + v) for k, v in _TYPE_FMT.items()}
+        self._types = {k: struct.Struct(self._fmt_end + k) for k, v in self._types.items()}
 
     def peek(self, count):
         cur_pos = self.tell()
@@ -106,92 +94,88 @@ class BinaryStream(BytesIO):
         return bytes_written
 
     def unpack(self, fmt):
-        local_struct = struct.Struct(self._fmt_end + fmt)
-        raw_value = self.read(local_struct.size)
-        return local_struct.unpack(raw_value)
+        if fmt not in self._types:
+            self._types[fmt] = struct.Struct(self._fmt_end + fmt)
+        return self._types[fmt].unpack(self.read(self._types[fmt].size))
 
     def pack(self, fmt, *values):
-        local_struct = struct.Struct(self._fmt_end + fmt)
-        return self.write(local_struct.pack(*values))
+        if fmt not in self._types:
+            self._types[fmt] = struct.Struct(self._fmt_end + fmt)
+        return self.write(self._types[fmt].pack(*values))
 
     def calc_size(self, fmt):
-        return struct.calcsize(self._fmt_end + fmt)
-
-    def _read_struct(self, struct_):
-        value, = struct_.unpack(self.read(struct_.size))
-        return value
-
-    def _write_struct(self, value, struct_):
-        return self.write(struct_.pack(value))
+        if fmt not in self._types:
+            self._types[fmt] = struct.Struct(self._fmt_end + fmt)
+        return self._types[fmt].size
 
     def read_byte(self):
-        return self._read_struct(self._types['u1'])
+        return self.unpack('B')[0]
 
     def write_byte(self, value):
-        return self._write_struct(value, self._types['u1'])
+        return self.pack('B', value)
 
     def read_sbyte(self):
-        return self._read_struct(self._types['s1'])
+        return self.unpack('b')[0]
 
     def write_sbyte(self, value):
-        return self._write_struct(value, self._types['s1'])
+        return self.pack('b', value)
 
     def read_cbyte(self):
-        return self._read_struct(self._types['c1'])
+        return self.unpack('c')[0]
 
     def write_cbyte(self, value):
-        return self._write_struct(value, self._types['c1'])
+        return self.pack('c', value)
 
     def read_int16(self):
-        return self._read_struct(self._types['s2'])
+        return self.unpack('h')[0]
 
     def write_int16(self, value):
-        return self._write_struct(value, self._types['s2'])
+        return self.pack('h', value)
 
     def read_uint16(self):
-        return self._read_struct(self._types['u2'])
+        return self.unpack('H')[0]
 
     def write_uint16(self, value):
-        return self._write_struct(value, self._types['u2'])
+        return self.pack('H', value)
 
     def read_int32(self):
-        return self._read_struct(self._types['s4'])
+        return self.unpack('i')[0]
 
     def write_int32(self, value):
-        return self._write_struct(value, self._types['s4'])
+        return self.pack('i', value)
 
     def read_uint32(self):
-        return self._read_struct(self._types['u4'])
+        return self.unpack('I')[0]
 
     def write_uint32(self, value):
-        return self._write_struct(value, self._types['u4'])
+        return self.pack('I', value)
 
     def read_int64(self):
-        return self._read_struct(self._types['s8'])
+        return self.unpack('q')[0]
 
     def write_int64(self, value):
-        return self._write_struct(value, self._types['s8'])
+        return self.pack('q', value)
 
     def read_uint64(self):
-        return self._read_struct(self._types['u8'])
+        return self.unpack('Q')[0]
 
     def write_uint64(self, value):
-        return self._write_struct(value, self._types['u8'])
+        return self.pack('Q', value)
 
     def read_boolean(self):
-        return self._read_struct(self._types['?'])
+        return self.unpack('?')[0]
 
     def write_boolean(self, value):
-        return self._write_struct(value, self._types['?'])
+        return self.pack('?', value)
 
     def read_single(self):
-        return self._read_struct(self._types['f'])
+        return self.unpack('f')[0]
 
     def write_single(self, value):
-        return self._write_struct(value, self._types['f'])
+        return self.pack('f', value)
 
     def read_double(self):
-        return self._read_struct(self._types['d'])
+        return self.unpack('d')[0]
 
     def write_double(self, value):
-        return self._write_struct(value, self._types['d'])
+        return self.pack('d', value)
