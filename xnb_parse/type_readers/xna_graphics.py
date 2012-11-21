@@ -105,13 +105,13 @@ class VertexDeclarationReader(BaseTypeReader, TypeReaderPlugin):
         element_count = self.stream.read_int32()
         elements = []
         for _ in range(element_count):
-            element_stream = self.stream.read_int16()
-            element_offset = self.stream.read_int16()
-            element_format = self.stream.read_byte()
-            element_method = self.stream.read_byte()
-            element_usage = self.stream.read_byte()
-            element_usage_index = self.stream.read_byte()
-            element = element_stream, element_offset, element_format, element_method, element_usage, element_usage_index
+            v_stream = self.stream.read_int16()
+            v_offset = self.stream.read_int16()
+            v_format = self.stream.read_byte()
+            v_method = self.stream.read_byte()
+            v_usage = self.stream.read_byte()
+            v_usage_index = self.stream.read_byte()
+            element = v_stream, v_offset, v_format, v_method, v_usage, v_usage_index
             elements.append(element)
         return elements
 
