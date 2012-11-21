@@ -62,18 +62,11 @@ class DictionaryReader(GenericTypeReader, TypeReaderPlugin):
 
     def read(self):
         elements = self.stream.read_int32()
-        values = XNADict()
         if self.readers[1].is_value_type:
-            for _ in range(elements):
-                key = self.readers[0].read()
-                value = self.readers[1].read()
-                values[key] = value
+            return XNADict([(self.readers[0].read(), self.readers[1].read()) for _ in range(elements)])
         else:
-            for _ in range(elements):
-                key = self.readers[0].read()
-                value = self.stream.read_object(self.readers[1])
-                values[key] = value
-        return values
+            return XNADict([(self.readers[0].read(), self.stream.read_object(self.readers[1]))
+                            for _ in range(elements)])
 
 
 class TimeSpanReader(ValueTypeReader, TypeReaderPlugin):
