@@ -13,11 +13,9 @@ def read_xnb(in_file):
     in_file = os.path.normpath(in_file)
     print(in_file)
     xnb = XNBReader.load(filename=in_file, parse=False)
-    print(xnb)
     print(xnb.parse())
     out_filebase = os.path.normpath(os.path.join('../export', in_file.replace('.xnb', '')))
-#    xnb.export(out_filebase)
-    print('done')
+    xnb.export(out_filebase)
 
 
 def main():

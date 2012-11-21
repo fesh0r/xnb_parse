@@ -23,7 +23,7 @@ def read_xnb_dir(in_dir, out_dir=None):
             out_file = None
             if out_dir is not None:
                 out_file = os.path.normpath(os.path.join(out_dir, short_name).replace('.xnb', ''))
-            print(in_file, file=sys.stderr)
+            print(in_file)
             try:
                 xnb = XNBReader.load(filename=in_file)
                 if out_file is not None:
