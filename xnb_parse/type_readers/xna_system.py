@@ -38,11 +38,10 @@ class ArrayReader(GenericTypeReader, TypeReaderPlugin):
 
     def read(self):
         elements = self.stream.read_int32()
-        values = XNAList()
-        for _ in range(elements):
-            element = self.stream.read_value_or_object(self.readers[0])
-            values.append(element)
-        return values
+        if self.readers[0].is_value_type:
+            return XNAList([self.readers[0].read() for _ in range(elements)])
+        else:
+            return XNAList([self.stream.read_object(self.readers[0]) for _ in range(elements)])
 
 
 class ListReader(GenericTypeReader, TypeReaderPlugin):
@@ -51,11 +50,10 @@ class ListReader(GenericTypeReader, TypeReaderPlugin):
 
     def read(self):
         elements = self.stream.read_int32()
-        values = XNAList()
-        for _ in range(elements):
-            element = self.stream.read_value_or_object(self.readers[0])
-            values.append(element)
-        return values
+        if self.readers[0].is_value_type:
+            return XNAList([self.readers[0].read() for _ in range(elements)])
+        else:
+            return XNAList([self.stream.read_object(self.readers[0]) for _ in range(elements)])
 
 
 class DictionaryReader(GenericTypeReader, TypeReaderPlugin):
@@ -65,10 +63,16 @@ class DictionaryReader(GenericTypeReader, TypeReaderPlugin):
     def read(self):
         elements = self.stream.read_int32()
         values = XNADict()
-        for _ in range(elements):
-            key = self.stream.read_value_or_object(self.readers[0])
-            value = self.stream.read_value_or_object(self.readers[1])
-            values[key] = value
+        if self.readers[1].is_value_type:
+            for _ in range(elements):
+                key = self.readers[0].read()
+                value = self.readers[1].read()
+                values[key] = value
+        else:
+            for _ in range(elements):
+                key = self.readers[0].read()
+                value = self.stream.read_object(self.readers[1])
+                values[key] = value
         return values
 
 
@@ -77,8 +81,7 @@ class TimeSpanReader(ValueTypeReader, TypeReaderPlugin):
     reader_name = 'Microsoft.Xna.Framework.Content.TimeSpanReader'
 
     def read(self):
-        ticks = self.stream.read_int64()
-        return ticks
+        return self.stream.read_int64()
 
 
 class DateTimeReader(ValueTypeReader, TypeReaderPlugin):
@@ -86,8 +89,7 @@ class DateTimeReader(ValueTypeReader, TypeReaderPlugin):
     reader_name = 'Microsoft.Xna.Framework.Content.DateTimeReader'
 
     def read(self):
-        value = self.stream.read_int64()
-        return value
+        return self.stream.read_int64()
 
 
 class DecimalReader(ValueTypeReader, TypeReaderPlugin):
@@ -95,11 +97,7 @@ class DecimalReader(ValueTypeReader, TypeReaderPlugin):
     reader_name = 'Microsoft.Xna.Framework.Content.DecimalReader'
 
     def read(self):
-        v_a = self.stream.read_int32()
-        v_b = self.stream.read_int32()
-        v_c = self.stream.read_int32()
-        v_d = self.stream.read_int32()
-        return v_a, v_b, v_c, v_d
+        return self.stream.unpack('4i')
 
 
 class ExternalReferenceReader(ValueTypeReader, TypeReaderPlugin):
