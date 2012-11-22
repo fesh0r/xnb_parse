@@ -85,5 +85,7 @@ class FrameReader(BaseTypeReader, TypeReaderPlugin):
 
     def read(self):
         duration = self.stream.read_object(TimeSpanReader)
-        data = self.stream.read_object(ArrayReader, [ColorReader])
+        _ = self.stream.read_7bit_encoded_int()
+        elements = self.stream.read_uint32()
+        data = self.stream.read(elements * 4)
         return Frame(duration, data)
