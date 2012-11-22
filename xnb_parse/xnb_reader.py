@@ -163,9 +163,14 @@ class XNBReader(BinaryStream):
             return stream.getvalue()
 
     def read_object(self, expected_type_reader=None, type_params=None, expected_type=None):
-        type_reader = self.read_type_id()
-        if type_reader is None:
+        type_id = self.read_7bit_encoded_int()
+        if type_id == 0:
+            # null object
             return None
+        try:
+            type_reader = self.type_readers[type_id - 1]
+        except IndexError:
+            raise ReaderError("type id out of range: {} > {}".format(type_id, len(self.type_readers)))
         if expected_type_reader is not None:
             try:
                 if expected_type_reader.is_generic_type and expected_type_reader.target_type is None:
@@ -176,9 +181,7 @@ class XNBReader(BinaryStream):
                     expected_type = expected_type_reader.target_type
             except AttributeError:
                 raise ReaderError("bad expected_type_reader: '{}'".format(expected_type_reader))
-            if type_reader.target_type != expected_type:
-                raise ReaderError("Unexpected type: '{}' != '{}'".format(type_reader.target_type, expected_type))
-        elif expected_type is not None:
+        if expected_type is not None:
             if type_reader.target_type != expected_type:
                 raise ReaderError("Unexpected type: '{}' != '{}'".format(type_reader.target_type, expected_type))
         return type_reader.read()
@@ -194,9 +197,10 @@ class XNBReader(BinaryStream):
         if type_id == 0:
             # null object
             return None
-        if type_id > len(self.type_readers):
+        try:
+            return self.type_readers[type_id - 1]
+        except IndexError:
             raise ReaderError("type id out of range: {} > {}".format(type_id, len(self.type_readers)))
-        return self.type_readers[type_id - 1]
 
     def export(self, filename):
         if not hasattr(self, 'content'):
