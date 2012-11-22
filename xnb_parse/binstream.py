@@ -6,7 +6,7 @@ import struct
 from io import BytesIO, SEEK_END
 
 
-_TYPE_FMT = ['Q', 'q', 'I', 'i', 'H', 'h', 'B', 'b', 'c', 'f', 'd', '?']
+_TYPE_FMT = ['Q', 'q', 'I', 'i', 'H', 'h', 'B', 'b', 'f', 'd', '?']
 
 
 # pylint: disable-msg=W0201
@@ -47,14 +47,12 @@ class BinaryStream(BytesIO):
         value = 0
         shift = 0
         while shift < 32:
-            val = self._types['B'].unpack(self.read(1))[0]
+            val = self.read(1)[0]
             value |= (val & 0x7F) << shift
             if val & 128 == 0:
-                break
+                return value
             shift += 7
-        if shift >= 32:
-            raise ValueError("Shift out of range")
-        return value
+        raise ValueError("Shift out of range")
 
     def write_7bit_encoded_int(self, value):
         temp = value
@@ -68,14 +66,14 @@ class BinaryStream(BytesIO):
         return bytes_written
 
     def read_char(self):
-        raw_value = self._types['B'].unpack(self.read(1))[0]
+        raw_value = self.read(1)[0]
         byte_count = 0
         while raw_value & (0x80 >> byte_count):
             byte_count += 1
         raw_value &= (1 << (8 - byte_count)) - 1
         while byte_count > 1:
             raw_value <<= 6
-            raw_value |= self._types['B'].unpack(self.read(1))[0] & 0x3f
+            raw_value |= self.read(1)[0] & 0x3f
             byte_count -= 1
         return chr(raw_value)
 
@@ -109,7 +107,7 @@ class BinaryStream(BytesIO):
         return self._types[fmt].size
 
     def read_byte(self):
-        return self._types['B'].unpack(self.read(1))[0]
+        return self.read(1)[0]
 
     def write_byte(self, value):
         return self.write(self._types['B'].pack(value))
@@ -119,12 +117,6 @@ class BinaryStream(BytesIO):
 
     def write_sbyte(self, value):
         return self.write(self._types['b'].pack(value))
-
-    def read_cbyte(self):
-        return self._types['c'].unpack(self.read(1))[0]
-
-    def write_cbyte(self, value):
-        return self.write(self._types['c'].pack(value))
 
     def read_int16(self):
         return self._types['h'].unpack(self.read(2))[0]
