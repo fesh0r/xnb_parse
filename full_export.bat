@@ -1,3 +1,5 @@
+@echo off
+
 echo Unpacking Essentials.pak...
 call fez_unpack.bat Content\Essentials.pak out
 if %errorlevel% neq 0 goto error
