@@ -5,7 +5,7 @@ FEZ graphics type readers
 from xnb_parse.type_reader import BaseTypeReader, ValueTypeReader, GenericTypeReader, generic_reader_type
 from xnb_parse.type_reader_manager import TypeReaderPlugin
 from xnb_parse.type_readers.xna_system import ListReader, ArrayReader, TimeSpanReader, ReflectiveReader
-from xnb_parse.type_readers.xna_math import ColorReader, MatrixReader
+from xnb_parse.type_readers.xna_math import MatrixReader
 from xnb_parse.type_readers.xna_graphics import PrimitiveTypeReader
 from xnb_parse.type_readers.xna_primitive import StringReader, UInt16Reader
 from xnb_parse.type_readers.fez.fez_basic import NpcActionReader, ActorTypeReader, SetReader, FaceOrientationReader

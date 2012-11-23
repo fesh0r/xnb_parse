@@ -2,7 +2,6 @@
 FEZ graphics types
 """
 
-from xnb_parse.binstream import BinaryStream
 from xnb_parse.xnb_reader import VERSION_31
 from xnb_parse.file_formats.xml_utils import E
 from xnb_parse.xna_types.xna_graphics import Texture2D, FORMAT_COLOR, get_surface_format
