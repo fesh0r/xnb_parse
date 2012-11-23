@@ -202,18 +202,18 @@ class XNBReader(BinaryStream):
         except IndexError:
             raise ReaderError("type id out of range: {} > {}".format(type_id, len(self.type_readers)))
 
-    def export(self, filename):
+    def export(self, filename, export_file=True, export_xml=True):
         if not hasattr(self, 'content'):
             raise ReaderError("XNB content deleted")
         if self.content is None:
             raise ReaderError("XNB content not parsed")
-        if hasattr(self.content, 'export'):
+        if export_file and hasattr(self.content, 'export'):
             filename = os.path.normpath(filename)
             dirname = os.path.dirname(filename)
             if not os.path.isdir(dirname):
                 os.makedirs(dirname)
             self.content.export(filename)
-        if hasattr(self.content, 'xml'):
+        if export_xml and hasattr(self.content, 'xml'):
             filename = os.path.normpath(filename)
             dirname = os.path.dirname(filename)
             if not os.path.isdir(dirname):
