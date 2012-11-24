@@ -29,7 +29,7 @@ def read_xnb_dir(in_dir, out_dir=None):
             try:
                 xnb = XNBReader.load(filename=in_file)
                 if out_file is not None:
-                    xnb.export(out_file, export_xml=False)
+                    xnb.export(out_file)
             except ReaderError as ex:
                 print("ReaderError in '{}'".format(short_name))
                 print(ex)
