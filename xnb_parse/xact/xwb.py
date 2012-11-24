@@ -89,6 +89,7 @@ class XWB(object):
     def __init__(self, data=None, filename=None):
         # open in little endian initially
         stream = BinaryStream(data=data, filename=filename)
+
         # check sig to find actual endianess
         h_sig = stream.peek(len(XWB_L_SIGNATURE))
         if h_sig == XWB_L_SIGNATURE:
@@ -97,6 +98,7 @@ class XWB(object):
             big_endian = True
         else:
             raise ValueError("bad sig: {!r}".format(h_sig))
+
         # switch stream to correct endianess
         stream.set_endian(big_endian)
         (h_sig, h_version, h_header_version) = stream.unpack(_WB_HEADER)

@@ -35,7 +35,6 @@ def _name_unescape(name):
 
 ArraySpec = namedtuple('ArraySpec', ['dimensions', 'bound'])  # pylint: disable-msg=C0103
 
-
 _CACHED_TYPES = {}
 
 
