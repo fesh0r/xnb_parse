@@ -219,44 +219,23 @@ class XNBReader(BinaryStream):
             output_xml(self.content.xml(), filename + '.xml')
 
     def read_color(self):
-        v_r = self.read_byte()
-        v_g = self.read_byte()
-        v_b = self.read_byte()
-        v_a = self.read_byte()
-        return Color(r=v_r, g=v_g, b=v_b, a=v_a)
+        return Color._make(self.unpack('4B'))
 
     def read_external_reference(self, expected_type=None):
         filename = self.read_string()
         return ExternalReference(filename, expected_type)
 
     def read_matrix(self):
-        matrix = XNAList()
-        for _ in range(16):
-            value = self.read_single()
-            matrix.append(value)
-        return Matrix(matrix)
+        return Matrix(XNAList(self.unpack('16f')))
 
     def read_quaternion(self):
-        v_x = self.read_single()
-        v_y = self.read_single()
-        v_z = self.read_single()
-        v_w = self.read_single()
-        return Quaternion(v_x, v_y, v_z, v_w)
+        return Quaternion._make(self.unpack('4f'))
 
     def read_vector2(self):
-        v_x = self.read_single()
-        v_y = self.read_single()
-        return Vector2(v_x, v_y)
+        return Vector2._make(self.unpack('2f'))
 
     def read_vector3(self):
-        v_x = self.read_single()
-        v_y = self.read_single()
-        v_z = self.read_single()
-        return Vector3(v_x, v_y, v_z)
+        return Vector3._make(self.unpack('3f'))
 
     def read_vector4(self):
-        v_x = self.read_single()
-        v_y = self.read_single()
-        v_z = self.read_single()
-        v_w = self.read_single()
-        return Vector4(v_x, v_y, v_z, v_w)
+        return Vector4._make(self.unpack('4f'))
