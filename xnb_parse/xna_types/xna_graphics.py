@@ -10,7 +10,7 @@ from xnb_parse.xnb_reader import VERSION_40, XNB_VERSIONS
 from xnb_parse.type_reader import ReaderError
 from xnb_parse.xna_types.xna_primitive import Enum
 from xnb_parse.file_formats.png import write_png
-from xnb_parse.file_formats.xml_utils import E
+from xnb_parse.file_formats.xml_utils import ET
 from xnb_parse.file_formats.img_decode import decode_bgra, decode_rgba, decode_a, decode_dxt1, decode_dxt3, decode_dxt5
 
 
@@ -228,12 +228,22 @@ class BasicEffect(object):
     def __str__(self):
         return "BasicEffectReader '{}'".format(self.texture)
 
-    def xml(self):
-        root = E.BasicEffect(spec=str(self.spec), alpha=str(self.alpha), colorV=str(self.colour_v))
-        root.append(E.Texture(self.texture.xml()))
-        root.append(E.ColorD(self.colour_d.xml()))
-        root.append(E.ColorE(self.colour_e.xml()))
-        root.append(E.ColorS(self.colour_s.xml()))
+    def xml(self, parent):
+        if parent is None:
+            root = ET.Element('BasicEffect')
+        else:
+            root = ET.SubElement(parent, 'BasicEffect')
+        root.set('spec', str(self.spec))
+        root.set('alpha', str(self.alpha))
+        root.set('colorV', str(self.colour_v))
+        texture_tag = ET.SubElement(root, 'Texture')
+        self.texture.xml(texture_tag)
+        color_d_tag = ET.SubElement(root, 'ColorD')
+        self.colour_d.xml(color_d_tag)
+        color_e_tag = ET.SubElement(root, 'ColorE')
+        self.colour_e.xml(color_e_tag)
+        color_s_tag = ET.SubElement(root, 'ColorS')
+        self.colour_s.xml(color_s_tag)
         return root
 
 
@@ -252,19 +262,25 @@ class SpriteFont(object):
         return 'SpriteFont c:{} f:{} d:{}x{}'.format(len(self.glyphs), self.texture.surface_format, self.texture.width,
                                                      self.texture.height)
 
-    def xml(self):
-        root = E.SpriteFont(width=str(self.texture.width), height=str(self.texture.height), hSpace=str(self.h_space),
-                            vSpace=str(self.v_space))
+    def xml(self, parent=None):
+        if parent is None:
+            root = ET.Element('SpriteFont')
+        else:
+            root = ET.SubElement(parent, 'SpriteFont')
+        root.set('width', str(self.texture.width))
+        root.set('height', str(self.texture.height))
+        root.set('hSpace', str(self.h_space))
+        root.set('vSpace', str(self.v_space))
         if self.default_char is not None:
             root.set('defaultChar', self.default_char)
         if self.glyphs is not None:
-            root.append(self.glyphs.xml('Glyphs'))
+            self.glyphs.xml(root, 'Glyphs')
         if self.cropping is not None:
-            root.append(self.cropping.xml('Cropping'))
+            self.cropping.xml(root, 'Cropping')
         if self.kerning is not None:
-            root.append(self.kerning.xml('Kerning'))
+            self.kerning.xml(root, 'Kerning')
         if self.char_map is not None:
-            root.append(self.char_map.xml('CharMap', 'Char', 'c'))
+            self.char_map.xml(root, 'CharMap', 'Char', 'c')
         return root
 
     def export(self, filename):

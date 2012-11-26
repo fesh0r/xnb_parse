@@ -4,7 +4,7 @@ primitive types
 
 from __future__ import print_function
 
-from xnb_parse.file_formats.xml_utils import E
+from xnb_parse.file_formats.xml_utils import ET
 
 
 class Enum(object):
@@ -32,7 +32,8 @@ class Enum(object):
     def __repr__(self):
         return '{}({})'.format(self.__class__.__name__, self._value)
 
-    def xml(self):
+    def xml(self, parent):
         xml_tag = self.xml_tag if self.xml_tag else self.__class__.__name__
-        root = E(xml_tag, self._name)
+        root = ET.SubElement(parent, xml_tag)
+        root.text = self._name
         return root

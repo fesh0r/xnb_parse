@@ -6,7 +6,7 @@ from __future__ import print_function
 
 from collections import namedtuple
 
-from xnb_parse.file_formats.xml_utils import E
+from xnb_parse.file_formats.xml_utils import ET
 
 
 _Color = namedtuple('Color', ['r', 'g', 'b', 'a'])  # pylint: disable-msg=C0103
@@ -45,8 +45,9 @@ class Color(_Color):  # pylint: disable-msg=W0232
     def attrib(self):
         return "#{:02X}{:02X}{:02X}{:02X}".format(self.a, self.r, self.g, self.b)
 
-    def xml(self):
-        root = E.Color(c=self.attrib())
+    def xml(self, parent):
+        root = ET.SubElement(parent, 'Color')
+        root.set('c', self.attrib())
         return root
 
 
@@ -57,8 +58,12 @@ class Rectangle(_Rectangle):  # pylint: disable-msg=W0232
     # pylint: disable-msg=E1101
     __slots__ = ()
 
-    def xml(self):
-        root = E.Rectangle(x=str(self.x), y=str(self.y), w=str(self.w), h=str(self.h))
+    def xml(self, parent):
+        root = ET.SubElement(parent, 'Rectangle')
+        root.set('x', str(self.x))
+        root.set('y', str(self.y))
+        root.set('w', str(self.w))
+        root.set('h', str(self.h))
         return root
 
 
@@ -69,8 +74,12 @@ class Quaternion(_Quarternion):  # pylint: disable-msg=W0232
     # pylint: disable-msg=E1101
     __slots__ = ()
 
-    def xml(self):
-        root = E.Quaternion(x=str(self.x), y=str(self.y), z=str(self.z), w=str(self.w))
+    def xml(self, parent):
+        root = ET.SubElement(parent, 'Quaternion')
+        root.set('x', str(self.x))
+        root.set('y', str(self.y))
+        root.set('z', str(self.z))
+        root.set('w', str(self.w))
         return root
 
 
@@ -81,8 +90,10 @@ class Vector2(_Vector2):  # pylint: disable-msg=W0232
     # pylint: disable-msg=E1101
     __slots__ = ()
 
-    def xml(self):
-        root = E.Vector2(x=str(self.x), y=str(self.y))
+    def xml(self, parent):
+        root = ET.SubElement(parent, 'Vector2')
+        root.set('x', str(self.x))
+        root.set('y', str(self.y))
         return root
 
 
@@ -93,8 +104,11 @@ class Vector3(_Vector3):  # pylint: disable-msg=W0232
     # pylint: disable-msg=E1101
     __slots__ = ()
 
-    def xml(self):
-        root = E.Vector3(x=str(self.x), y=str(self.y), z=str(self.z))
+    def xml(self, parent):
+        root = ET.SubElement(parent, 'Vector3')
+        root.set('x', str(self.x))
+        root.set('y', str(self.y))
+        root.set('z', str(self.z))
         return root
 
 
@@ -105,8 +119,12 @@ class Vector4(_Vector4):  # pylint: disable-msg=W0232
     # pylint: disable-msg=E1101
     __slots__ = ()
 
-    def xml(self):
-        root = E.Vector4(x=str(self.x), y=str(self.y), z=str(self.z), w=str(self.w))
+    def xml(self, parent):
+        root = ET.SubElement(parent, 'Vector4')
+        root.set('x', str(self.x))
+        root.set('y', str(self.y))
+        root.set('z', str(self.z))
+        root.set('w', str(self.w))
         return root
 
 
@@ -117,8 +135,10 @@ class Point(_Point):  # pylint: disable-msg=W0232
     # pylint: disable-msg=E1101
     __slots__ = ()
 
-    def xml(self):
-        root = E.Point(x=str(self.x), y=str(self.y))
+    def xml(self, parent):
+        root = ET.SubElement(parent, 'Point')
+        root.set('x', str(self.x))
+        root.set('y', str(self.y))
         return root
 
 
@@ -129,8 +149,10 @@ class Plane(_Plane):  # pylint: disable-msg=W0232
     # pylint: disable-msg=E1101
     __slots__ = ()
 
-    def xml(self):
-        root = E.Plane(self.normal.xml(), d=str(self.d))
+    def xml(self, parent):
+        root = ET.SubElement(parent, 'Plane')
+        root.set('d', str(self.d))
+        self.normal.xml(root)
         return root
 
 
@@ -141,8 +163,10 @@ class BoundingBox(_BoundingBox):  # pylint: disable-msg=W0232
     # pylint: disable-msg=E1101
     __slots__ = ()
 
-    def xml(self):
-        root = E.BoundingBox(self.min.xml(), self.max.xml())
+    def xml(self, parent):
+        root = ET.SubElement(parent, 'BoundingBox')
+        self.min.xml(root)
+        self.max.xml(root)
         return root
 
 
@@ -153,8 +177,10 @@ class BoundingSphere(_BoundingSphere):  # pylint: disable-msg=W0232
     # pylint: disable-msg=E1101
     __slots__ = ()
 
-    def xml(self):
-        root = E.BoundingSphere(self.center.xml(), radius=str(self.radius))
+    def xml(self, parent):
+        root = ET.SubElement(parent, 'BoundingSphere')
+        root.set('radius', str(self.radius))
+        self.center.xml(root)
         return root
 
 
@@ -165,8 +191,10 @@ class Ray(_Ray):  # pylint: disable-msg=W0232
     # pylint: disable-msg=E1101
     __slots__ = ()
 
-    def xml(self):
-        root = E.Ray(self.pos.xml(), self.dir.xml())
+    def xml(self, parent):
+        root = ET.SubElement(parent, 'Ray')
+        self.pos.xml(root)
+        self.dir.xml(root)
         return root
 
 
@@ -181,8 +209,8 @@ class Matrix(object):
     def __repr__(self):
         return 'Matrix(' + ','.join([str(v) for v in self.value]) + ')'
 
-    def xml(self):
-        root = self.value.xml('Matrix', 'Cell')
+    def xml(self, parent):
+        root = self.value.xml(parent, 'Matrix', 'Cell')
         return root
 
 
@@ -193,6 +221,7 @@ class BoundingFrustum(_BoundingFrustum):  # pylint: disable-msg=W0232
     # pylint: disable-msg=E1101
     __slots__ = ()
 
-    def xml(self):
-        root = E.BoundingFrustum(self.v.xml())
+    def xml(self, parent):
+        root = ET.SubElement(parent, 'BoundingFrustum')
+        self.v.xml(root)
         return root
