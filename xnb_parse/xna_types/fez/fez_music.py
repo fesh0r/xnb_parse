@@ -5,7 +5,7 @@ FEZ music types
 from __future__ import print_function
 
 from xnb_parse.xna_types.xna_primitive import Enum
-from xnb_parse.file_formats.xml_utils import E
+from xnb_parse.file_formats.xml_utils import ET
 
 
 class ShardNotes(Enum):
@@ -37,18 +37,24 @@ class TrackedSong(object):
     def __str__(self):
         return "TrackedSong '{}'".format(self.name)
 
-    def xml(self):
-        root = E.TrackedSong(name=self.name, tempo=str(self.tempo), timeSignature=str(self.time_signature))
+    def xml(self, parent=None):
+        if parent is None:
+            root = ET.Element('TrackedSong')
+        else:
+            root = ET.SubElement(parent, 'TrackedSong')
+        root.set('name', self.name)
+        root.set('tempo', str(self.tempo))
+        root.set('timeSignature', str(self.time_signature))
         if self.assemble_chord is not None:
-            root.append(self.assemble_chord.xml())
+            self.assemble_chord.xml(root)
         if self.notes is not None:
-            root.append(self.notes.xml('Notes'))
+            self.notes.xml(root, 'Notes')
         if self.loops is not None:
-            root.append(self.loops.xml('Loops'))
+            self.loops.xml(root, 'Loops')
         if self.random_ordering is not None:
             root.set('randomOrdering', str(self.random_ordering))
         if self.custom_ordering is not None:
-            root.append(self.custom_ordering.xml('CustomOrdering', 'Order'))
+            self.custom_ordering.xml(root, 'CustomOrdering', 'Order')
         return root
 
 
@@ -73,10 +79,20 @@ class Loop(object):
     def __str__(self):
         return "Loop '{}' d:{}".format(self.name, self.duration)
 
-    def xml(self):
-        root = E.Loop(name=self.name, duration=str(self.duration), loopTimesFrom=str(self.loop_times_from),
-                      loopTimesTo=str(self.loop_times_to), triggerFrom=str(self.trigger_from),
-                      triggerTo=str(self.trigger_to), delay=str(self.delay), fractionalTime=str(self.fractional_time),
-                      oneAtATime=str(self.one_at_a_time), cutOffTail=str(self.cut_off_tail), night=str(self.night),
-                      day=str(self.day), dusk=str(self.dusk), dawn=str(self.dawn))
+    def xml(self, parent):
+        root = ET.SubElement(parent, 'Loop')
+        root.set('name', self.name)
+        root.set('duration', str(self.duration))
+        root.set('loopTimesFrom', str(self.loop_times_from))
+        root.set('loopTimesTo', str(self.loop_times_to))
+        root.set('triggerFrom', str(self.trigger_from))
+        root.set('triggerTo', str(self.trigger_to))
+        root.set('delay', str(self.delay))
+        root.set('fractionalTime', str(self.fractional_time))
+        root.set('oneAtATime', str(self.one_at_a_time))
+        root.set('cutOffTail', str(self.cut_off_tail))
+        root.set('night', str(self.night))
+        root.set('day', str(self.day))
+        root.set('dusk', str(self.dusk))
+        root.set('dawn', str(self.dawn))
         return root
