@@ -5,7 +5,7 @@ FEZ graphics types
 from __future__ import print_function
 
 from xnb_parse.xnb_reader import VERSION_31
-from xnb_parse.file_formats.xml_utils import E
+from xnb_parse.file_formats.xml_utils import ET
 from xnb_parse.xna_types.xna_graphics import Texture2D, FORMAT_COLOR, get_surface_format
 
 
@@ -23,15 +23,21 @@ class ArtObject(object):
         return "ArtObject '{}' t:'{}' s:{} g:{}".format(self.name, self.cubemap_path, self.size,
                                                         len(self.geometry.vertices))
 
-    def xml(self):
-        root = E.ArtObject(name=self.name, cubemapPath=self.cubemap_path, noSilhouette=str(self.no_silhouette))
-        root.append(E.Size(self.size.xml()))
+    def xml(self, parent=None):
+        if parent is None:
+            root = ET.Element('ArtObject')
+        else:
+            root = ET.SubElement(parent, 'ArtObject')
+        root.set('name', self.name)
+        root.set('cubemapPath', self.cubemap_path)
+        root.set('noSilhouette', str(self.no_silhouette))
+        self.size.xml(ET.SubElement(root, 'Size'))
         if self.actor_type is not None:
             root.set('actorType', str(self.actor_type))
         if self.geometry is not None:
-            root.append(self.geometry.xml())
+            self.geometry.xml(root)
         if self.laser_outlets is not None:
-            root.append(self.laser_outlets.xml('LaserOutlets'))
+            self.laser_outlets.xml(root, 'LaserOutlets')
         return root
 
 
@@ -47,14 +53,14 @@ class ShaderInstancedIndexedPrimitives(object):
         return "ShaderInstancedIndexedPrimitives t:{} v:{} i:{}".format(self.primitive_type, len(self.vertices),
                                                                         len(self.indices))
 
-    def xml(self):
-        root = E.ShaderInstancedIndexedPrimitives()
+    def xml(self, parent):
+        root = ET.SubElement(parent, 'ShaderInstancedIndexedPrimitives')
         if self.primitive_type is not None:
             root.set('type', str(self.primitive_type))
         if self.vertices is not None:
-            root.append(self.vertices.xml('Vertices'))
+            self.vertices.xml(root, 'Vertices')
         if self.indices is not None:
-            root.append(self.indices.xml('Indices', 'Index'))
+            self.indices.xml(root, 'Indices', 'Index')
         return root
 
 
@@ -70,11 +76,12 @@ class VertexPositionNormalTextureInstance(object):
         return "VertexPositionNormalTextureInstance p:{} n:{} c:{}".format(self.position, self.normal,
                                                                            self.texture_coord)
 
-    def xml(self):
-        root = E.VertexPositionNormalTextureInstance()
-        root.append(E.Position(self.position.xml()))
-        root.append(E.Normal(str(self.normal)))
-        root.append(E.TextureCoord(self.texture_coord.xml()))
+    def xml(self, parent):
+        root = ET.SubElement(parent, 'VertexPositionNormalTextureInstance')
+        self.position.xml(ET.SubElement(root, 'Position'))
+        normal_tag = ET.SubElement(root, 'Normal')
+        normal_tag.text = str(self.normal)
+        self.texture_coord.xml(ET.SubElement(root, 'TextureCoord'))
         return root
 
 
@@ -88,12 +95,17 @@ class NpcMetadata(object):
     def __str__(self):
         return "NpcMetadata s:{} a:{}".format(self.sound_path, len(self.sound_actions))
 
-    def xml(self):
-        root = E.NpcMetadata(avoidsGomez=str(self.avoids_gomez), walkSpeed=str(self.walk_speed))
+    def xml(self, parent=None):
+        if parent is None:
+            root = ET.Element('NpcMetadata')
+        else:
+            root = ET.SubElement(parent, 'NpcMetadata')
+        root.set('avoidsGomez', str(self.avoids_gomez))
+        root.set('walkSpeed', str(self.walk_speed))
         if self.sound_path is not None:
             root.set('soundPath', self.sound_path)
         if self.sound_actions is not None:
-            root.append(self.sound_actions.xml('SoundActions'))
+            self.sound_actions.xml(root, 'SoundActions')
         return root
 
 
@@ -111,11 +123,17 @@ class AnimatedTexture(object):
         return "AnimatedTexture d:{}x{} a:{}x{} f:{}".format(self.width, self.height, self.actual_width,
                                                              self.actual_height, len(self.frames))
 
-    def xml(self):
-        root = E.AnimatedTexture(width=str(self.width), height=str(self.height), actualWidth=str(self.actual_width),
-                                 actualHeight=str(self.actual_height))
+    def xml(self, parent=None):
+        if parent is None:
+            root = ET.Element('AnimatedTexture')
+        else:
+            root = ET.SubElement(parent, 'AnimatedTexture')
+        root.set('width', str(self.width))
+        root.set('height', str(self.height))
+        root.set('actualWidth', str(self.actual_width))
+        root.set('actualHeight', str(self.actual_height))
         if self.frames is not None:
-            root.append(self.frames.xml('Frames'))
+            self.frames.xml(root, 'Frames')
         return root
 
     def export(self, filename):
@@ -144,8 +162,8 @@ class Frame(object):
     def __str__(self):
         return "Frame d:{} s:{}".format(self.duration, len(self.data))
 
-    def xml(self):
-        root = E.Frame()
+    def xml(self, parent):
+        root = ET.SubElement(parent, 'Frame')
         if self.duration is not None:
             root.set('duration', str(self.duration))
         return root
