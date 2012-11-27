@@ -4,14 +4,15 @@ XML utils
 
 from __future__ import print_function
 
-import lxml.etree as ET
-from lxml.builder import ElementMaker
+try:
+    import lxml.etree as ET
 
+    def output_xml(xml, filename):
+        ET.ElementTree(xml).write(filename, encoding='utf-8', xml_declaration=True, pretty_print=True)
+except ImportError:
+    #noinspection PyRedeclaration
+    import xml.etree.cElementTree as ET
 
-#noinspection PyUnresolvedReferences
-def output_xml(xml, filename):
-    ET.ElementTree(xml).write(filename, encoding='utf-8', xml_declaration=True, pretty_print=True)
-
-
-# create factory object
-E = ElementMaker()
+    #noinspection PyRedeclaration
+    def output_xml(xml, filename):
+        ET.ElementTree(xml).write(filename, encoding='utf-8')
