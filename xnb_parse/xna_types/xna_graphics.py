@@ -236,14 +236,10 @@ class BasicEffect(object):
         root.set('spec', str(self.spec))
         root.set('alpha', str(self.alpha))
         root.set('colorV', str(self.colour_v))
-        texture_tag = ET.SubElement(root, 'Texture')
-        self.texture.xml(texture_tag)
-        color_d_tag = ET.SubElement(root, 'ColorD')
-        self.colour_d.xml(color_d_tag)
-        color_e_tag = ET.SubElement(root, 'ColorE')
-        self.colour_e.xml(color_e_tag)
-        color_s_tag = ET.SubElement(root, 'ColorS')
-        self.colour_s.xml(color_s_tag)
+        self.texture.xml(ET.SubElement(root, 'Texture'))
+        self.colour_d.xml(ET.SubElement(root, 'ColorD'))
+        self.colour_e.xml(ET.SubElement(root, 'ColorE'))
+        self.colour_s.xml(ET.SubElement(root, 'ColorS'))
         return root
 
 
