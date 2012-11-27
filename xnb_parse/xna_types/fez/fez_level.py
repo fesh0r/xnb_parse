@@ -6,7 +6,7 @@ from __future__ import print_function
 
 from collections import namedtuple
 
-from xnb_parse.file_formats.xml_utils import E, ET
+from xnb_parse.file_formats.xml_utils import ET
 
 
 class MapTree(object):
@@ -313,20 +313,33 @@ class Level(object):
     def __str__(self):
         return "Level '{}'".format(self.name)
 
-    def xml(self):
-        root = E.Level(flat=str(self.flat),
-                       skipPostprocess=str(self.skip_postprocess), baseDiffuse=str(self.base_diffuse),
-                       baseAmbient=str(self.base_ambient), haloFiltering=str(self.halo_filtering),
-                       blinkingAlpha=str(self.blinking_alpha), loops=str(self.loops),
-                       waterHeight=str(self.water_height), skyName=self.sky_name,
-                       fapFadeoutStart=str(self.fap_fadeout_start), fapFadeoutLength=str(self.fap_fadeout_length),
-                       descending=str(self.descending), rainy=str(self.rainy), lowPass=str(self.low_pass),
-                       quantum=str(self.quantum))
+    def xml(self, parent=None):
+        if parent is None:
+            root = ET.Element('Level')
+        else:
+            root = ET.SubElement(parent, 'Level')
+        root.set('flat', str(self.flat))
+        root.set('skipPostprocess', str(self.skip_postprocess))
+        root.set('baseDiffuse', str(self.base_diffuse))
+        root.set('baseAmbient', str(self.base_ambient))
+        root.set('haloFiltering', str(self.halo_filtering))
+        root.set('blinkingAlpha', str(self.blinking_alpha))
+        root.set('loops', str(self.loops))
+        root.set('waterHeight', str(self.water_height))
+        root.set('skyName', self.sky_name)
+        root.set('fapFadeoutStart', str(self.fap_fadeout_start))
+        root.set('fapFadeoutLength', str(self.fap_fadeout_length))
+        root.set('descending', str(self.descending))
+        root.set('rainy', str(self.rainy))
+        root.set('lowPass', str(self.low_pass))
+        root.set('quantum', str(self.quantum))
         if self.name is not None:
             root.set('name', self.name)
-        root.append(E.Size(self.size.xml()))
+        size_tag = ET.SubElement(root, 'Size')
+        self.size.xml(size_tag)
         if self.starting_position is not None:
-            root.append(E.StartingPosition(self.starting_position.xml()))
+            starting_position_tag = ET.SubElement(root, 'StartingPosition')
+            self.starting_position.xml(starting_position_tag)
         if self.sequence_samples_path is not None:
             root.set('sequenceSamplesPath', self.sequence_samples_path)
         if self.gomez_halo_name is not None:
@@ -336,27 +349,27 @@ class Level(object):
         if self.trile_set_name is not None:
             root.set('trileSetName', self.trile_set_name)
         if self.volumes is not None:
-            root.append(self.volumes.xml('Volumes'))
+            self.volumes.xml(root, 'Volumes')
         if self.scripts is not None:
-            root.append(self.scripts.xml('Scripts'))
+            self.scripts.xml(root, 'Scripts')
         if self.song_name is not None:
             root.set('songName', self.song_name)
         if self.triles is not None:
-            root.append(self.triles.xml('Triles'))
+            self.triles.xml(root, 'Triles')
         if self.art_objects is not None:
-            root.append(self.art_objects.xml('ArtObjects'))
+            self.art_objects.xml(root, 'ArtObjects')
         if self.background_planes is not None:
-            root.append(self.background_planes.xml('BackgroundPlanes'))
+            self.background_planes.xml(root, 'BackgroundPlanes')
         if self.groups is not None:
-            root.append(self.groups.xml('Groups'))
+            self.groups.xml(root, 'Groups')
         if self.nonplayer_characters is not None:
-            root.append(self.nonplayer_characters.xml('NonplayerCharacters'))
+            self.nonplayer_characters.xml(root, 'NonplayerCharacters')
         if self.paths is not None:
-            root.append(self.paths.xml('Paths'))
+            self.paths.xml(root, 'Paths')
         if self.muted_loops is not None:
-            root.append(self.muted_loops.xml('MutedLoops'))
+            self.muted_loops.xml(root, 'MutedLoops')
         if self.ambience_tracks is not None:
-            root.append(self.ambience_tracks.xml('AmbienceTracks'))
+            self.ambience_tracks.xml(root, 'AmbienceTracks')
         if self.node_type is not None:
             root.set('nodeType', str(self.node_type))
         return root
@@ -372,14 +385,17 @@ class Volume(object):
     def __str__(self):
         return "Volume"
 
-    def xml(self):
-        root = E.Volume()
+    def xml(self, parent):
+        root = ET.SubElement(parent, 'Volume')
         if self.orientations is not None:
-            root.append(self.orientations.xml('Orientations'))
-        root.append(E.From(self.v_from.xml()))
-        root.append(E.To(self.v_to.xml()))
+            self.orientations.xml(root, 'Orientations')
+        from_tag = ET.SubElement(root, 'From')
+        self.v_from.xml(from_tag)
+        to_tag = ET.SubElement(root, 'To')
+        self.v_to.xml(to_tag)
         if self.actor_settings is not None:
-            root.append(E.ActorSettings(self.actor_settings.xml()))
+            actor_settings_tag = ET.SubElement(root, 'ActorSettings')
+            self.actor_settings.xml(actor_settings_tag)
         return root
 
 
@@ -390,8 +406,11 @@ class TrileEmplacement(_TrileEmplacement):  # pylint: disable-msg=W0232
     # pylint: disable-msg=E1101
     __slots__ = ()
 
-    def xml(self):
-        root = E.TrileEmplacement(x=str(self.x), y=str(self.y), z=str(self.z))
+    def xml(self, parent):
+        root = ET.SubElement(parent, 'TrileEmplacement')
+        root.set('x', str(self.x))
+        root.set('y', str(self.y))
+        root.set('z', str(self.z))
         return root
 
 
@@ -408,13 +427,16 @@ class TrileInstance(object):
     def __str__(self):
         return "TrileInstance t:{} p:{},{},{}".format(self.trile_id, self.position.x, self.position.y, self.position.z)
 
-    def xml(self):
-        root = E.TrileInstance(trileId=str(self.trile_id), orientation=str(self.orientation))
-        root.append(E.Position(self.position.xml()))
+    def xml(self, parent):
+        root = ET.SubElement(parent, 'TrileInstance')
+        root.set('trileId', str(self.trile_id))
+        root.set('orientation', str(self.orientation))
+        position_tag = ET.SubElement(root, 'Position')
+        self.position.xml(position_tag)
         if self.actor_settings is not None:
-            root.append(self.actor_settings.xml())
+            self.actor_settings.xml(root)
         if self.overlapped_triles is not None:
-            root.append(self.overlapped_triles.xml('OverlappedTriles'))
+            self.overlapped_triles.xml(root, 'OverlappedTriles')
         return root
 
 
@@ -429,13 +451,17 @@ class ArtObjectInstance(object):
     def __str__(self):
         return "ArtObjectInstance '{}'".format(self.name)
 
-    def xml(self):
-        root = E.ArtObjectInstance(name=self.name)
-        root.append(E.Position(self.position.xml()))
-        root.append(E.Rotation(self.rotation.xml()))
-        root.append(E.Scale(self.scale.xml()))
+    def xml(self, parent):
+        root = ET.SubElement(parent, 'ArtObjectInstance')
+        root.set('name', self.name)
+        position_tag = ET.SubElement(root, 'Position')
+        self.position.xml(position_tag)
+        rotation_tag = ET.SubElement(root, 'Rotation')
+        self.rotation.xml(rotation_tag)
+        scale_tag = ET.SubElement(root, 'Scale')
+        self.scale.xml(scale_tag)
         if self.actor_settings is not None:
-            root.append(self.actor_settings.xml())
+            self.actor_settings.xml(root)
         return root
 
 
@@ -478,19 +504,28 @@ class BackgroundPlane(object):
     def __str__(self):
         return "BackgroundPlane t:'{}'".format(self.texture_name)
 
-    def xml(self):
-        root = E.BackgroundPlane(textureName=self.texture_name, lightMap=str(self.light_map),
-                                 allowOverbrightness=str(self.allow_overbrightness), animated=str(self.animated),
-                                 doubleSided=str(self.doublesided), opacity=str(self.opacity),
-                                 billboard=str(self.billboard), syncWithSamples=str(self.sync_with_samples),
-                                 crosshatch=str(self.crosshatch), unknown=str(self.unknown),
-                                 alwaysOnTop=str(self.always_on_top), fullbright=str(self.fullbright),
-                                 pixelatedLightmap=str(self.pixelated_lightmap),
-                                 xTextureRepeat=str(self.x_texture_repeat), yTextureRepeat=str(self.y_texture_repeat),
-                                 clampTexture=str(self.clamp_texture), parallaxFactor=str(self.parallax_factor))
-        root.append(E.Position(self.position.xml()))
-        root.append(E.Rotation(self.rotation.xml()))
-        root.append(E.Scale(self.scale.xml()))
+    def xml(self, parent):
+        root = ET.SubElement(parent, 'BackgroundPlane')
+        root.set('textureName', self.texture_name)
+        root.set('lightMap', str(self.light_map))
+        root.set('allowOverbrightness', str(self.allow_overbrightness))
+        root.set('animated', str(self.animated))
+        root.set('doubleSided', str(self.doublesided))
+        root.set('opacity', str(self.opacity))
+        root.set('billboard', str(self.billboard))
+        root.set('syncWithSamples', str(self.sync_with_samples))
+        root.set('crosshatch', str(self.crosshatch))
+        root.set('unknown', str(self.unknown))
+        root.set('alwaysOnTop', str(self.always_on_top))
+        root.set('fullbright', str(self.fullbright))
+        root.set('pixelatedLightmap', str(self.pixelated_lightmap))
+        root.set('xTextureRepeat', str(self.x_texture_repeat))
+        root.set('yTextureRepeat', str(self.y_texture_repeat))
+        root.set('clampTexture', str(self.clamp_texture))
+        root.set('parallaxFactor', str(self.parallax_factor))
+        self.position.xml(ET.SubElement(root, 'Position'))
+        self.rotation.xml(ET.SubElement(root, 'Rotation'))
+        self.scale.xml(ET.SubElement(root, 'Scale'))
         root.set('filter', self.filter_.attrib())
         if self.attached_group is not None:
             root.set('attachedGroup', str(self.attached_group))
@@ -525,21 +560,27 @@ class TrileGroup(object):
     def __str__(self):
         return "TrileGroup"
 
-    def xml(self):
-        root = E.TrileGroup(heavy=str(self.heavy), geyserOffset=str(self.geyser_offset),
-                            geyserPauseFor=str(self.geyser_pause_for), geyserLiftFor=str(self.geyser_lift_for),
-                            geyserApexHeight=str(self.geyser_apex_height), spinClockwise=str(self.spin_clockwise),
-                            spinFrequency=str(self.spin_frequency), spinNeedsTriggering=str(self.spin_needs_triggering),
-                            spin180Degrees=str(self.spin_180_degrees), fallOnRotate=str(self.fall_on_rotate),
-                            spinOffset=str(self.spin_offset))
+    def xml(self, parent):
+        root = ET.SubElement(parent, 'TrileGroup')
+        root.set('heavy', str(self.heavy))
+        root.set('geyserOffset', str(self.geyser_offset))
+        root.set('geyserPauseFor', str(self.geyser_pause_for))
+        root.set('geyserLiftFor', str(self.geyser_lift_for))
+        root.set('geyserApexHeight', str(self.geyser_apex_height))
+        root.set('spinClockwise', str(self.spin_clockwise))
+        root.set('spinFrequency', str(self.spin_frequency))
+        root.set('spinNeedsTriggering', str(self.spin_needs_triggering))
+        root.set('spin180Degrees', str(self.spin_180_degrees))
+        root.set('fallOnRotate', str(self.fall_on_rotate))
+        root.set('spinOffset', str(self.spin_offset))
         if self.triles is not None:
-            root.append(self.triles.xml('Triles'))
+            self.triles.xml(root, 'Triles')
         if self.path is not None:
-            root.append(self.path.xml())
+            self.path.xml(root)
         if self.actor_type is not None:
             root.set('actorType', str(self.actor_type))
         if self.spin_center is not None:
-            root.append(E.SpinCenter(self.spin_center.xml()))
+            self.spin_center.xml(ET.SubElement(root, 'SpinCenter'))
         if self.associated_sound is not None:
             root.set('associatedSound', self.associated_sound)
         return root
@@ -553,12 +594,12 @@ class TrileFace(object):
     def __str__(self):
         return "TrileFace f:{} t:{},{},{}".format(self.face, self.trile_id.x, self.trile_id.y, self.trile_id.z)
 
-    def xml(self):
-        root = E.TrileFace()
+    def xml(self, parent):
+        root = ET.SubElement(parent, 'TrileFace')
         if self.face is not None:
             root.set('face', str(self.face))
         if self.trile_id is not None:
-            root.append(E.TrileId(self.trile_id.xml()))
+            self.trile_id.xml(ET.SubElement(root, 'TrileId'))
         return root
 
 
@@ -579,20 +620,23 @@ class NpcInstance(object):
     def __str__(self):
         return "NpcInstance '{}'".format(self.name)
 
-    def xml(self):
-        root = E.NpcInstance(name=self.name, walkSpeed=str(self.walk_speed), randomizeSpeed=str(self.randomize_speech),
-                             sayFirstSpeedLineOnce=str(self.say_first_speed_line_once),
-                             avoidsGomez=str(self.avoids_gomez))
+    def xml(self, parent):
+        root = ET.SubElement(parent, 'NpcInstance')
+        root.set('name', self.name)
+        root.set('walkSpeed', str(self.walk_speed))
+        root.set('randomizeSpeed', str(self.randomize_speech))
+        root.set('sayFirstSpeedLineOnce', str(self.say_first_speed_line_once))
+        root.set('avoidsGomez', str(self.avoids_gomez))
         if self.position is not None:
-            root.append(E.Position(self.position.xml()))
+            self.position.xml(ET.SubElement(root, 'Position'))
         if self.destination_offset is not None:
-            root.append(E.DestinationOffset(self.destination_offset.xml()))
+            self.destination_offset.xml(ET.SubElement(root, 'DestinationOffset'))
         if self.actor_type is not None:
             root.set('actorType', str(self.actor_type))
         if self.speech is not None:
-            root.append(self.speech.xml('Speech'))
+            self.speech.xml(root, 'Speech')
         if self.actions is not None:
-            root.append(self.actions.xml('Actions', 'Action'))
+            self.actions.xml(root, 'Actions', 'Action')
         return root
 
 
@@ -609,11 +653,14 @@ class MovementPath(object):
     def __str__(self):
         return "MovementPath"
 
-    def xml(self):
-        root = E.MovementPath(needsTrigger=str(self.needs_trigger), isSpline=str(self.is_spline),
-                              offsetSeconds=str(self.offset_seconds), saveTrigger=str(self.save_trigger))
+    def xml(self, parent):
+        root = ET.SubElement(parent, 'MovementPath')
+        root.set('needsTrigger', str(self.needs_trigger))
+        root.set('isSpline', str(self.is_spline))
+        root.set('offsetSeconds', str(self.offset_seconds))
+        root.set('saveTrigger', str(self.save_trigger))
         if self.segments is not None:
-            root.append(self.segments.xml('Segments'))
+            self.segments.xml(root, 'Segments')
         if self.end_behavior is not None:
             root.set('endBehavior', str(self.end_behavior))
         if self.sound_name is not None:
@@ -632,8 +679,12 @@ class AmbienceTrack(object):
     def __str__(self):
         return "AmbienceTrack '{}'".format(self.name)
 
-    def xml(self):
-        root = E.AmbienceTrack(dawn=str(self.dawn), day=str(self.day), dusk=str(self.dusk), night=str(self.night))
+    def xml(self, parent):
+        root = ET.SubElement(parent, 'AmbienceTrack')
+        root.set('dawn', str(self.dawn))
+        root.set('day', str(self.day))
+        root.set('dusk', str(self.dusk))
+        root.set('night', str(self.night))
         if self.name is not None:
             root.set('name', self.name)
         return root
@@ -654,15 +705,18 @@ class VolumeActorSettings(object):
     def __str__(self):
         return "VolumeActorSettings"
 
-    def xml(self):
-        root = E.VolumeActorSettings(isPointOfInterest=str(self.is_point_of_interest),
-                                     waterLocked=str(self.water_locked), isBlackhole=str(self.is_blackhole),
-                                     needsTrigger=str(self.needs_trigger), isSecretPassage=str(self.is_secret_passage))
-        root.append(E.FarawayPlaneOffset(self.faraway_plane_offset.xml()))
+    def xml(self, parent):
+        root = ET.SubElement(parent, 'VolumeActorSettings')
+        root.set('isPointOfInterest', str(self.is_point_of_interest))
+        root.set('waterLocked', str(self.water_locked))
+        root.set('isBlackhole', str(self.is_blackhole))
+        root.set('needsTrigger', str(self.needs_trigger))
+        root.set('isSecretPassage', str(self.is_secret_passage))
+        self.faraway_plane_offset.xml(ET.SubElement(root, 'FarawayPlaneOffset'))
         if self.dot_dialogue is not None:
-            root.append(self.dot_dialogue.xml('DotDialogue'))
+            self.dot_dialogue.xml(root, 'DotDialogue')
         if self.code_pattern is not None:
-            root.append(self.code_pattern.xml('CodePattern'))
+            self.code_pattern.xml(root, 'CodePattern')
         return root
 
 
@@ -674,8 +728,9 @@ class DotDialogueLine(object):
     def __str__(self):
         return "DotDialogueLine '{}'".format(self.resource_text)
 
-    def xml(self):
-        root = E.Line(grouped=str(self.grouped))
+    def xml(self, parent):
+        root = ET.SubElement(parent, 'Line')
+        root.set('grouped', str(self.grouped))
         if self.resource_text is not None:
             root.text = self.resource_text
         return root
@@ -699,18 +754,23 @@ class Script(object):
     def __str__(self):
         return "Script '{}'".format(self.name)
 
-    def xml(self):
-        root = E.Script(name=self.name, oneTime=str(self.one_time), triggerless=str(self.triggerless),
-                        ignoreEndTriggers=str(self.ignore_end_triggers), levelWideOneTime=str(self.level_wide_one_time),
-                        disabled=str(self.disabled), isWinCondition=str(self.is_win_condition))
+    def xml(self, parent):
+        root = ET.SubElement(parent, 'Script')
+        root.set('name', self.name)
+        root.set('oneTime', str(self.one_time))
+        root.set('triggerless', str(self.triggerless))
+        root.set('ignoreEndTriggers', str(self.ignore_end_triggers))
+        root.set('levelWideOneTime', str(self.level_wide_one_time))
+        root.set('disabled', str(self.disabled))
+        root.set('isWinCondition', str(self.is_win_condition))
         if self.timeout is not None:
             root.set('timeout', str(self.timeout))
         if self.triggers is not None:
-            root.append(self.triggers.xml('Triggers'))
+            self.triggers.xml(root, 'Triggers')
         if self.conditions is not None:
-            root.append(self.conditions.xml('Conditions'))
+            self.conditions.xml(root, 'Conditions')
         if self.actions is not None:
-            root.append(self.actions.xml('Actions'))
+            self.actions.xml(root, 'Actions')
         return root
 
 
@@ -722,10 +782,11 @@ class ScriptTrigger(object):
     def __str__(self):
         return "ScriptTrigger"
 
-    def xml(self):
-        root = E.ScriptTrigger(event=self.event)
+    def xml(self, parent):
+        root = ET.SubElement(parent, 'ScriptTrigger')
+        root.set('event', self.event)
         if self.entity is not None:
-            root.append(self.entity.xml())
+            self.entity.xml(root)
         return root
 
 
@@ -740,12 +801,15 @@ class ScriptAction(object):
     def __str__(self):
         return "ScriptAction a:{}".format(self.operation)
 
-    def xml(self):
-        root = E.ScriptAction(operation=self.operation, killswitch=str(self.killswitch), blocking=str(self.blocking))
+    def xml(self, parent):
+        root = ET.SubElement(parent, 'ScriptAction')
+        root.set('operation', self.operation)
+        root.set('killswitch', str(self.killswitch))
+        root.set('blocking', str(self.blocking))
         if self.entity is not None:
-            root.append(self.entity.xml())
+            self.entity.xml(root)
         if self.arguments is not None:
-            root.append(self.arguments.xml('Arguments'))
+            self.arguments.xml(root, 'Arguments')
         return root
 
 
@@ -759,12 +823,14 @@ class ScriptCondition(object):
     def __str__(self):
         return "ScriptCondition o:{}".format(self.operator)
 
-    def xml(self):
-        root = E.ScriptCondition(property=self.property_, value=self.value)
+    def xml(self, parent):
+        root = ET.SubElement(parent, 'ScriptCondition')
+        root.set('property', self.property_)
+        root.set('value', self.value)
         if self.operator is not None:
             root.set('operator', str(self.operator))
         if self.entity is not None:
-            root.append(self.entity.xml())
+            self.entity.xml(root)
         return root
 
 
@@ -776,8 +842,9 @@ class Entity(object):
     def __str__(self):
         return "Entity i:{}".format(self.identifier)
 
-    def xml(self):
-        root = E.Entity(entityType=self.entity_type)
+    def xml(self, parent):
+        root = ET.SubElement(parent, 'Entity')
+        root.set('entityType', self.entity_type)
         if self.identifier is not None:
             root.set('identifier', str(self.identifier))
         return root
@@ -796,14 +863,14 @@ class InstanceActorSettings(object):
     def __str__(self):
         return "InstanceActorSettings"
 
-    def xml(self):
-        root = E.InstanceActorSettings()
+    def xml(self, parent):
+        root = ET.SubElement(parent, 'InstanceActorSettings')
         if self.contained_trile is not None:
             root.set('containedTrile', str(self.contained_trile))
         if self.sign_text is not None:
             root.set('signText', self.sign_text)
         if self.sequence is not None:
-            root.append(self.sequence.xml('Sequence'))
+            self.sequence.xml(root, 'Sequence')
         if self.sequence_sample_name is not None:
             root.set('sequenceSampleName', self.sequence_sample_name)
         if self.sequence_alternate_sample_name is not None:
@@ -841,10 +908,13 @@ class ArtObjectActorSettings(object):
     def __str__(self):
         return "ActObjectActorSettings"
 
-    def xml(self):
-        root = E.ArtObjectActorSettings(inactive=str(self.inactive), spinEvery=str(self.spin_every),
-                                        spinOffset=str(self.spin_offset), offCenter=str(self.off_center),
-                                        timeswitchWindBackSpeed=str(self.timeswitch_wind_back_speed))
+    def xml(self, parent):
+        root = ET.SubElement(parent, 'ArtObjectActorSettings')
+        root.set('inactive', str(self.inactive))
+        root.set('spinEvery', str(self.spin_every))
+        root.set('spinOffset', str(self.spin_offset))
+        root.set('offCenter', str(self.off_center))
+        root.set('timeswitchWindBackSpeed', str(self.timeswitch_wind_back_speed))
         if self.contained_trile is not None:
             root.set('containedTrile', str(self.contained_trile))
         if self.attached_group is not None:
@@ -852,13 +922,13 @@ class ArtObjectActorSettings(object):
         if self.spin_view is not None:
             root.set('spinView', str(self.spin_view))
         if self.rotation_center is not None:
-            root.append(E.RotationCenter(self.rotation_center.xml()))
+            self.rotation_center.xml(ET.SubElement(root, 'RotationCenter'))
         if self.vibration_pattern is not None:
-            root.append(self.vibration_pattern.xml('VibrationPattern'))
+            self.vibration_pattern.xml(root, 'VibrationPattern')
         if self.code_pattern is not None:
-            root.append(self.code_pattern.xml('CodePattern'))
+            self.code_pattern.xml(root, 'CodePattern')
         if self.segment is not None:
-            root.append(E.Segment(self.segment.xml()))
+            self.segment.xml(ET.SubElement(root, 'Segment'))
         if self.next_node is not None:
             root.set('nextNode', str(self.next_node))
         if self.destination_level is not None:
@@ -884,19 +954,21 @@ class PathSegment(object):
     def __str__(self):
         return "PathSegment"
 
-    def xml(self):
-        root = E.PathSegment(acceleration=str(self.acceleration), deceleration=str(self.deceleration),
-                             jitterFactor=str(self.jitter_factor))
-        root.append(E.Destination(self.destination.xml()))
+    def xml(self, parent):
+        root = ET.SubElement(parent, 'PathSegment')
+        root.set('acceleration', str(self.acceleration))
+        root.set('deceleration', str(self.deceleration))
+        root.set('jitterFactor', str(self.jitter_factor))
+        self.destination.xml(ET.SubElement(root, 'Destination'))
         if self.duration is not None:
             root.set('duration', str(self.duration))
         if self.wait_time_on_start is not None:
             root.set('waitTimeOnStart', str(self.wait_time_on_start))
         if self.wait_time_on_finish is not None:
             root.set('waitTimeOnFinish', str(self.wait_time_on_finish))
-        root.append(E.Orientation(self.orientation.xml()))
+        self.orientation.xml(ET.SubElement(root, 'Orientation'))
         if self.custom_data is not None:
-            root.append(E.CustomData(self.custom_data.xml()))
+            self.custom_data.xml(ET.SubElement(root, 'CustomData'))
         return root
 
 
@@ -908,12 +980,12 @@ class SpeechLine(object):
     def __str__(self):
         return "SpeechLine '{}'".format(self.text)
 
-    def xml(self):
-        root = E.SpeechLine()
+    def xml(self, parent):
+        root = ET.SubElement(parent, 'SpeechLine')
         if self.text is not None:
             root.set('text', self.text)
         if self.override_content is not None:
-            root.append(E.OverrideContent(self.override_content.xml()))
+            self.override_content.xml(ET.SubElement(root, 'OverrideContent'))
         return root
 
 
@@ -925,8 +997,8 @@ class NpcActionContent(object):
     def __str__(self):
         return "NpcActionContent"
 
-    def xml(self):
-        root = E.NpcActionContent()
+    def xml(self, parent):
+        root = ET.SubElement(parent, 'NpcActionContent')
         if self.animation_name is not None:
             root.set('animationName', self.animation_name)
         if self.sound_name is not None:
@@ -943,8 +1015,10 @@ class CameraNodeData(object):
     def __str__(self):
         return "CameraNodeData"
 
-    def xml(self):
-        root = E.CameraNodeData(perspective=str(self.perspective), pixelsPerTrixel=str(self.pixels_per_trixel))
+    def xml(self, parent):
+        root = ET.SubElement(parent, 'CameraNodeData')
+        root.set('perspective', str(self.perspective))
+        root.set('pixelsPerTrixel', str(self.pixels_per_trixel))
         if self.sound_name is not None:
             root.set('soundName', str(self.sound_name))
         return root
