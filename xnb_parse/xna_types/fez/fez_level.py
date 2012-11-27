@@ -6,7 +6,7 @@ from __future__ import print_function
 
 from collections import namedtuple
 
-from xnb_parse.file_formats.xml_utils import E
+from xnb_parse.file_formats.xml_utils import E, ET
 
 
 class MapTree(object):
@@ -16,10 +16,13 @@ class MapTree(object):
     def __str__(self):
         return "MapTree {}".format(self.map_node)
 
-    def xml(self):
-        root = E.MapTree()
+    def xml(self, parent=None):
+        if parent is None:
+            root = ET.Element('MapTree')
+        else:
+            root = ET.SubElement(parent, 'MapTree')
         if self.map_node is not None:
-            root.append(self.map_node.xml())
+            self.map_node.xml(root)
         return root
 
 
@@ -35,15 +38,17 @@ class MapNode(object):
     def __str__(self):
         return "MapNode '{}' t:{} c:{}".format(self.level_name, self.node_type, len(self.connections))
 
-    def xml(self):
-        root = E.Node(name=self.level_name, hasLesserGate=str(self.has_lesser_gate),
-                      hasWarpGate=str(self.has_warp_gate))
+    def xml(self, parent):
+        root = ET.SubElement(parent, 'Node')
+        root.set('name', self.level_name)
+        root.set('hasLesserGate', str(self.has_lesser_gate))
+        root.set('hasWarpGate', str(self.has_warp_gate))
         if self.node_type is not None:
             root.set('type', str(self.node_type))
         if self.conditions is not None:
-            root.append(self.conditions.xml())
+            self.conditions.xml(root)
         if self.connections is not None:
-            root.append(self.connections.xml('Connections'))
+            self.connections.xml(root, 'Connections')
         return root
 
 
@@ -56,12 +61,13 @@ class MapNodeConnection(object):
     def __str__(self):
         return "MapNodeConnection f:{}".format(self.face)
 
-    def xml(self):
-        root = E.Connection(branchOversize=str(self.branch_oversize))
+    def xml(self, parent):
+        root = ET.SubElement(parent, 'Connection')
+        root.set('branchOversize', str(self.branch_oversize))
         if self.face is not None:
             root.set('face', str(self.face))
         if self.node is not None:
-            root.append(self.node.xml())
+            self.node.xml(root)
         return root
 
 
@@ -80,13 +86,17 @@ class WinConditions(object):
     def __str__(self):
         return "WinConditions"
 
-    def xml(self):
-        root = E.WinConditions(chests=str(self.chest_count), lockedDoors=str(self.locked_door_count),
-                               unlockedDoors=str(self.unlocked_door_count), cubeShards=str(self.cube_shard_count),
-                               splitUp=str(self.split_up_count), secrets=str(self.secret_count),
-                               others=str(self.other_collectible_count))
+    def xml(self, parent):
+        root = ET.SubElement(parent, 'WinConditions')
+        root.set('chests', str(self.chest_count))
+        root.set('lockedDoors', str(self.locked_door_count))
+        root.set('unlockedDoors', str(self.unlocked_door_count))
+        root.set('cubeShards', str(self.cube_shard_count))
+        root.set('splitUp', str(self.split_up_count))
+        root.set('secrets', str(self.secret_count))
+        root.set('others', str(self.other_collectible_count))
         if self.script_ids is not None:
-            root.append(self.script_ids.xml('Scripts', 'Script'))
+            self.script_ids.xml(root, 'Scripts', 'Script')
         return root
 
 
@@ -125,19 +135,31 @@ class Sky(object):
     def __str__(self):
         return "Sky '{}' b:'{}' l:{}".format(self.name, self.background, len(self.layers))
 
-    def xml(self):
-        root = E.Sky(name=self.name, background=self.background, windSpeed=str(self.wind_speed),
-                     density=str(self.density), fogDensity=str(self.fog_density),
-                     verticalTiling=str(self.vertical_tiling), horizontalScrolling=str(self.horizontal_scrolling),
-                     layerBaseHeight=str(self.layer_base_height),
-                     interLayerVerticalDistance=str(self.inter_layer_vertical_distance),
-                     interLayerHorizontalDistance=str(self.inter_layer_horizontal_distance),
-                     horizontalDistance=str(self.horizontal_distance), verticalDistance=str(self.vertical_distance),
-                     layerBaseSpacing=str(self.layer_base_spacing), windParallax=str(self.wind_parallax),
-                     windDistance=str(self.wind_distance), cloudsParallax=str(self.clouds_parallax),
-                     shadowOpacity=str(self.shadow_opacity), foliageShadows=str(self.foliage_shadows),
-                     noPerFaceLayerXOffset=str(self.no_per_face_layer_x_offset),
-                     layerBaseXOffset=str(self.layer_base_x_offset))
+    def xml(self, parent=None):
+        if parent is None:
+            root = ET.Element('Sky')
+        else:
+            root = ET.SubElement(parent, 'Sky')
+        root.set('name', self.name)
+        root.set('background', self.background)
+        root.set('windSpeed', str(self.wind_speed))
+        root.set('density', str(self.density))
+        root.set('fogDensity', str(self.fog_density))
+        root.set('verticalTiling', str(self.vertical_tiling))
+        root.set('horizontalScrolling', str(self.horizontal_scrolling))
+        root.set('layerBaseHeight', str(self.layer_base_height))
+        root.set('interLayerVerticalDistance', str(self.inter_layer_vertical_distance))
+        root.set('interLayerHorizontalDistance', str(self.inter_layer_horizontal_distance))
+        root.set('horizontalDistance', str(self.horizontal_distance))
+        root.set('verticalDistance', str(self.vertical_distance))
+        root.set('layerBaseSpacing', str(self.layer_base_spacing))
+        root.set('windParallax', str(self.wind_parallax))
+        root.set('windDistance', str(self.wind_distance))
+        root.set('cloudsParallax', str(self.clouds_parallax))
+        root.set('shadowOpacity', str(self.shadow_opacity))
+        root.set('foliageShadows', str(self.foliage_shadows))
+        root.set('noPerFaceLayerXOffset', str(self.no_per_face_layer_x_offset))
+        root.set('layerBaseXOffset', str(self.layer_base_x_offset))
         if self.shadows is not None:
             root.set('shadows', self.shadows)
         if self.stars is not None:
@@ -145,9 +167,9 @@ class Sky(object):
         if self.cloud_tint is not None:
             root.set('cloudTint', self.cloud_tint)
         if self.layers is not None:
-            root.append(self.layers.xml('Layers'))
+            self.layers.xml(root, 'Layers')
         if self.clouds is not None:
-            root.append(self.clouds.xml('Clouds', 'Cloud'))
+            self.clouds.xml(root, 'Clouds', 'Cloud')
         return root
 
 
@@ -161,9 +183,12 @@ class SkyLayer(object):
     def __str__(self):
         return "SkyLayer '{}' o:{}".format(self.name, self.opacity)
 
-    def xml(self):
-        root = E.SkyLayer(name=self.name, opacity=str(self.opacity), fogTint=str(self.fog_tint),
-                          inFront=str(self.in_front))
+    def xml(self, parent):
+        root = ET.SubElement(parent, 'SkyLayer')
+        root.set('name', self.name)
+        root.set('opacity', str(self.opacity))
+        root.set('fogTint', str(self.fog_tint))
+        root.set('inFront', str(self.in_front))
         return root
 
 
@@ -176,10 +201,14 @@ class TrileSet(object):
     def __str__(self):
         return "TrileSet '{}' c:{}".format(self.name, len(self.triles))
 
-    def xml(self):
-        root = E.TrileSet(name=self.name)
+    def xml(self, parent=None):
+        if parent is None:
+            root = ET.Element('TrileSet')
+        else:
+            root = ET.SubElement(parent, 'TrileSet')
+        root.set('name', self.name)
         if self.triles is not None:
-            root.append(self.triles.xml('Triles', 'TrileEntry'))
+            self.triles.xml(root, 'Triles', 'TrileEntry')
         return root
 
     def export(self, filename):
@@ -211,25 +240,32 @@ class Trile(object):
     def __str__(self):
         return "Trile '{}' c:'{}' s:{}".format(self.name, self.cubemap_path, self.size)
 
-    def xml(self):
-        root = E.Trile(name=self.name, cubemapPath=self.cubemap_path, immaterial=str(self.immaterial),
-                       seeThrough=str(self.see_through), thin=str(self.thin), forceHugging=str(self.force_hugging))
+    def xml(self, parent):
+        if parent is None:
+            root = ET.Element('Trile')
+        else:
+            root = ET.SubElement(parent, 'Trile')
+        root.set('name', self.name)
+        root.set('cubemapPath', self.cubemap_path)
+        root.set('immaterial', str(self.immaterial))
+        root.set('seeThrough', str(self.see_through))
+        root.set('thin', str(self.thin))
+        root.set('forceHugging', str(self.force_hugging))
         if self.surface_type is not None:
             root.set('surfaceType', str(self.surface_type))
         if self.actor_settings_type is not None or self.actor_settings_face is not None:
-            actor_settings = E.ActorSettings()
+            actor_settings_tag = ET.SubElement(root, 'ActorSettings')
             if self.actor_settings_type is not None:
-                actor_settings.set('type', str(self.actor_settings_type))
+                actor_settings_tag.set('type', str(self.actor_settings_type))
             if self.actor_settings_face is not None:
-                actor_settings.set('face', str(self.actor_settings_face))
-            root.append(actor_settings)
-        root.append(E.Size(self.size.xml()))
-        root.append(E.Offset(self.offset.xml()))
-        root.append(E.AtlasOffset(self.atlas_offset.xml()))
+                actor_settings_tag.set('face', str(self.actor_settings_face))
+        self.size.xml(ET.SubElement(root, 'Size'))
+        self.offset.xml(ET.SubElement(root, 'Offset'))
+        self.atlas_offset.xml(ET.SubElement(root, 'AtlasOffset'))
         if self.faces is not None:
-            root.append(self.faces.xml('Faces', 'Face'))
+            self.faces.xml(root, 'Faces', 'Face')
         if self.geometry is not None:
-            root.append(E.Geometry(self.geometry.xml()))
+            self.geometry.xml(ET.SubElement(root, 'Geometry'))
         return root
 
 
