@@ -4,13 +4,12 @@ Display ArtObject
 
 from __future__ import print_function
 
-import os
 import sys
 import pyglet
 from pyglet.gl import *  # pylint: disable-msg=W0614,W0401
 
+from xnb_parse.xna_content_manager import ContentManager
 from xnb_parse.trackball_camera import TrackballCamera, norm1, vec_args
-from xnb_parse.xnb_reader import XNBReader
 from xnb_parse.xna_types.xna_math import Vector3
 
 
@@ -25,10 +24,10 @@ class AOWindow(pyglet.window.Window):  # pylint: disable-msg=W0223
     culling = False
     texturing = True
 
-    def __init__(self, filename, width=1000, height=750, config=None):  # pylint: disable-msg=W0231
+    def __init__(self, content_manager, asset_name, width=1000, height=750, config=None):  # pylint: disable-msg=W0231
         pyglet.window.Window.__init__(self, width=width, height=height, resizable=True, config=config)
         self.gl_setup()
-        self.art_object = AO(filename)
+        self.art_object = AO(content_manager, asset_name)
         self.tbcam = TrackballCamera()
         self.fps_display = pyglet.clock.ClockDisplay(color=(0.5, 0.5, 0.5, 1.0))
 
@@ -126,19 +125,18 @@ class AOWindow(pyglet.window.Window):  # pylint: disable-msg=W0223
 
 
 class AO(object):
-    def __init__(self, ao_filename):
-        ao_filename = os.path.normpath(ao_filename)
-        ao_dir = os.path.dirname(ao_filename)
-        ao_xnb = read_xnb(ao_filename, expected_type='FezEngine.Structure.ArtObject')
+    def __init__(self, content_manager, asset_name):
+        asset_name = 'art objects/' + asset_name
+        art_object = content_manager.load(asset_name, expected_type='FezEngine.Structure.ArtObject')
 
-        indices = ao_xnb.geometry.indices
+        indices = art_object.geometry.indices
         vertices = []
         normals = []
         texture_coords = []
-        for cur_vertex in ao_xnb.geometry.vertices:
-            vertices.append(cur_vertex.position.x / ao_xnb.size.x)
-            vertices.append(cur_vertex.position.y / ao_xnb.size.y)
-            vertices.append(cur_vertex.position.z / ao_xnb.size.z)
+        for cur_vertex in art_object.geometry.vertices:
+            vertices.append(cur_vertex.position.x / art_object.size.x)
+            vertices.append(cur_vertex.position.y / art_object.size.y)
+            vertices.append(cur_vertex.position.z / art_object.size.z)
             cur_normal = NORMALS[cur_vertex.normal]
             normals.append(cur_normal.x)
             normals.append(cur_normal.y)
@@ -150,10 +148,9 @@ class AO(object):
                                                        ('n3f', normals),
                                                        ('t2f', texture_coords))
 
-        cm_filename = os.path.join(ao_dir, ao_xnb.cubemap_path.lower() + '.xnb')
-        cm_xnb = read_xnb(cm_filename, expected_type='Microsoft.Xna.Framework.Graphics.Texture2D')
-        cm_image = pyglet.image.ImageData(cm_xnb.width, cm_xnb.height, 'RGBA', cm_xnb.full_data())
-        self.texture = cm_image.get_texture()
+        cubemap_name = 'art objects/' + art_object.cubemap_path
+        cubemap = content_manager.load(cubemap_name, expected_type='Microsoft.Xna.Framework.Graphics.Texture2D')
+        self.texture = pyglet.image.ImageData(cubemap.width, cubemap.height, 'RGBA', cubemap.full_data()).get_texture()
 
         glDisable(self.texture.target)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
@@ -168,12 +165,8 @@ class AO(object):
         glDisable(self.texture.target)
 
 
-def read_xnb(filename, expected_type=None):
-    return XNBReader.load(filename=filename, expected_type=expected_type).content
-
-
 def main():
-    if len(sys.argv) == 2:
+    if len(sys.argv) == 3:
         # try and get 8x AA failing back to 4x and then none
         platform = pyglet.window.get_platform()
         display = platform.get_default_display()
@@ -188,7 +181,8 @@ def main():
             except pyglet.window.NoSuchConfigException:
                 template = pyglet.gl.Config()
                 config = screen.get_best_config(template)
-        AOWindow(filename=sys.argv[1], config=config)
+        content_manager = ContentManager(sys.argv[1])
+        AOWindow(content_manager=content_manager, asset_name=sys.argv[2], config=config)
         pyglet.app.run()
     else:
-        print('show_ao.py art_object.xnb')
+        print('show_ao.py content_dir objectao')

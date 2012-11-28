@@ -16,6 +16,7 @@ from xnb_parse.xna_types.xna_system import XNAList, ExternalReference
 from xnb_parse.file_formats.xml_utils import output_xml
 
 
+XNB_EXTENSION = '.xnb'
 XNB_SIGNATURE = b'XNB'
 PLATFORM_WINDOWS = b'w'
 PLATFORM_XBOX = b'x'
@@ -106,6 +107,8 @@ class XNBReader(BinaryStream):
 
     @classmethod
     def load(cls, data=None, filename=None, parse=True, expected_type=None):
+        if filename is not None:
+            filename = os.path.normpath(filename)
         stream = BinaryStream(data=data, filename=filename)
         del data
         (sig, platform, version, attribs, size) = stream.unpack(_XNB_HEADER)
@@ -160,6 +163,12 @@ class XNBReader(BinaryStream):
         stream.pack(_XNB_HEADER, XNB_SIGNATURE, self.file_platform, self.file_version, attribs, size)
         stream.write(data)
         if filename is not None:
+            filename = os.path.normpath(filename)
+            dirname = os.path.dirname(filename)
+            if not os.path.isdir(dirname):
+                os.makedirs(dirname)
+            if not filename.endswith(XNB_EXTENSION):
+                filename += XNB_EXTENSION
             stream.write_file(filename)
         else:
             return stream.getvalue()
@@ -208,18 +217,14 @@ class XNBReader(BinaryStream):
         if not hasattr(self, 'content'):
             raise ReaderError("XNB content deleted")
         if self.content is None:
-            raise ReaderError("XNB content not parsed")
+            self.parse()
+        filename = os.path.normpath(filename)
+        dirname = os.path.dirname(filename)
+        if not os.path.isdir(dirname):
+            os.makedirs(dirname)
         if export_file and hasattr(self.content, 'export'):
-            filename = os.path.normpath(filename)
-            dirname = os.path.dirname(filename)
-            if not os.path.isdir(dirname):
-                os.makedirs(dirname)
             self.content.export(filename)
         if export_xml and hasattr(self.content, 'xml'):
-            filename = os.path.normpath(filename)
-            dirname = os.path.dirname(filename)
-            if not os.path.isdir(dirname):
-                os.makedirs(dirname)
             output_xml(self.content.xml(), filename + '.xml')
 
     def read_color(self):
