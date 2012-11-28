@@ -1,26 +1,11 @@
 @echo off
 
-echo Unpacking Essentials.pak...
-call fez_unpack.bat Content\Essentials.pak out
+echo Decompressing Essentials.pak and Other.pak...
+call fez_decomp.bat Content out
 if %errorlevel% neq 0 goto error
 
-echo Unpacking Other.pak...
-call fez_unpack.bat Content\Other.pak out
-if %errorlevel% neq 0 goto error
-
-echo Decompressing XNBs...
-call xnb_decomp.bat out out_u
-if %errorlevel% neq 0 goto net_decomp
-goto conv
-:net_decomp
-echo Trying .net decompressor
-bin\xnbdecomp.exe out out_u
-if %errorlevel% neq 0 goto error
-goto error
-
-:conv
 echo Converting XNBs...
-call read_xnb_dir.bat out_u export
+call read_xnb_dir.bat out export
 if %errorlevel% neq 0 goto error
 
 echo Converting XWB...
