@@ -11,6 +11,7 @@ from xnb_parse.type_readers.xna_system import ListReader, DictionaryReader
 from xnb_parse.xna_types.xna_graphics import (Texture2D, Texture3D, TextureCube, CUBE_SIDES, IndexBuffer, Effect,
                                               get_surface_format, PrimitiveType, SpriteFont, BasicEffect)
 
+
 class TextureReader(BaseTypeReader, TypeReaderPlugin):
     target_type = 'Microsoft.Xna.Framework.Graphics.Texture'
     reader_name = 'Microsoft.Xna.Framework.Content.TextureReader'

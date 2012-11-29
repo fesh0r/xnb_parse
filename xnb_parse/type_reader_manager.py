@@ -4,10 +4,12 @@ load and manage type readers
 
 from __future__ import print_function
 
-import pkgutil
-
 from xnb_parse.type_spec import TypeSpec
 from xnb_parse.type_reader import TypeReaderPlugin, ReaderError, GenericTypeReader, BaseTypeReader
+
+# pull in all typereaders
+#noinspection PyUnresolvedReferences
+import xnb_parse.type_readers  # pylint: disable-msg=W0611
 
 
 class TypeReaderManager(object):
@@ -16,8 +18,7 @@ class TypeReaderManager(object):
         self.type_readers_type = {}
         self.generic_type_readers = {}
         self.generic_type_readers_type = {}
-        classes = _find_subclasses('xnb_parse.type_readers', TypeReaderPlugin)
-        for class_ in classes:
+        for class_ in TypeReaderPlugin.__subclasses__():  # pylint: disable-msg=E1101
             if issubclass(class_, GenericTypeReader):
                 if class_.generic_reader_name in self.generic_type_readers:
                     raise ReaderError("Duplicate generic type reader name: '{}'".format(class_.generic_reader_name))
@@ -88,13 +89,3 @@ class TypeReaderManager(object):
                 return generic_type_reader_class
 
         raise ReaderError("Type reader not found: '{}'".format(type_spec.full_name))
-
-
-def _find_subclasses(pkgname, cls):
-    # iccck, must be a better way of doing this
-    pkg = __import__(pkgname)
-    for sub_pkg in pkgname.split('.')[1:]:
-        pkg = getattr(pkg, sub_pkg)
-    for _, modulename, _ in pkgutil.walk_packages(pkg.__path__, pkg.__name__ + '.'):
-        __import__(modulename)
-    return cls.__subclasses__()
