@@ -4,9 +4,8 @@ FEZ graphics types
 
 from __future__ import print_function
 
-from xnb_parse.xnb_reader import VERSION_31
 from xnb_parse.file_formats.xml_utils import ET
-from xnb_parse.xna_types.xna_graphics import Texture2D, FORMAT_COLOR, get_surface_format
+from xnb_parse.xna_types.xna_graphics import Texture2D, FORMAT_COLOR, get_surface_format, VERSION_31
 
 
 class ArtObject(object):

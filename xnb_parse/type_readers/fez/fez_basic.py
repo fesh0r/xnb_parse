@@ -4,8 +4,7 @@ FEZ basic type readers
 
 from __future__ import print_function
 
-from xnb_parse.type_reader import GenericTypeReader, EnumTypeReader
-from xnb_parse.type_reader_manager import TypeReaderPlugin
+from xnb_parse.type_reader import TypeReaderPlugin, GenericTypeReader, EnumTypeReader
 from xnb_parse.xna_types.xna_system import XNASet
 from xnb_parse.xna_types.fez.fez_basic import (FaceOrientation, LevelNodeType, CollisionType, Viewpoint, NpcAction,
                                                ActorType, SurfaceType, LiquidType, PathEndBehavior, ComparisonOperator,

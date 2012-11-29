@@ -4,8 +4,8 @@ FEZ music types
 
 from __future__ import print_function
 
-from xnb_parse.xna_types.xna_primitive import Enum
 from xnb_parse.file_formats.xml_utils import ET
+from xnb_parse.xna_types.xna_primitive import Enum
 
 
 class ShardNotes(Enum):

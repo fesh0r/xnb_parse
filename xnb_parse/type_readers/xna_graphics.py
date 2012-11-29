@@ -4,14 +4,12 @@ graphics type readers
 
 from __future__ import print_function
 
-from xnb_parse.type_reader import BaseTypeReader, ReaderError, EnumTypeReader
-from xnb_parse.type_reader_manager import TypeReaderPlugin
-from xnb_parse.xna_types.xna_graphics import (Texture2D, Texture3D, TextureCube, CUBE_SIDES, IndexBuffer, Effect,
-                                              get_surface_format, PrimitiveType, SpriteFont, BasicEffect)
-from xnb_parse.type_readers.xna_system import ListReader, DictionaryReader
+from xnb_parse.type_reader import TypeReaderPlugin, BaseTypeReader, ReaderError, EnumTypeReader
 from xnb_parse.type_readers.xna_math import Vector3Reader, RectangleReader
 from xnb_parse.type_readers.xna_primitive import CharReader, StringReader, ObjectReader
-
+from xnb_parse.type_readers.xna_system import ListReader, DictionaryReader
+from xnb_parse.xna_types.xna_graphics import (Texture2D, Texture3D, TextureCube, CUBE_SIDES, IndexBuffer, Effect,
+                                              get_surface_format, PrimitiveType, SpriteFont, BasicEffect)
 
 class TextureReader(BaseTypeReader, TypeReaderPlugin):
     target_type = 'Microsoft.Xna.Framework.Graphics.Texture'

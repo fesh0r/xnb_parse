@@ -4,8 +4,7 @@ media type readers
 
 from __future__ import print_function
 
-from xnb_parse.type_reader import BaseTypeReader
-from xnb_parse.type_reader_manager import TypeReaderPlugin
+from xnb_parse.type_reader import TypeReaderPlugin, BaseTypeReader
 from xnb_parse.type_readers.xna_primitive import StringReader, Int32Reader, SingleReader
 from xnb_parse.xna_types.xna_media import SoundEffect, Song, Video, VideoSoundtrackType
 

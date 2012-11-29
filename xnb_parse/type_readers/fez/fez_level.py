@@ -4,18 +4,18 @@ FEZ level type readers
 
 from __future__ import print_function
 
-from xnb_parse.type_reader import BaseTypeReader, ValueTypeReader
-from xnb_parse.type_reader_manager import TypeReaderPlugin
+from xnb_parse.type_reader import TypeReaderPlugin, BaseTypeReader, ValueTypeReader
 from xnb_parse.type_readers.xna_graphics import Texture2DReader
 from xnb_parse.type_readers.xna_math import Vector4Reader
-from xnb_parse.type_readers.xna_system import ListReader, DictionaryReader, ArrayReader, TimeSpanReader
 from xnb_parse.type_readers.xna_primitive import Int32Reader, StringReader, BooleanReader
+from xnb_parse.type_readers.xna_system import ListReader, DictionaryReader, ArrayReader, TimeSpanReader
 from xnb_parse.type_readers.fez.fez_basic import (LevelNodeTypeReader, FaceOrientationReader, CollisionTypeReader,
                                                   LiquidTypeReader, CodeInputReader, ViewpointReader,
                                                   ActorTypeReader, SurfaceTypeReader, PathEndBehaviorReader,
                                                   NpcActionReader, ComparisonOperatorReader, VibrationMotorReader)
-from xnb_parse.type_readers.fez.fez_graphics import ShaderInstancedIndexedPrimitivesReader
-from xnb_parse.type_readers.fez.fez_graphics import VertexPositionNormalTextureInstanceReader
+from xnb_parse.type_readers.fez.fez_graphics import (ShaderInstancedIndexedPrimitivesReader,
+                                                     VertexPositionNormalTextureInstanceReader)
+from xnb_parse.xna_types.xna_math import Vector3, Quaternion
 from xnb_parse.xna_types.fez.fez_level import (MapTree, MapNode, MapNodeConnection, WinConditions, Sky, SkyLayer, Trile,
                                                TrileSet, Level, TrileFace, TrileEmplacement, Volume,
                                                VolumeActorSettings, DotDialogueLine, Script, ScriptTrigger, Entity,
@@ -23,7 +23,6 @@ from xnb_parse.xna_types.fez.fez_level import (MapTree, MapNode, MapNodeConnecti
                                                ArtObjectInstance, ArtObjectActorSettings, PathSegment, CameraNodeData,
                                                SpeechLine, NpcActionContent, NpcInstance, BackgroundPlane, TrileGroup,
                                                MovementPath, AmbienceTrack)
-from xnb_parse.xna_types.xna_math import Vector3, Quaternion
 
 
 class MapTreeReader(BaseTypeReader, TypeReaderPlugin):

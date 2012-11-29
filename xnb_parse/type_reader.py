@@ -17,6 +17,18 @@ class NotGenericError(ReaderError):
     pass
 
 
+class Plugin(object):
+    """
+    marker class for plugins
+    """
+
+
+class TypeReaderPlugin(Plugin):
+    """
+    type reader plugins
+    """
+
+
 class BaseTypeReader(object):
     target_type = None
     reader_name = None

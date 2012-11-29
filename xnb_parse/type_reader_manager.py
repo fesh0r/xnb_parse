@@ -7,7 +7,7 @@ from __future__ import print_function
 import pkgutil
 
 from xnb_parse.type_spec import TypeSpec
-from xnb_parse.type_reader import ReaderError, GenericTypeReader, BaseTypeReader
+from xnb_parse.type_reader import TypeReaderPlugin, ReaderError, GenericTypeReader, BaseTypeReader
 
 
 class TypeReaderManager(object):
@@ -98,15 +98,3 @@ def _find_subclasses(pkgname, cls):
     for _, modulename, _ in pkgutil.walk_packages(pkg.__path__, pkg.__name__ + '.'):
         __import__(modulename)
     return cls.__subclasses__()
-
-
-class Plugin(object):
-    """
-    marker class for plugins
-    """
-
-
-class TypeReaderPlugin(Plugin):
-    """
-    type reader plugins
-    """

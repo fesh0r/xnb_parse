@@ -4,10 +4,9 @@ FEZ music type readers
 
 from __future__ import print_function
 
-from xnb_parse.type_reader import BaseTypeReader, EnumTypeReader
-from xnb_parse.type_reader_manager import TypeReaderPlugin
-from xnb_parse.type_readers.xna_system import ListReader, ArrayReader
+from xnb_parse.type_reader import TypeReaderPlugin, BaseTypeReader, EnumTypeReader
 from xnb_parse.type_readers.xna_primitive import Int32Reader
+from xnb_parse.type_readers.xna_system import ListReader, ArrayReader
 from xnb_parse.xna_types.fez.fez_music import ShardNotes, AssembleChords, TrackedSong, Loop
 
 

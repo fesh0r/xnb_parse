@@ -4,8 +4,7 @@ primitive type readers
 
 from __future__ import print_function
 
-from xnb_parse.type_reader_manager import TypeReaderPlugin
-from xnb_parse.type_reader import BaseTypeReader, ValueTypeReader, ReaderError
+from xnb_parse.type_reader import TypeReaderPlugin, BaseTypeReader, ValueTypeReader, ReaderError
 
 
 class ByteReader(ValueTypeReader, TypeReaderPlugin):

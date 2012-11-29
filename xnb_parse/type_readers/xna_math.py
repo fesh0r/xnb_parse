@@ -4,8 +4,7 @@ math type readers
 
 from __future__ import print_function
 
-from xnb_parse.type_reader_manager import TypeReaderPlugin
-from xnb_parse.type_reader import BaseTypeReader, ValueTypeReader
+from xnb_parse.type_reader import TypeReaderPlugin, BaseTypeReader, ValueTypeReader
 from xnb_parse.xna_types.xna_math import (Rectangle, Point, Plane, BoundingBox, BoundingSphere, Ray, BoundingFrustum,
                                           Vector2, Vector3, Vector4, Matrix, Quaternion, Color)
 from xnb_parse.xna_types.xna_system import XNAList

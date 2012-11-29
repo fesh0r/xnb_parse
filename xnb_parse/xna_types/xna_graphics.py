@@ -6,7 +6,6 @@ from __future__ import print_function
 
 import os
 
-from xnb_parse.xnb_reader import VERSION_40, XNB_VERSIONS
 from xnb_parse.type_reader import ReaderError
 from xnb_parse.xna_types.xna_primitive import Enum
 from xnb_parse.file_formats.png import write_png
@@ -14,6 +13,8 @@ from xnb_parse.file_formats.xml_utils import ET
 from xnb_parse.file_formats.img_decode import decode_bgra, decode_rgba, decode_a, decode_dxt1, decode_dxt3, decode_dxt5
 
 
+VERSION_31 = 4
+VERSION_40 = 5
 CUBE_SIDES = ['+x', '-x', '+y', '-y', '+z', '-z']
 FORMAT_COLOR = 1
 SURFACE_FORMAT = {
@@ -122,7 +123,7 @@ def get_surface_format(xna_version, surface_format):
         else:
             return SurfaceFormat(surface_format)
     except KeyError:
-        raise ReaderError("Invalid surface format for V{}: {}".format(XNB_VERSIONS[xna_version], surface_format))
+        raise ReaderError("Invalid surface format for V{}: {}".format(xna_version, surface_format))
 
 
 class Texture2D(object):

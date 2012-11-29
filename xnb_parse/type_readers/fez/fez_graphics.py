@@ -4,16 +4,16 @@ FEZ graphics type readers
 
 from __future__ import print_function
 
-from xnb_parse.type_reader import BaseTypeReader, ValueTypeReader, GenericTypeReader, generic_reader_type
-from xnb_parse.type_reader_manager import TypeReaderPlugin
-from xnb_parse.type_readers.xna_system import ListReader, ArrayReader, TimeSpanReader, ReflectiveReader
-from xnb_parse.type_readers.xna_math import MatrixReader
+from xnb_parse.type_reader import (TypeReaderPlugin, BaseTypeReader, ValueTypeReader, GenericTypeReader,
+                                   generic_reader_type)
 from xnb_parse.type_readers.xna_graphics import PrimitiveTypeReader
+from xnb_parse.type_readers.xna_math import MatrixReader
 from xnb_parse.type_readers.xna_primitive import StringReader, UInt16Reader
+from xnb_parse.type_readers.xna_system import ListReader, ArrayReader, TimeSpanReader, ReflectiveReader
 from xnb_parse.type_readers.fez.fez_basic import NpcActionReader, ActorTypeReader, SetReader, FaceOrientationReader
+from xnb_parse.xna_types.xna_math import Vector3, Vector2
 from xnb_parse.xna_types.fez.fez_graphics import (AnimatedTexture, Frame, ArtObject, ShaderInstancedIndexedPrimitives,
                                                   VertexPositionNormalTextureInstance, NpcMetadata)
-from xnb_parse.xna_types.xna_math import Vector3, Vector2
 
 
 class ArtObjectReader(BaseTypeReader, TypeReaderPlugin):
