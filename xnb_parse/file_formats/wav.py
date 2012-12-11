@@ -10,6 +10,8 @@ from xnb_parse.type_reader import ReaderError
 from xnb_parse.binstream import BinaryStream
 
 
+WAVE_FORMAT_PCM = 0x0001
+WAVE_FORMAT_ADPCM = 0x002
 WAVE_FORMAT_WMAUDIO2 = 0x161
 WAVE_FORMAT_WMAUDIO3 = 0x162
 WAVE_FORMAT_XMA2 = 0x166
@@ -17,6 +19,7 @@ WAVE_FORMAT_EXTENSIBLE = 0xFFFE
 WAVE_FORMAT = {
     0x0000: 'WAVE_FORMAT_UNKNOWN',
     0x0001: 'WAVE_FORMAT_PCM',
+    0x0002: 'WAVE_FORMAT_ADPCM',
     0x0161: 'WAVE_FORMAT_WMAUDIO2',
     0x0162: 'WAVE_FORMAT_WMAUDIO3',
     0x0165: 'WAVE_FORMAT_XMA',
@@ -75,7 +78,6 @@ class PyWavWriter(object):
             self.h_remainder = h_s.read()
             if len(self.h_remainder):
                 header_size += len(self.h_remainder)
-                raise ReaderError("Trailing bytes in header: {}".format(len(self.h_remainder)))
         if header_size != len(self.header_raw):
             raise ReaderError("Header size mismatch: {} != {}".format(header_size, len(self.header_raw)))
 
