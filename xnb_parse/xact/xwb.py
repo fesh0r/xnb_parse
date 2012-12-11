@@ -97,6 +97,7 @@ _ADPCM_WAVEFORMAT = Struct('<H H')
 _ADPCM_WAVEFORMAT_COEF = Struct('<h h')
 _XMA_WAVEFORMAT = Struct('<H I I I I I I I B B H')
 
+
 class XWB(object):
     #noinspection PyUnusedLocal
     # pylint: disable-msg=W0612
@@ -208,7 +209,7 @@ class XWB(object):
                 cx_num_coef = len(ADPCM_COEF)
                 adpcm_header = _ADPCM_WAVEFORMAT.pack(cx_samples_per_block, cx_num_coef)
                 for coef in ADPCM_COEF:
-                    adpcm_header += _ADPCM_WAVEFORMAT_COEF.pack(*coef)
+                    adpcm_header += _ADPCM_WAVEFORMAT_COEF.pack(coef[0], coef[1])
                 cx_size = len(adpcm_header)
                 entry_header = _WAVEFORMATEX.pack(c_format_tag, c_channels, c_samples_per_sec, c_avg_bytes_per_sec,
                                                   c_block_align, c_bits_per_sample, cx_size)
