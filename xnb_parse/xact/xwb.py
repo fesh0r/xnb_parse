@@ -149,7 +149,7 @@ class XWB(object):
 
         # read ENTRYNAMES if present
         entry_names = None
-        if h_flags & WAVEBANK_FLAGS_ENTRYNAMES:
+        if h_flags & WAVEBANK_FLAGS_ENTRYNAMES and regions['ENTRYNAMES'].offset and regions['ENTRYNAMES'].length:
             if regions['ENTRYNAMES'].length != h_entry_name_element_size * h_entry_count:
                 raise ReaderError("Invalid ENTRYNAMES region size: {} != {}".format(
                     regions['ENTRYNAMES'].length, h_entry_name_element_size * h_entry_count))
@@ -159,7 +159,7 @@ class XWB(object):
 
         # read SEEKTABLES if present
         entry_seektables = None
-        if h_flags & WAVEBANK_FLAGS_SEEKTABLES:
+        if h_flags & WAVEBANK_FLAGS_SEEKTABLES and regions['SEEKTABLES'].offset and regions['SEEKTABLES'].length:
             entry_seektables = []
             stream.seek(regions['SEEKTABLES'].offset)
             seek_offsets = []
@@ -266,8 +266,13 @@ class XWB(object):
             self.entries.append(Entry(entry_name, entry_header, entry_data, entry_dpds, entry_seek))
 
     def export(self, out_dir):
+        if self.h_bank_name:
+            out_dir = os.path.join(out_dir, self.h_bank_name)
         if not os.path.isdir(out_dir):
             os.makedirs(out_dir)
         for i, entry in enumerate(self.entries):
-            out_filename = os.path.join(out_dir, str(i))
+            if entry.name:
+                out_filename = os.path.join(out_dir, entry.name)
+            else:
+                out_filename = os.path.join(out_dir, str(i))
             PyWavWriter(header=entry.header, data=entry.data, dpds=entry.dpds, seek=entry.seek).write(out_filename)
