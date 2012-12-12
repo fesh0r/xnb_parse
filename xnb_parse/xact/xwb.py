@@ -104,6 +104,7 @@ class XWB(object):
     def __init__(self, data=None, filename=None):
         # open in little endian initially
         stream = BinaryStream(data=data, filename=filename)
+        del data
 
         # check sig to find actual endianess
         h_sig = stream.peek(len(XWB_L_SIGNATURE))
@@ -128,7 +129,7 @@ class XWB(object):
         stream.seek(regions['BANKDATA'].offset)
         (h_flags, h_entry_count, h_bank_name_raw, h_entry_metadata_element_size, h_entry_name_element_size,
          h_alignment, h_compact_format, h_buildtime_raw_low, h_buildtime_raw_high) = stream.unpack(_WB_DATA)
-        h_bank_name = h_bank_name_raw.rstrip(b'\x00').decode('utf-8')
+        h_bank_name = h_bank_name_raw.rstrip(b'\x00').decode('iso8859-1')
         h_buildtime = filetime_to_datetime(h_buildtime_raw_low, h_buildtime_raw_high)
         self.h_flags = h_flags
         self.h_bank_name = h_bank_name
@@ -154,7 +155,7 @@ class XWB(object):
                 raise ReaderError("Invalid ENTRYNAMES region size: {} != {}".format(
                     regions['ENTRYNAMES'].length, h_entry_name_element_size * h_entry_count))
             stream.seek(regions['ENTRYNAMES'].offset)
-            entry_names = [stream.read(h_entry_name_element_size).rstrip(b'\x00').decode('utf-8')
+            entry_names = [stream.read(h_entry_name_element_size).rstrip(b'\x00').decode('iso8859-1')
                            for _ in range(h_entry_count)]
 
         # read SEEKTABLES if present
@@ -163,7 +164,7 @@ class XWB(object):
             entry_seektables = []
             stream.seek(regions['SEEKTABLES'].offset)
             seek_offsets = []
-            for i in range(h_entry_count):
+            for _ in range(h_entry_count):
                 seek_offsets.append(stream.read_uint32())
             seek_data_offset = stream.tell()
             for cur_offset in seek_offsets:
