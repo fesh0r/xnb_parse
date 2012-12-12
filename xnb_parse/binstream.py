@@ -98,6 +98,15 @@ class BinaryStream(BytesIO):
         bytes_written += self.write(raw_value)
         return bytes_written
 
+    def read_cstring(self, encoding='utf-8'):
+        return ''
+
+    def write_cstring(self, value, encoding='utf-8'):
+        raw_value = value.encode(encoding)
+        bytes_written = self.write(raw_value)
+        bytes_written += self.write_byte(0)
+        return bytes_written
+
     def unpack(self, fmt):
         if fmt not in self._types:
             self._types[fmt] = struct.Struct(self._fmt_end + fmt)
