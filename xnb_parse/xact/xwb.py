@@ -101,7 +101,9 @@ _XMA_WAVEFORMAT = Struct('<H I I I I I I I B B H')
 class XWB(object):
     #noinspection PyUnusedLocal
     # pylint: disable-msg=W0612
-    def __init__(self, data=None, filename=None):
+    def __init__(self, data=None, filename=None, audio_engine=None):
+        self.audio_engine = audio_engine
+
         # open in little endian initially
         stream = BinaryStream(data=data, filename=filename)
         del data
@@ -127,16 +129,14 @@ class XWB(object):
         if regions['BANKDATA'].length != bankdata_size:
             raise ReaderError("Invalid BANKDATA size: {} != {}".format(regions['BANKDATA'].length, bankdata_size))
         stream.seek(regions['BANKDATA'].offset)
-        (h_flags, h_entry_count, h_bank_name_raw, h_entry_metadata_element_size, h_entry_name_element_size,
-         h_alignment, h_compact_format, h_buildtime_raw_low, h_buildtime_raw_high) = stream.unpack(_WB_DATA)
-        h_bank_name = h_bank_name_raw.rstrip(b'\x00').decode('iso8859-1')
-        h_buildtime = filetime_to_datetime(h_buildtime_raw_low, h_buildtime_raw_high)
-        self.h_flags = h_flags
-        self.h_bank_name = h_bank_name
-        self.h_buildtime = h_buildtime
+        (self.flags, h_entry_count, h_bank_name_raw, h_entry_metadata_element_size, h_entry_name_element_size,
+         self.alignment, h_compact_format, buildtime_raw_low, buildtime_raw_high) = stream.unpack(_WB_DATA)
+        self.bank_name = h_bank_name_raw.rstrip(b'\x00').decode('iso8859-1')
+        del h_bank_name_raw
+        self.buildtime = filetime_to_datetime(buildtime_raw_low, buildtime_raw_high)
 
         # check what type of ENTRYMETADATA we have and parse it
-        if h_flags & WAVEBANK_FLAGS_COMPACT:
+        if self.flags & WAVEBANK_FLAGS_COMPACT:
             raise ReaderError("Compact format not supported")
         bankentry_size = stream.calc_size(_WB_ENTRY)
         if bankentry_size != h_entry_metadata_element_size:
@@ -150,7 +150,7 @@ class XWB(object):
 
         # read ENTRYNAMES if present
         entry_names = None
-        if h_flags & WAVEBANK_FLAGS_ENTRYNAMES and regions['ENTRYNAMES'].offset and regions['ENTRYNAMES'].length:
+        if self.flags & WAVEBANK_FLAGS_ENTRYNAMES and regions['ENTRYNAMES'].offset and regions['ENTRYNAMES'].length:
             if regions['ENTRYNAMES'].length != h_entry_name_element_size * h_entry_count:
                 raise ReaderError("Invalid ENTRYNAMES region size: {} != {}".format(
                     regions['ENTRYNAMES'].length, h_entry_name_element_size * h_entry_count))
@@ -160,7 +160,7 @@ class XWB(object):
 
         # read SEEKTABLES if present
         entry_seektables = None
-        if h_flags & WAVEBANK_FLAGS_SEEKTABLES and regions['SEEKTABLES'].offset and regions['SEEKTABLES'].length:
+        if self.flags & WAVEBANK_FLAGS_SEEKTABLES and regions['SEEKTABLES'].offset and regions['SEEKTABLES'].length:
             entry_seektables = []
             stream.seek(regions['SEEKTABLES'].offset)
             seek_offsets = []
