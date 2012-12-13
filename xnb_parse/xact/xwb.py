@@ -267,8 +267,8 @@ class XWB(object):
             self.entries.append(Entry(entry_name, entry_header, entry_data, entry_dpds, entry_seek))
 
     def export(self, out_dir):
-        if self.h_bank_name:
-            out_dir = os.path.join(out_dir, self.h_bank_name)
+        if self.bank_name:
+            out_dir = os.path.join(out_dir, self.bank_name)
         if not os.path.isdir(out_dir):
             os.makedirs(out_dir)
         for i, entry in enumerate(self.entries):
