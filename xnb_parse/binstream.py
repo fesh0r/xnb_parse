@@ -99,7 +99,12 @@ class BinaryStream(BytesIO):
         return bytes_written
 
     def read_cstring(self, encoding='utf-8'):
-        return ''
+        raw_value = bytearray()
+        cur_byte = self.read(1)
+        while cur_byte != b'\x00' and cur_byte != b'':
+            raw_value += cur_byte
+            cur_byte = self.read(1)
+        return raw_value.decode(encoding)
 
     def write_cstring(self, value, encoding='utf-8'):
         raw_value = value.encode(encoding)
