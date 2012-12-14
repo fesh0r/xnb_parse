@@ -15,31 +15,31 @@ from xnb_parse.type_reader import ReaderError
 from xnb_parse.binstream import BinaryStream
 
 
-XWB_L_SIGNATURE = b'WBND'
-XWB_B_SIGNATURE = b'DNBW'
-WAVEBANK_TYPE_BUFFER = 0x00000000
-WAVEBANK_TYPE_STREAMING = 0x00000001
-WAVEBANK_TYPE_MASK = 0x00000001
-WAVEBANK_FLAGS_ENTRYNAMES = 0x00010000
-WAVEBANK_FLAGS_COMPACT = 0x00020000
-WAVEBANK_FLAGS_SYNC_DISABLED = 0x00040000
-WAVEBANK_FLAGS_SEEKTABLES = 0x00080000
-WAVEBANK_FLAGS_MASK = 0x000F0000
-WAVEBANKENTRY_FLAGS_READAHEAD = 0x00000001
-WAVEBANKENTRY_FLAGS_LOOPCACHE = 0x00000002
-WAVEBANKENTRY_FLAGS_REMOVELOOPTAIL = 0x00000004
-WAVEBANKENTRY_FLAGS_IGNORELOOP = 0x00000008
-WAVEBANKENTRY_FLAGS_MASK = 0x0000000F
-WAVEBANKENTRY_DURATION_MASK = 0xFFFFFFF0
-WAVEBANKMINIFORMAT_TAG_PCM = 0
-WAVEBANKMINIFORMAT_TAG_XMA = 1
-WAVEBANKMINIFORMAT_TAG_ADPCM = 2
-WAVEBANKMINIFORMAT_TAG_WMA = 3
-WAVEBANKMINIFORMAT_TAG_MASK = 0x00000003
-WAVEBANKMINIFORMAT_CHANNELS = 0x0000001C
-WAVEBANKMINIFORMAT_SAMPLES_PER_SEC = 0x007FFFE0
-WAVEBANKMINIFORMAT_BLOCK_ALIGN = 0x7F800000
-WAVEBANKMINIFORMAT_BITS_PER_SAMPLE = 0x80000000
+WB_L_SIGNATURE = b'WBND'
+WB_B_SIGNATURE = b'DNBW'
+WB_TYPE_BUFFER = 0x00000000
+WB_TYPE_STREAMING = 0x00000001
+WB_TYPE_MASK = 0x00000001
+WB_FLAGS_ENTRY_NAMES = 0x00010000
+WB_FLAGS_COMPACT = 0x00020000
+WB_FLAGS_SYNC_DISABLED = 0x00040000
+WB_FLAGS_SEEKTABLES = 0x00080000
+WB_FLAGS_MASK = 0x000F0000
+WB_ENTRY_FLAGS_READ_AHEAD = 0x00000001
+WB_ENTRY_FLAGS_LOOP_CACHE = 0x00000002
+WB_ENTRY_FLAGS_REMOVE_LOOP_TAIL = 0x00000004
+WB_ENTRY_FLAGS_IGNORE_LOOP = 0x00000008
+WB_ENTRY_FLAGS_MASK = 0x0000000F
+WB_ENTRY_DURATION_MASK = 0xFFFFFFF0
+WB_FORMAT_TAG_PCM = 0
+WB_FORMAT_TAG_XMA = 1
+WB_FORMAT_TAG_ADPCM = 2
+WB_FORMAT_TAG_WMA = 3
+WB_FORMAT_TAG_MASK = 0x00000003
+WB_FORMAT_CHANNELS = 0x0000001C
+WB_FORMAT_SAMPLES_PER_SEC = 0x007FFFE0
+WB_FORMAT_BLOCK_ALIGN = 0x7F800000
+WB_FORMAT_BITS_PER_SAMPLE = 0x80000000
 WMA_AVG_BYTES_PER_SEC = [
     12000,
     24000,
@@ -117,10 +117,10 @@ class XWB(object):
         del data
 
         # check sig to find actual endianess
-        h_sig = stream.peek(len(XWB_L_SIGNATURE))
-        if h_sig == XWB_L_SIGNATURE:
+        h_sig = stream.peek(len(WB_L_SIGNATURE))
+        if h_sig == WB_L_SIGNATURE:
             big_endian = False
-        elif h_sig == XWB_B_SIGNATURE:
+        elif h_sig == WB_B_SIGNATURE:
             big_endian = True
         else:
             raise ValueError("bad sig: {!r}".format(h_sig))
@@ -143,10 +143,11 @@ class XWB(object):
         del h_bank_name_raw
         self.buildtime = filetime_to_datetime(buildtime_raw_low, buildtime_raw_high)
 
-        assert self.flags & ~(WAVEBANK_TYPE_MASK | WAVEBANK_FLAGS_MASK) == 0
+        if self.flags & ~(WB_TYPE_MASK | WB_FLAGS_MASK):
+            raise ReaderError("Unknown flags in WAVEBANK")
 
         # check what type of ENTRYMETADATA we have and parse it
-        if self.flags & WAVEBANK_FLAGS_COMPACT:
+        if self.flags & WB_FLAGS_COMPACT:
             raise ReaderError("Compact format not supported")
         bankentry_size = stream.calc_size(_WB_ENTRY)
         if bankentry_size != h_entry_metadata_element_size:
@@ -160,7 +161,7 @@ class XWB(object):
 
         # read ENTRYNAMES if present
         entry_names = None
-        if self.flags & WAVEBANK_FLAGS_ENTRYNAMES and regions['ENTRYNAMES'].offset and regions['ENTRYNAMES'].length:
+        if self.flags & WB_FLAGS_ENTRY_NAMES and regions['ENTRYNAMES'].offset and regions['ENTRYNAMES'].length:
             if regions['ENTRYNAMES'].length != h_entry_name_element_size * h_entry_count:
                 raise ReaderError("Invalid ENTRYNAMES region size: {} != {}".format(
                     regions['ENTRYNAMES'].length, h_entry_name_element_size * h_entry_count))
@@ -170,7 +171,7 @@ class XWB(object):
 
         # read SEEKTABLES if present
         entry_seektables = None
-        if self.flags & WAVEBANK_FLAGS_SEEKTABLES and regions['SEEKTABLES'].offset and regions['SEEKTABLES'].length:
+        if self.flags & WB_FLAGS_SEEKTABLES and regions['SEEKTABLES'].offset and regions['SEEKTABLES'].length:
             entry_seektables = []
             stream.seek(regions['SEEKTABLES'].offset)
             seek_offsets = []
@@ -187,13 +188,13 @@ class XWB(object):
 
         self.entries = []
         for i, cur_meta in enumerate(entry_metadata):
-            c_entry_flags = cur_meta.flags_duration & WAVEBANKENTRY_FLAGS_MASK
-            c_duration = (cur_meta.flags_duration & WAVEBANKENTRY_DURATION_MASK) >> 4
-            c_format_tag = cur_meta.format & WAVEBANKMINIFORMAT_TAG_MASK
-            c_channels = (cur_meta.format & WAVEBANKMINIFORMAT_CHANNELS) >> 2
-            c_samples_per_sec = (cur_meta.format & WAVEBANKMINIFORMAT_SAMPLES_PER_SEC) >> 5
-            c_block_align = (cur_meta.format & WAVEBANKMINIFORMAT_BLOCK_ALIGN) >> 23
-            c_bits_per_sample = (cur_meta.format & WAVEBANKMINIFORMAT_BITS_PER_SAMPLE) >> 31
+            c_entry_flags = cur_meta.flags_duration & WB_ENTRY_FLAGS_MASK
+            c_duration = (cur_meta.flags_duration & WB_ENTRY_DURATION_MASK) >> 4
+            c_format_tag = cur_meta.format & WB_FORMAT_TAG_MASK
+            c_channels = (cur_meta.format & WB_FORMAT_CHANNELS) >> 2
+            c_samples_per_sec = (cur_meta.format & WB_FORMAT_SAMPLES_PER_SEC) >> 5
+            c_block_align = (cur_meta.format & WB_FORMAT_BLOCK_ALIGN) >> 23
+            c_bits_per_sample = (cur_meta.format & WB_FORMAT_BITS_PER_SAMPLE) >> 31
             if entry_names is not None:
                 entry_name = entry_names[i]
             else:
@@ -202,14 +203,14 @@ class XWB(object):
             entry_seek = None
             extra_header = bytes()
             # build format specific header and seek data
-            if c_format_tag == WAVEBANKMINIFORMAT_TAG_PCM:
+            if c_format_tag == WB_FORMAT_TAG_PCM:
                 c_format_tag = WAVE_FORMAT_PCM
                 if c_bits_per_sample == 1:
                     c_bits_per_sample = 16
                 else:
                     c_bits_per_sample = 8
                 c_avg_bytes_per_sec = c_samples_per_sec * c_block_align
-            elif c_format_tag == WAVEBANKMINIFORMAT_TAG_ADPCM:
+            elif c_format_tag == WB_FORMAT_TAG_ADPCM:
                 c_format_tag = WAVE_FORMAT_ADPCM
                 c_bits_per_sample = 4
                 c_block_align = (c_block_align + ADPCM_BLOCK_ALIGN_OFFSET) * c_channels
@@ -219,7 +220,7 @@ class XWB(object):
                 extra_header = _ADPCM_WAVEFORMAT.pack(cx_samples_per_block, cx_num_coef)
                 for coef in ADPCM_COEF:
                     extra_header += _ADPCM_WAVEFORMAT_COEF.pack(coef[0], coef[1])
-            elif c_format_tag == WAVEBANKMINIFORMAT_TAG_WMA:
+            elif c_format_tag == WB_FORMAT_TAG_WMA:
                 if c_bits_per_sample == 1:
                     c_format_tag = WAVE_FORMAT_WMAUDIO3
                 else:
@@ -230,7 +231,7 @@ class XWB(object):
                 if entry_seektables is None:
                     raise ReaderError("No SEEKTABLES found for xWMA format")
                 entry_dpds = entry_seektables[i]
-            elif c_format_tag == WAVEBANKMINIFORMAT_TAG_XMA:
+            elif c_format_tag == WB_FORMAT_TAG_XMA:
                 # lots of placeholders in here but seems to decode ok
                 c_format_tag = WAVE_FORMAT_XMA2
                 c_bits_per_sample = 16
