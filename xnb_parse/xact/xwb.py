@@ -23,7 +23,7 @@ WB_TYPE_MASK = 0x00000001
 WB_FLAGS_ENTRY_NAMES = 0x00010000
 WB_FLAGS_COMPACT = 0x00020000
 WB_FLAGS_SYNC_DISABLED = 0x00040000
-WB_FLAGS_SEEKTABLES = 0x00080000
+WB_FLAGS_SEEK_TABLES = 0x00080000
 WB_FLAGS_MASK = 0x000F0000
 WB_ENTRY_FLAGS_READ_AHEAD = 0x00000001
 WB_ENTRY_FLAGS_LOOP_CACHE = 0x00000002
@@ -127,9 +127,7 @@ class XWB(object):
 
         # switch stream to correct endianess
         stream.set_endian(big_endian)
-        (h_sig, h_version, h_header_version) = stream.unpack(_WB_HEADER)
-        self.h_version = h_version
-        self.h_header_version = h_header_version
+        (h_sig, self.h_version, self.h_header_version) = stream.unpack(_WB_HEADER)
         regions = {k: XWBRegion._make(stream.unpack(_WB_REGION)) for k in _REGIONS}
 
         # check if we have a valid BANKDATA region and parse it
@@ -147,7 +145,7 @@ class XWB(object):
             raise ReaderError("Unknown flags in WAVEBANK")
 
         # check what type of ENTRYMETADATA we have and parse it
-        if self.flags & WB_FLAGS_COMPACT:
+        if self.has_compact:
             raise ReaderError("Compact format not supported")
         bankentry_size = stream.calc_size(_WB_ENTRY)
         if bankentry_size != h_entry_metadata_element_size:
@@ -161,7 +159,7 @@ class XWB(object):
 
         # read ENTRYNAMES if present
         entry_names = None
-        if self.flags & WB_FLAGS_ENTRY_NAMES and regions['ENTRYNAMES'].offset and regions['ENTRYNAMES'].length:
+        if self.has_entry_names and regions['ENTRYNAMES'].offset and regions['ENTRYNAMES'].length:
             if regions['ENTRYNAMES'].length != h_entry_name_element_size * h_entry_count:
                 raise ReaderError("Invalid ENTRYNAMES region size: {} != {}".format(
                     regions['ENTRYNAMES'].length, h_entry_name_element_size * h_entry_count))
@@ -171,7 +169,7 @@ class XWB(object):
 
         # read SEEKTABLES if present
         entry_seektables = None
-        if self.flags & WB_FLAGS_SEEKTABLES and regions['SEEKTABLES'].offset and regions['SEEKTABLES'].length:
+        if self.has_seek_tables and regions['SEEKTABLES'].offset and regions['SEEKTABLES'].length:
             entry_seektables = []
             stream.seek(regions['SEEKTABLES'].offset)
             seek_offsets = []
@@ -267,6 +265,30 @@ class XWB(object):
             stream.seek(regions['ENTRYWAVEDATA'].offset + cur_meta.play_offset)
             entry_data = stream.read(cur_meta.play_length)
             self.entries.append(Entry(entry_name, entry_header, entry_data, entry_dpds, entry_seek))
+
+    @property
+    def is_buffer(self):
+        return self.flags & WB_TYPE_MASK == WB_TYPE_BUFFER
+
+    @property
+    def is_streaming(self):
+        return self.flags & WB_TYPE_MASK == WB_TYPE_STREAMING
+
+    @property
+    def has_entry_names(self):
+        return bool(self.flags & WB_FLAGS_ENTRY_NAMES)
+
+    @property
+    def has_compact(self):
+        return bool(self.flags & WB_FLAGS_COMPACT)
+
+    @property
+    def has_sync_disabled(self):
+        return bool(self.flags & WB_FLAGS_SYNC_DISABLED)
+
+    @property
+    def has_seek_tables(self):
+        return bool(self.flags & WB_FLAGS_SEEK_TABLES)
 
     def export(self, out_dir):
         if self.bank_name:
