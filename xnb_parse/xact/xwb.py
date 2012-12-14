@@ -158,7 +158,7 @@ class XWB(object):
         entry_metadata = [XWBEntry._make(stream.unpack(_WB_ENTRY)) for _ in range(h_entry_count)]
 
         # read ENTRYNAMES if present
-        entry_names = None
+        entry_names = []
         if self.has_entry_names and regions['ENTRYNAMES'].offset and regions['ENTRYNAMES'].length:
             if regions['ENTRYNAMES'].length != h_entry_name_element_size * h_entry_count:
                 raise ReaderError("Invalid ENTRYNAMES region size: {} != {}".format(
@@ -168,9 +168,8 @@ class XWB(object):
                            for _ in range(h_entry_count)]
 
         # read SEEKTABLES if present
-        entry_seektables = None
+        entry_seektables = []
         if self.has_seek_tables and regions['SEEKTABLES'].offset and regions['SEEKTABLES'].length:
-            entry_seektables = []
             stream.seek(regions['SEEKTABLES'].offset)
             seek_offsets = []
             for _ in range(h_entry_count):
@@ -193,10 +192,9 @@ class XWB(object):
             c_samples_per_sec = (cur_meta.format & WB_FORMAT_SAMPLES_PER_SEC) >> 5
             c_block_align = (cur_meta.format & WB_FORMAT_BLOCK_ALIGN) >> 23
             c_bits_per_sample = (cur_meta.format & WB_FORMAT_BITS_PER_SAMPLE) >> 31
-            if entry_names is not None:
+            entry_name = None
+            if entry_names:
                 entry_name = entry_names[i]
-            else:
-                entry_name = None
             entry_dpds = None
             entry_seek = None
             extra_header = bytes()
@@ -226,9 +224,10 @@ class XWB(object):
                 c_bits_per_sample = 16
                 c_avg_bytes_per_sec = WMA_AVG_BYTES_PER_SEC[c_block_align >> 5]
                 c_block_align = WMA_BLOCK_ALIGN[c_block_align & 0x1f]
-                if entry_seektables is None:
+                if entry_seektables:
+                    entry_dpds = entry_seektables[i]
+                else:
                     raise ReaderError("No SEEKTABLES found for xWMA format")
-                entry_dpds = entry_seektables[i]
             elif c_format_tag == WB_FORMAT_TAG_XMA:
                 # lots of placeholders in here but seems to decode ok
                 c_format_tag = WAVE_FORMAT_XMA2
@@ -251,16 +250,16 @@ class XWB(object):
                 extra_header = _XMA_WAVEFORMAT.pack(cx_num_streams, cx_channel_mask, cx_samples_encoded,
                                                     cx_bytes_per_block, cx_play_begin, cx_play_length, cx_loop_begin,
                                                     cx_loop_length, cx_loop_count, cx_encoder_version, cx_block_count)
-                if entry_seektables is None:
+                if entry_seektables:
+                    entry_seek = entry_seektables[i]
+                else:
                     raise ReaderError("No SEEKTABLES found for XMA2 format")
-                entry_seek = entry_seektables[i]
             else:
                 raise ReaderError("Unhandled entry format: {}".format(c_format_tag))
             cx_size = len(extra_header)
             entry_header = _WAVEFORMATEX.pack(c_format_tag, c_channels, c_samples_per_sec, c_avg_bytes_per_sec,
                                               c_block_align, c_bits_per_sample, cx_size)
             entry_header += extra_header
-
             # read entry wave data
             stream.seek(regions['ENTRYWAVEDATA'].offset + cur_meta.play_offset)
             entry_data = stream.read(cur_meta.play_length)
