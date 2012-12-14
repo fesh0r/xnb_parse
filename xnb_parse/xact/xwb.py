@@ -24,14 +24,22 @@ WAVEBANK_FLAGS_ENTRYNAMES = 0x00010000
 WAVEBANK_FLAGS_COMPACT = 0x00020000
 WAVEBANK_FLAGS_SYNC_DISABLED = 0x00040000
 WAVEBANK_FLAGS_SEEKTABLES = 0x00080000
+WAVEBANK_FLAGS_MASK = 0x000F0000
 WAVEBANKENTRY_FLAGS_READAHEAD = 0x00000001
 WAVEBANKENTRY_FLAGS_LOOPCACHE = 0x00000002
 WAVEBANKENTRY_FLAGS_REMOVELOOPTAIL = 0x00000004
 WAVEBANKENTRY_FLAGS_IGNORELOOP = 0x00000008
+WAVEBANKENTRY_FLAGS_MASK = 0x0000000F
+WAVEBANKENTRY_DURATION_MASK = 0xFFFFFFF0
 WAVEBANKMINIFORMAT_TAG_PCM = 0
 WAVEBANKMINIFORMAT_TAG_XMA = 1
 WAVEBANKMINIFORMAT_TAG_ADPCM = 2
 WAVEBANKMINIFORMAT_TAG_WMA = 3
+WAVEBANKMINIFORMAT_TAG_MASK = 0x00000003
+WAVEBANKMINIFORMAT_CHANNELS = 0x0000001C
+WAVEBANKMINIFORMAT_SAMPLES_PER_SEC = 0x007FFFE0
+WAVEBANKMINIFORMAT_BLOCK_ALIGN = 0x7F800000
+WAVEBANKMINIFORMAT_BITS_PER_SAMPLE = 0x80000000
 WMA_AVG_BYTES_PER_SEC = [
     12000,
     24000,
@@ -135,6 +143,8 @@ class XWB(object):
         del h_bank_name_raw
         self.buildtime = filetime_to_datetime(buildtime_raw_low, buildtime_raw_high)
 
+        assert self.flags & ~(WAVEBANK_TYPE_MASK | WAVEBANK_FLAGS_MASK) == 0
+
         # check what type of ENTRYMETADATA we have and parse it
         if self.flags & WAVEBANK_FLAGS_COMPACT:
             raise ReaderError("Compact format not supported")
@@ -177,19 +187,20 @@ class XWB(object):
 
         self.entries = []
         for i, cur_meta in enumerate(entry_metadata):
-            c_entry_flags = cur_meta.flags_duration & 0x0f
-            c_duration = cur_meta.flags_duration >> 4
-            c_format_tag = cur_meta.format & 0x03
-            c_channels = cur_meta.format >> 2 & 0x07
-            c_samples_per_sec = cur_meta.format >> 5 & 0x3ffff
-            c_block_align = cur_meta.format >> 23 & 0xff
-            c_bits_per_sample = cur_meta.format >> 31
+            c_entry_flags = cur_meta.flags_duration & WAVEBANKENTRY_FLAGS_MASK
+            c_duration = (cur_meta.flags_duration & WAVEBANKENTRY_DURATION_MASK) >> 4
+            c_format_tag = cur_meta.format & WAVEBANKMINIFORMAT_TAG_MASK
+            c_channels = (cur_meta.format & WAVEBANKMINIFORMAT_CHANNELS) >> 2
+            c_samples_per_sec = (cur_meta.format & WAVEBANKMINIFORMAT_SAMPLES_PER_SEC) >> 5
+            c_block_align = (cur_meta.format & WAVEBANKMINIFORMAT_BLOCK_ALIGN) >> 23
+            c_bits_per_sample = (cur_meta.format & WAVEBANKMINIFORMAT_BITS_PER_SAMPLE) >> 31
             if entry_names is not None:
                 entry_name = entry_names[i]
             else:
                 entry_name = None
             entry_dpds = None
             entry_seek = None
+            extra_header = bytes()
             # build format specific header and seek data
             if c_format_tag == WAVEBANKMINIFORMAT_TAG_PCM:
                 c_format_tag = WAVE_FORMAT_PCM
@@ -198,9 +209,6 @@ class XWB(object):
                 else:
                     c_bits_per_sample = 8
                 c_avg_bytes_per_sec = c_samples_per_sec * c_block_align
-                cx_size = 0
-                entry_header = _WAVEFORMATEX.pack(c_format_tag, c_channels, c_samples_per_sec, c_avg_bytes_per_sec,
-                                                  c_block_align, c_bits_per_sample, cx_size)
             elif c_format_tag == WAVEBANKMINIFORMAT_TAG_ADPCM:
                 c_format_tag = WAVE_FORMAT_ADPCM
                 c_bits_per_sample = 4
@@ -208,13 +216,9 @@ class XWB(object):
                 cx_samples_per_block = ((c_block_align - (7 * c_channels)) * 8) // (c_bits_per_sample * c_channels) + 2
                 c_avg_bytes_per_sec = (c_samples_per_sec // cx_samples_per_block) * c_block_align
                 cx_num_coef = len(ADPCM_COEF)
-                adpcm_header = _ADPCM_WAVEFORMAT.pack(cx_samples_per_block, cx_num_coef)
+                extra_header = _ADPCM_WAVEFORMAT.pack(cx_samples_per_block, cx_num_coef)
                 for coef in ADPCM_COEF:
-                    adpcm_header += _ADPCM_WAVEFORMAT_COEF.pack(coef[0], coef[1])
-                cx_size = len(adpcm_header)
-                entry_header = _WAVEFORMATEX.pack(c_format_tag, c_channels, c_samples_per_sec, c_avg_bytes_per_sec,
-                                                  c_block_align, c_bits_per_sample, cx_size)
-                entry_header += adpcm_header
+                    extra_header += _ADPCM_WAVEFORMAT_COEF.pack(coef[0], coef[1])
             elif c_format_tag == WAVEBANKMINIFORMAT_TAG_WMA:
                 if c_bits_per_sample == 1:
                     c_format_tag = WAVE_FORMAT_WMAUDIO3
@@ -223,9 +227,6 @@ class XWB(object):
                 c_bits_per_sample = 16
                 c_avg_bytes_per_sec = WMA_AVG_BYTES_PER_SEC[c_block_align >> 5]
                 c_block_align = WMA_BLOCK_ALIGN[c_block_align & 0x1f]
-                cx_size = 0
-                entry_header = _WAVEFORMATEX.pack(c_format_tag, c_channels, c_samples_per_sec, c_avg_bytes_per_sec,
-                                                  c_block_align, c_bits_per_sample, cx_size)
                 if entry_seektables is None:
                     raise ReaderError("No SEEKTABLES found for xWMA format")
                 entry_dpds = entry_seektables[i]
@@ -248,18 +249,18 @@ class XWB(object):
                 cx_loop_count = 0
                 cx_encoder_version = 4
                 cx_block_count = 1
-                xma2_header = _XMA_WAVEFORMAT.pack(cx_num_streams, cx_channel_mask, cx_samples_encoded,
-                                                   cx_bytes_per_block, cx_play_begin, cx_play_length, cx_loop_begin,
-                                                   cx_loop_length, cx_loop_count, cx_encoder_version, cx_block_count)
-                cx_size = len(xma2_header)
-                entry_header = _WAVEFORMATEX.pack(c_format_tag, c_channels, c_samples_per_sec, c_avg_bytes_per_sec,
-                                                  c_block_align, c_bits_per_sample, cx_size)
-                entry_header += xma2_header
+                extra_header = _XMA_WAVEFORMAT.pack(cx_num_streams, cx_channel_mask, cx_samples_encoded,
+                                                    cx_bytes_per_block, cx_play_begin, cx_play_length, cx_loop_begin,
+                                                    cx_loop_length, cx_loop_count, cx_encoder_version, cx_block_count)
                 if entry_seektables is None:
                     raise ReaderError("No SEEKTABLES found for XMA2 format")
                 entry_seek = entry_seektables[i]
             else:
                 raise ReaderError("Unhandled entry format: {}".format(c_format_tag))
+            cx_size = len(extra_header)
+            entry_header = _WAVEFORMATEX.pack(c_format_tag, c_channels, c_samples_per_sec, c_avg_bytes_per_sec,
+                                              c_block_align, c_bits_per_sample, cx_size)
+            entry_header += extra_header
 
             # read entry wave data
             stream.seek(regions['ENTRYWAVEDATA'].offset + cur_meta.play_offset)
