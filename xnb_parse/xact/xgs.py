@@ -3,6 +3,8 @@ parse XGS files
 """
 
 from __future__ import print_function
+
+import os
 from collections import OrderedDict
 
 from xnb_parse.type_reader import ReaderError
@@ -31,3 +33,7 @@ class XGS(object):
 
         # switch stream to correct endianess
         stream.set_endian(big_endian)
+
+    def export(self, out_dir):
+        if not os.path.isdir(out_dir):
+            os.makedirs(out_dir)

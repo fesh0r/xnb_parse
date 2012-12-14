@@ -24,6 +24,8 @@ def read_xact(in_xgs_file, in_xsb_file, in_xwb_file, out_dir=None):
     print(in_xwb_file)
     xwb = XWB(filename=in_xwb_file, audio_engine=xgs)
     if out_dir is not None:
+        xgs.export(out_dir)
+        xsb.export(out_dir)
         xwb.export(out_dir)
 
 
