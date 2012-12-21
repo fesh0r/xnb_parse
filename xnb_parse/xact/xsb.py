@@ -18,8 +18,10 @@ SB_CUE_FLAGS_COMPLEX = 0x01
 SB_CUE_FLAGS_TRANSITION = 0x02
 SB_CUE_FLAGS_SOUND = 0x04
 SB_CUE_FLAGS_MASK = 0x07
-SB_SOUND_FLAGS_CLIP = 0x01
-SB_SOUND_FLAGS_RPC = 0x0E
+SB_SOUND_FLAGS_COMPLEX = 0x01
+SB_SOUND_FLAGS_RPC_SOUND = 0x02
+SB_SOUND_FLAGS_RPC_TRACK = 0x04
+SB_SOUND_FLAGS_RPC_EFFECT = 0x08
 SB_SOUND_FLAGS_DSP = 0x10
 SB_SOUND_FLAGS_MASK = 0x1F
 SB_EVENT_TYPE = 0x0000001F
@@ -89,13 +91,13 @@ class XSB(object):
         if h_cue_name_hash_count and h_cue_name_hash_offset:
             stream.seek(h_cue_name_hash_offset)
             cue_name_hash = [stream.read_int16() for _ in range(h_cue_name_hash_count)]
-        cue_name_table = []
+        cue_name_hash_entry = []
         if h_cue_names_length and h_cue_name_table_offset:
             stream.seek(h_cue_name_table_offset)
-            cue_name_table = [(stream.read_int32(), stream.read_int16())
+            cue_name_hash_entry = [(stream.read_int32(), stream.read_int16())
                               for _ in range(h_simple_cue_count + h_complex_cue_count)]
         cue_names = []
-        for (name_offset, _) in cue_name_table:
+        for (name_offset, _) in cue_name_hash_entry:
             stream.seek(name_offset)
             cue_names.append(stream.read_cstring())
 
@@ -190,32 +192,42 @@ class Sound(object):
         if self.flags & ~SB_SOUND_FLAGS_MASK:
             raise ReaderError("Unknown flags in SB_SOUND")
         clip_count = 0
-        if self.has_clip:
+        if self.is_complex:
             clip_count = stream.read_byte()
         else:
             self.track = stream.read_uint16()
             self.wavebank = stream.read_byte()
-        if self.has_rpc:
+        if self.has_rpc_sound or self.has_rpc_track or self.has_rpc_effect:
             rpc_pos = stream.tell()
             rpc_extra = stream.read_uint16()
+            # TODO: parse RPC data
             stream.seek(rpc_pos + rpc_extra)
         if self.has_dsp:
             dsp_pos = stream.tell()
             dsp_extra = stream.read_uint16()
+            # TODO: parse DSP data
             stream.seek(dsp_pos + dsp_extra)
         self.clips = []
-        if self.has_clip:
+        if self.is_complex:
             self.clips = [Clip(stream) for _ in range(clip_count)]
         if stream.tell() > entry_len + start_pos:
             raise ReaderError("SB_SOUND length mismatch")
 
     @property
-    def has_clip(self):
-        return bool(self.flags & SB_SOUND_FLAGS_CLIP)
+    def is_complex(self):
+        return bool(self.flags & SB_CUE_FLAGS_COMPLEX)
 
     @property
-    def has_rpc(self):
-        return (self.flags & SB_SOUND_FLAGS_RPC) >> 1
+    def has_rpc_sound(self):
+        return bool(self.flags & SB_SOUND_FLAGS_RPC_SOUND)
+
+    @property
+    def has_rpc_track(self):
+        return bool(self.flags & SB_SOUND_FLAGS_RPC_TRACK)
+
+    @property
+    def has_rpc_effect(self):
+        return bool(self.flags & SB_SOUND_FLAGS_RPC_EFFECT)
 
     @property
     def has_dsp(self):
