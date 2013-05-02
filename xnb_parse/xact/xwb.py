@@ -173,15 +173,18 @@ class XWB(object):
             stream.seek(regions['SEEKTABLES'].offset)
             seek_offsets = []
             for _ in range(h_entry_count):
-                seek_offsets.append(stream.read_uint32())
+                seek_offsets.append(stream.read_int32())
             seek_data_offset = stream.tell()
             for cur_offset in seek_offsets:
-                stream.seek(seek_data_offset + cur_offset)
-                packet_count = stream.read_uint32()
-                cur_seek_data = BinaryStream()
-                for _ in range(packet_count):
-                    cur_seek_data.write_uint32(stream.read_uint32())
-                entry_seektables.append(cur_seek_data.getvalue())
+                if cur_offset >= 0:
+                    stream.seek(seek_data_offset + cur_offset)
+                    packet_count = stream.read_uint32()
+                    cur_seek_data = BinaryStream()
+                    for _ in range(packet_count):
+                        cur_seek_data.write_uint32(stream.read_uint32())
+                    entry_seektables.append(cur_seek_data.getvalue())
+                else:
+                    entry_seektables.append(None)
 
         self.entries = []
         for i, cur_meta in enumerate(entry_metadata):
@@ -262,7 +265,11 @@ class XWB(object):
             entry_header += extra_header
             # read entry wave data
             stream.seek(regions['ENTRYWAVEDATA'].offset + cur_meta.play_offset)
+            # manually swap PCM data if needed
             entry_data = stream.read(cur_meta.play_length)
+            if big_endian and c_format_tag == WAVE_FORMAT_PCM and c_bits_per_sample == 16:
+                entry_data = bytearray(entry_data)
+                entry_data[1::2], entry_data[0::2] = entry_data[0::2], entry_data[1::2]
             self.entries.append(Entry(entry_name, entry_header, entry_data, entry_dpds, entry_seek))
 
     @property

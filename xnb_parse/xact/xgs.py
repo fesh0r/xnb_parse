@@ -5,10 +5,7 @@ parse XGS files
 from __future__ import print_function
 
 import os
-from collections import OrderedDict
 
-from xnb_parse.type_reader import ReaderError
-from xnb_parse.xact.xwb import filetime_to_datetime
 from xnb_parse.binstream import BinaryStream
 
 
@@ -34,6 +31,9 @@ class XGS(object):
         # switch stream to correct endianess
         stream.set_endian(big_endian)
 
+        # TODO: actually parse something
+
     def export(self, out_dir):
         if not os.path.isdir(out_dir):
             os.makedirs(out_dir)
+        # TODO: actually export something

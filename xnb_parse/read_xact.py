@@ -30,7 +30,7 @@ def read_xact(in_xgs_file, in_xsb_file, in_xwb_file, out_dir=None):
 
 
 def main():
-    if 1 < len(sys.argv) <= 5:
+    if 3 < len(sys.argv) <= 5:
         totaltime = time.time()
         in_xgs_file = sys.argv[1]
         in_xsb_file = sys.argv[2]

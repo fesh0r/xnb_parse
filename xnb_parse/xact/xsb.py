@@ -95,7 +95,7 @@ class XSB(object):
         if h_cue_names_length and h_cue_name_table_offset:
             stream.seek(h_cue_name_table_offset)
             cue_name_hash_entry = [(stream.read_int32(), stream.read_int16())
-                              for _ in range(h_simple_cue_count + h_complex_cue_count)]
+                                   for _ in range(h_simple_cue_count + h_complex_cue_count)]
         cue_names = []
         for (name_offset, _) in cue_name_hash_entry:
             stream.seek(name_offset)
