@@ -16,15 +16,21 @@ import ctypes
 _XNA_VERSIONS = ['v4.0', 'v3.1', 'v3.0']
 _DLL_NAME = 'XnaNative.dll'
 
+_native_dir = None
+
 
 # pylint: disable-msg=F0401
 def _find_native():
+    global _native_dir
+    if _native_dir:
+        return _native_dir
+
     if not sys.platform == 'win32' or not platform.architecture()[0] == '32bit':
         raise IOError("win32 required for decompression")
     try:
         import winreg  # pylint: disable-msg=F0401
     except ImportError:
-        #noinspection PyUnresolvedReferences
+        #noinspection PyUnresolvedReferences,PyRedeclaration
         import _winreg as winreg  # pylint: disable-msg=F0401
 
     native_path = None
@@ -40,7 +46,14 @@ def _find_native():
         except WindowsError:
             pass
     if native_path is None:
+        # TODO: must be a better way of doing this
+        lib_path = os.path.realpath(os.path.join(os.path.dirname(__file__), '../bin'))
+        lib_path = os.path.join(os.path.normpath(lib_path), _DLL_NAME)
+        if os.path.isfile(lib_path):
+            native_path = lib_path
+    if native_path is None:
         raise IOError("{} not found".format(_DLL_NAME))
+    _native_dir = native_path
     return native_path
 
 
