@@ -9,3 +9,4 @@ export/
 out/
 out_u/
 bin/*.exe
+bin/*.dll
