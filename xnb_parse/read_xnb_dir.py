@@ -7,6 +7,7 @@ from __future__ import print_function
 import sys
 import time
 
+from xnb_parse.type_reader import ReaderError
 from xnb_parse.xna_content_manager import ContentManager
 
 
@@ -14,9 +15,12 @@ def read_xnb_dir(content_dir, export_dir=None):
     content_manager = ContentManager(content_dir)
     for asset_name in content_manager.assets:
         print(asset_name)
-        asset = content_manager.load(asset_name)
-        if export_dir is not None:
-            content_manager.export(asset, asset_name, export_dir)
+        try:
+            asset = content_manager.load(asset_name)
+            if export_dir is not None:
+                content_manager.export(asset, asset_name, export_dir)
+        except (ReaderError, KeyError) as e:
+            print('FAILED: {}: {}'.format(type(e).__name__, e))
 
 
 def main():
