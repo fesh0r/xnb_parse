@@ -13,7 +13,7 @@ _Color = namedtuple('Color', ['r', 'g', 'b', 'a'])  # pylint: disable-msg=C0103
 
 
 class Color(_Color):  # pylint: disable-msg=W0232
-    # pylint: disable-msg=E1101
+    # pylint: disable-msg=E1101,E1001
     __slots__ = ()
 
     def to_packed(self):
@@ -55,7 +55,7 @@ _Rectangle = namedtuple('Rectangle', ['x', 'y', 'w', 'h'])  # pylint: disable-ms
 
 
 class Rectangle(_Rectangle):  # pylint: disable-msg=W0232
-    # pylint: disable-msg=E1101
+    # pylint: disable-msg=E1101,E1001
     __slots__ = ()
 
     def xml(self, parent):
@@ -71,7 +71,7 @@ _Quarternion = namedtuple('Quarternion', ['x', 'y', 'z', 'w'])  # pylint: disabl
 
 
 class Quaternion(_Quarternion):  # pylint: disable-msg=W0232
-    # pylint: disable-msg=E1101
+    # pylint: disable-msg=E1101,E1001
     __slots__ = ()
 
     def xml(self, parent):
@@ -87,7 +87,7 @@ _Vector2 = namedtuple('Vector2', ['x', 'y'])  # pylint: disable-msg=C0103
 
 
 class Vector2(_Vector2):  # pylint: disable-msg=W0232
-    # pylint: disable-msg=E1101
+    # pylint: disable-msg=E1101,E1001
     __slots__ = ()
 
     def xml(self, parent):
@@ -101,7 +101,7 @@ _Vector3 = namedtuple('Vector3', ['x', 'y', 'z'])  # pylint: disable-msg=C0103
 
 
 class Vector3(_Vector3):  # pylint: disable-msg=W0232
-    # pylint: disable-msg=E1101
+    # pylint: disable-msg=E1101,E1001
     __slots__ = ()
 
     def xml(self, parent):
@@ -116,7 +116,7 @@ _Vector4 = namedtuple('Vector4', ['x', 'y', 'z', 'w'])  # pylint: disable-msg=C0
 
 
 class Vector4(_Vector4):  # pylint: disable-msg=W0232
-    # pylint: disable-msg=E1101
+    # pylint: disable-msg=E1101,E1001
     __slots__ = ()
 
     def xml(self, parent):
@@ -132,7 +132,7 @@ _Point = namedtuple('Point', ['x', 'y'])  # pylint: disable-msg=C0103
 
 
 class Point(_Point):  # pylint: disable-msg=W0232
-    # pylint: disable-msg=E1101
+    # pylint: disable-msg=E1101,E1001
     __slots__ = ()
 
     def xml(self, parent):
@@ -146,7 +146,7 @@ _Plane = namedtuple('Plane', ['normal', 'd'])  # pylint: disable-msg=C0103
 
 
 class Plane(_Plane):  # pylint: disable-msg=W0232
-    # pylint: disable-msg=E1101
+    # pylint: disable-msg=E1101,E1001
     __slots__ = ()
 
     def xml(self, parent):
@@ -160,7 +160,7 @@ _BoundingBox = namedtuple('BoundingBox', ['min', 'max'])  # pylint: disable-msg=
 
 
 class BoundingBox(_BoundingBox):  # pylint: disable-msg=W0232
-    # pylint: disable-msg=E1101
+    # pylint: disable-msg=E1101,E1001
     __slots__ = ()
 
     def xml(self, parent):
@@ -174,7 +174,7 @@ _BoundingSphere = namedtuple('BoundingSphere', ['center', 'radius'])  # pylint: 
 
 
 class BoundingSphere(_BoundingSphere):  # pylint: disable-msg=W0232
-    # pylint: disable-msg=E1101
+    # pylint: disable-msg=E1101,E1001
     __slots__ = ()
 
     def xml(self, parent):
@@ -188,7 +188,7 @@ _Ray = namedtuple('Ray', ['pos', 'dir'])  # pylint: disable-msg=C0103
 
 
 class Ray(_Ray):  # pylint: disable-msg=W0232
-    # pylint: disable-msg=E1101
+    # pylint: disable-msg=E1101,E1001
     __slots__ = ()
 
     def xml(self, parent):
@@ -218,7 +218,7 @@ _BoundingFrustum = namedtuple('BoundingFrustum', ['v'])  # pylint: disable-msg=C
 
 
 class BoundingFrustum(_BoundingFrustum):  # pylint: disable-msg=W0232
-    # pylint: disable-msg=E1101
+    # pylint: disable-msg=E1101,E1001
     __slots__ = ()
 
     def xml(self, parent):

@@ -228,7 +228,7 @@ class XNBReader(BinaryStream):
             output_xml(self.content.xml(), filename + '.xml')
 
     def read_color(self):
-        return Color._make(self.unpack('4B'))
+        return Color._make(self.unpack('4B'))  # pylint: disable-msg=W0212,E1101
 
     def read_external_reference(self, expected_type=None):
         filename = self.read_string()
@@ -238,13 +238,13 @@ class XNBReader(BinaryStream):
         return Matrix(XNAList(self.unpack('16f')))
 
     def read_quaternion(self):
-        return Quaternion._make(self.unpack('4f'))
+        return Quaternion._make(self.unpack('4f'))  # pylint: disable-msg=W0212,E1101
 
     def read_vector2(self):
-        return Vector2._make(self.unpack('2f'))
+        return Vector2._make(self.unpack('2f'))  # pylint: disable-msg=W0212,E1101
 
     def read_vector3(self):
-        return Vector3._make(self.unpack('3f'))
+        return Vector3._make(self.unpack('3f'))  # pylint: disable-msg=W0212,E1101
 
     def read_vector4(self):
-        return Vector4._make(self.unpack('4f'))
+        return Vector4._make(self.unpack('4f'))  # pylint: disable-msg=W0212,E1101

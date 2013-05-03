@@ -128,7 +128,7 @@ class XWB(object):
         # switch stream to correct endianess
         stream.set_endian(big_endian)
         (h_sig, self.h_version, self.h_header_version) = stream.unpack(_WB_HEADER)
-        regions = {k: XWBRegion._make(stream.unpack(_WB_REGION)) for k in _REGIONS}
+        regions = {k: XWBRegion._make(stream.unpack(_WB_REGION)) for k in _REGIONS}  # pylint: disable-msg=W0212
 
         # check if we have a valid BANKDATA region and parse it
         bankdata_size = stream.calc_size(_WB_DATA)
@@ -155,7 +155,7 @@ class XWB(object):
             raise ReaderError("Invalid ENTRYMETADATA size: {} != {}".format(regions['ENTRYMETADATA'].length,
                                                                             bankentry_size * h_entry_count))
         stream.seek(regions['ENTRYMETADATA'].offset)
-        entry_metadata = [XWBEntry._make(stream.unpack(_WB_ENTRY)) for _ in range(h_entry_count)]
+        entry_metadata = [XWBEntry._make(stream.unpack(_WB_ENTRY)) for _ in range(h_entry_count)]  # pylint: disable-msg=W0212,E1101
 
         # read ENTRYNAMES if present
         entry_names = []

@@ -50,9 +50,9 @@ class VertexPositionNormalTextureInstanceReader(ValueTypeReader, TypeReaderPlugi
 
     def read(self):
         values = self.stream.unpack('3f B 2f')
-        position = Vector3._make(values[0:3])
+        position = Vector3._make(values[0:3])  # pylint: disable-msg=W0212,E1101
         normal = values[3]
-        texture_coord = Vector2._make(values[4:6])
+        texture_coord = Vector2._make(values[4:6])  # pylint: disable-msg=W0212,E1101
         return VertexPositionNormalTextureInstance(position, normal, texture_coord)
 
 

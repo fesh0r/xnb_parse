@@ -16,10 +16,10 @@ import ctypes
 _XNA_VERSIONS = ['v4.0', 'v3.1', 'v3.0']
 _DLL_NAME = 'XnaNative.dll'
 
-_native_dir = None
+_native_dir = None  # pylint: disable-msg=C0103
 
 
-# pylint: disable-msg=F0401
+# pylint: disable-msg=F0401,W0603
 def _find_native():
     global _native_dir
     if _native_dir:

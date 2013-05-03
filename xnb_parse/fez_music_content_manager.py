@@ -4,8 +4,6 @@ Fez PC Music ContentManager
 
 from __future__ import print_function
 
-import os
-
 from xnb_parse.fez_content_manager import FezContentManager
 
 

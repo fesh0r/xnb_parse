@@ -403,7 +403,7 @@ _TrileEmplacement = namedtuple('TrileEmplacement', ['x', 'y', 'z'])  # pylint: d
 
 
 class TrileEmplacement(_TrileEmplacement):  # pylint: disable-msg=W0232
-    # pylint: disable-msg=E1101
+    # pylint: disable-msg=E1101,E1001
     __slots__ = ()
 
     def xml(self, parent):
