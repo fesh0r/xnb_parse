@@ -75,7 +75,7 @@ class XNBReader(BinaryStream):
             print("Type: {!s}".format(self.type_readers[0]))
 
         for reader in self.type_readers:
-            reader.init_reader()
+            reader.init_reader(self.file_platform, self.file_version)
 
         shared_count = self.read_7bit_encoded_int()
 

@@ -13,8 +13,8 @@ class EnumReader(GenericValueTypeReader, TypeReaderPlugin):
     generic_target_type = 'System.Enum`1'
     generic_reader_name = 'Microsoft.Xna.Framework.Content.EnumReader`1'
 
-    def init_reader(self):
-        GenericValueTypeReader.init_reader(self)
+    def init_reader(self, file_platform=None, file_version=None):
+        GenericValueTypeReader.init_reader(self, file_platform, file_version)
         if not self.readers[0].is_enum_type:
             ReaderError("Not enum type reader: '{}'".format(self.readers[0]))
 

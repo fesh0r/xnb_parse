@@ -35,6 +35,8 @@ class BaseTypeReader(object):
     is_value_type = False
     is_generic_type = False
     is_enum_type = False
+    file_platform = None
+    file_version = None
 
     def __init__(self, stream=None, version=None):
         self.stream = stream
@@ -46,8 +48,9 @@ class BaseTypeReader(object):
     def read(self):
         raise ReaderError("Unimplemented type reader: '{}'".format(self.reader_name))
 
-    def init_reader(self):
-        pass
+    def init_reader(self, file_platform=None, file_version=None):
+        self.file_platform = file_platform
+        self.file_version = file_version
 
 
 class ValueTypeReader(BaseTypeReader):
@@ -61,8 +64,8 @@ class GenericTypeReader(BaseTypeReader):
     generic_params = None
     readers = None
 
-    def init_reader(self):
-        BaseTypeReader.init_reader(self)
+    def init_reader(self, file_platform=None, file_version=None):
+        BaseTypeReader.init_reader(self, file_platform, file_version)
         if self.readers is None:
             self.readers = []
         for arg in self.generic_params:
