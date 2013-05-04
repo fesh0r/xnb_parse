@@ -5,7 +5,8 @@ FEZ graphics types
 from __future__ import print_function
 
 from xnb_parse.file_formats.xml_utils import ET
-from xnb_parse.xna_types.xna_graphics import Texture2D, FORMAT_COLOR, get_surface_format, VERSION_31
+from xnb_parse.xna_types.xna_graphics import (Texture2D, FORMAT_COLOR, get_surface_format, VERSION_31, VERSION_40,
+                                              FORMAT4_COLOR)
 
 
 class ArtObject(object):
@@ -153,6 +154,40 @@ class AnimatedTexture(object):
         texture.export(filename + '.ani')
 
 
+class AnimatedTexturePC(object):
+    surface_format = get_surface_format(VERSION_40, FORMAT4_COLOR)
+
+    def __init__(self, width, height, actual_width, actual_height, data, frames):
+        self.width = width
+        self.height = height
+        self.actual_width = actual_width
+        self.actual_height = actual_height
+        self.data = data
+        self.frames = frames
+
+    def __str__(self):
+        return "AnimatedTexturePC d:{}x{} a:{}x{} f:{}".format(self.width, self.height, self.actual_width,
+                                                                self.actual_height, len(self.frames))
+
+    def xml(self, parent=None):
+        if parent is None:
+            root = ET.Element('AnimatedTexturePC')
+        else:
+            root = ET.SubElement(parent, 'AnimatedTexturePC')
+        root.set('width', str(self.width))
+        root.set('height', str(self.height))
+        root.set('actualWidth', str(self.actual_width))
+        root.set('actualHeight', str(self.actual_height))
+        if self.frames is not None:
+            self.frames.xml(root, 'Frames')
+        return root
+
+    def export(self, filename):
+        if self.data is not None:
+            texture = Texture2D(self.surface_format, self.width, self.height, [self.data])
+            texture.export(filename + '.ani')
+
+
 class Frame(object):
     def __init__(self, duration, data):
         self.duration = duration
@@ -165,4 +200,21 @@ class Frame(object):
         root = ET.SubElement(parent, 'Frame')
         if self.duration is not None:
             root.set('duration', str(self.duration))
+        return root
+
+
+class FramePC(object):
+    def __init__(self, duration, rectangle):
+        self.duration = duration
+        self.rectangle = rectangle
+
+    def __str__(self):
+        return "FramePC d:{} r:{}".format(self.duration, self.rectangle)
+
+    def xml(self, parent):
+        root = ET.SubElement(parent, 'FramePC')
+        if self.duration is not None:
+            root.set('duration', str(self.duration))
+        if self.rectangle is not None:
+            self.rectangle.xml(root)
         return root

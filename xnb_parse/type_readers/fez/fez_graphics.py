@@ -7,13 +7,17 @@ from __future__ import print_function
 from xnb_parse.type_reader import (TypeReaderPlugin, BaseTypeReader, ValueTypeReader, GenericTypeReader,
                                    generic_reader_type)
 from xnb_parse.type_readers.xna_graphics import PrimitiveTypeReader
-from xnb_parse.type_readers.xna_math import MatrixReader
+from xnb_parse.type_readers.xna_math import MatrixReader, RectangleReader
 from xnb_parse.type_readers.xna_primitive import StringReader, UInt16Reader
 from xnb_parse.type_readers.xna_system import ListReader, ArrayReader, TimeSpanReader, ReflectiveReader
 from xnb_parse.type_readers.fez.fez_basic import NpcActionReader, ActorTypeReader, SetReader, FaceOrientationReader
 from xnb_parse.xna_types.xna_math import Vector3, Vector2
 from xnb_parse.xna_types.fez.fez_graphics import (AnimatedTexture, Frame, ArtObject, ShaderInstancedIndexedPrimitives,
-                                                  VertexPositionNormalTextureInstance, NpcMetadata)
+                                                  VertexPositionNormalTextureInstance, NpcMetadata, AnimatedTexturePC,
+                                                  FramePC)
+
+# avoiding circular import
+PLATFORM_WINDOWS = b'w'
 
 
 class ArtObjectReader(BaseTypeReader, TypeReaderPlugin):
@@ -73,12 +77,22 @@ class AnimatedTextureReader(BaseTypeReader, TypeReaderPlugin):
     reader_name = 'FezEngine.Readers.AnimatedTextureReader'
 
     def read(self):
-        width = self.stream.read_int32()
-        height = self.stream.read_int32()
-        actual_width = self.stream.read_int32()
-        actual_height = self.stream.read_int32()
-        frames = self.stream.read_object(ListReader, [FrameReader])
-        return AnimatedTexture(width, height, actual_width, actual_height, frames)
+        if self.file_platform == PLATFORM_WINDOWS:
+            width = self.stream.read_int32()
+            height = self.stream.read_int32()
+            actual_width = self.stream.read_int32()
+            actual_height = self.stream.read_int32()
+            elements = self.stream.read_uint32()
+            data = self.stream.read(elements)
+            frames = self.stream.read_object(ListReader, [FrameReader])
+            return AnimatedTexturePC(width, height, actual_width, actual_height, data, frames)
+        else:
+            width = self.stream.read_int32()
+            height = self.stream.read_int32()
+            actual_width = self.stream.read_int32()
+            actual_height = self.stream.read_int32()
+            frames = self.stream.read_object(ListReader, [FrameReader])
+            return AnimatedTexture(width, height, actual_width, actual_height, frames)
 
 
 class FrameReader(BaseTypeReader, TypeReaderPlugin):
@@ -86,8 +100,13 @@ class FrameReader(BaseTypeReader, TypeReaderPlugin):
     reader_name = 'FezEngine.Readers.FrameReader'
 
     def read(self):
-        duration = self.stream.read_object(TimeSpanReader)
-        _ = self.stream.read_7bit_encoded_int()
-        elements = self.stream.read_uint32()
-        data = self.stream.read(elements * 4)
-        return Frame(duration, data)
+        if self.file_platform == PLATFORM_WINDOWS:
+            duration = self.stream.read_object(TimeSpanReader)
+            rectangle = self.stream.read_object(RectangleReader)
+            return FramePC(duration, rectangle)
+        else:
+            duration = self.stream.read_object(TimeSpanReader)
+            _ = self.stream.read_7bit_encoded_int()
+            elements = self.stream.read_uint32()
+            data = self.stream.read(elements * 4)
+            return Frame(duration, data)
