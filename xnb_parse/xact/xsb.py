@@ -266,11 +266,11 @@ _EVENTS = {
 class ClipEvent(object):
     def __init__(self, stream):
         (self.flags, self.random_offset, unknown) = stream.unpack(_SB_EVENT)
-#        if self.flags & ~SB_EVENT_MASK:
-#            raise ReaderError("Unknown flags in SB_EVENT")
+        # if self.flags & ~SB_EVENT_MASK:
+        #     raise ReaderError("Unknown flags in SB_EVENT")
         self.event = _EVENTS[self.event_type](stream)
-#        if unknown:
-#            raise ReaderError("Unknown field set in SB_EVENT")
+        # if unknown:
+        #     raise ReaderError("Unknown field set in SB_EVENT")
 
     @property
     def event_type(self):

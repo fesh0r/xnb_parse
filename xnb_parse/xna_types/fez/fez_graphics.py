@@ -167,7 +167,7 @@ class AnimatedTexturePC(object):
 
     def __str__(self):
         return "AnimatedTexturePC d:{}x{} a:{}x{} f:{}".format(self.width, self.height, self.actual_width,
-                                                                self.actual_height, len(self.frames))
+                                                               self.actual_height, len(self.frames))
 
     def xml(self, parent=None):
         if parent is None:
