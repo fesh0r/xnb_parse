@@ -290,3 +290,8 @@ class PrimitiveType(Enum):
     __slots__ = ()
     enum_values = {1: 'PointList', 2: 'LineList', 3: 'LineStrip', 4: 'TriangleList', 5: 'TriangleStrip',
                    6: 'TriangleFan'}
+
+
+class PrimitiveType4(Enum):
+    __slots__ = ()
+    enum_values = {0: 'TriangleList', 1: 'TriangleStrip', 2: 'LineList', 3: 'LineStrip'}
