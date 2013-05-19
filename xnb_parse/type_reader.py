@@ -70,6 +70,7 @@ class GenericTypeReader(BaseTypeReader):
             self.readers = []
         for arg in self.generic_params:
             reader = self.stream.get_type_reader_by_type(arg)
+            reader.init_reader(file_platform, file_version)
             self.readers.append(reader)
 
     @classmethod
