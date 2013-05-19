@@ -129,6 +129,13 @@ class AO(object):
         asset_name = 'art objects/' + asset_name
         art_object = content_manager.load(asset_name, expected_type='FezEngine.Structure.ArtObject')
 
+        try:
+            cubemap_name = 'art objects/' + art_object.cubemap_path
+            cubemap = content_manager.load(cubemap_name, expected_type='Microsoft.Xna.Framework.Graphics.Texture2D')
+        except AttributeError:
+            cubemap = art_object.cubemap
+        self.texture = pyglet.image.ImageData(cubemap.width, cubemap.height, 'RGBA', cubemap.full_data()).get_texture()
+
         indices = art_object.geometry.indices
         vertices = []
         normals = []
@@ -141,20 +148,16 @@ class AO(object):
             normals.append(cur_normal.x)
             normals.append(cur_normal.y)
             normals.append(cur_normal.z)
-            texture_coords.append(cur_vertex.texture_coord.x)
-            texture_coords.append(cur_vertex.texture_coord.y)
+            texture_coords.append(cur_vertex.texture_coord.x * self.texture.tex_coords[2 * 3 + 0])
+            texture_coords.append(cur_vertex.texture_coord.y * self.texture.tex_coords[2 * 3 + 1])
         self.vli = pyglet.graphics.vertex_list_indexed(len(vertices) // 3, indices,
                                                        ('v3f', vertices),
                                                        ('n3f', normals),
                                                        ('t2f', texture_coords))
 
-        cubemap_name = 'art objects/' + art_object.cubemap_path
-        cubemap = content_manager.load(cubemap_name, expected_type='Microsoft.Xna.Framework.Graphics.Texture2D')
-        self.texture = pyglet.image.ImageData(cubemap.width, cubemap.height, 'RGBA', cubemap.full_data()).get_texture()
-
         glDisable(self.texture.target)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
+        glTexParameteri(self.texture.target, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
+        glTexParameteri(self.texture.target, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
         glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, vec_args(0.6, 0.6, 0.6, 1.0))
 
     def draw(self, texturing=True):
