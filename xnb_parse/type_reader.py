@@ -4,6 +4,9 @@ Base type readers
 
 from __future__ import print_function
 
+# avoid circular import
+VERSION_40 = 5
+
 
 class Error(Exception):
     pass
@@ -91,10 +94,14 @@ class GenericValueTypeReader(GenericTypeReader):
 class EnumTypeReader(ValueTypeReader):
     is_enum_type = True
     enum_type = None
+    enum_type4 = None
 
     def read(self):
         value = self.stream.read_int32()
-        enum_type = self.enum_type
+        if self.file_version == VERSION_40 and self.enum_type4 is not None:
+            enum_type = self.enum_type4
+        else:
+            enum_type = self.enum_type
         if callable(enum_type):
             return enum_type(value)  # pylint: disable-msg=E1102
         else:
