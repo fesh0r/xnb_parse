@@ -6,7 +6,7 @@ from __future__ import print_function
 
 from xnb_parse.type_reader import (TypeReaderPlugin, BaseTypeReader, ValueTypeReader, GenericTypeReader,
                                    generic_reader_type)
-from xnb_parse.type_readers.xna_graphics import PrimitiveTypeReader
+from xnb_parse.type_readers.xna_graphics import PrimitiveTypeReader, Texture2DReader
 from xnb_parse.type_readers.xna_math import MatrixReader, RectangleReader
 from xnb_parse.type_readers.xna_primitive import StringReader, UInt16Reader
 from xnb_parse.type_readers.xna_system import ListReader, ArrayReader, TimeSpanReader, ReflectiveReader
@@ -14,7 +14,7 @@ from xnb_parse.type_readers.fez.fez_basic import NpcActionReader, ActorTypeReade
 from xnb_parse.xna_types.xna_math import Vector3, Vector2
 from xnb_parse.xna_types.fez.fez_graphics import (AnimatedTexture, Frame, ArtObject, ShaderInstancedIndexedPrimitives,
                                                   VertexPositionNormalTextureInstance, NpcMetadata, AnimatedTexturePC,
-                                                  FramePC)
+                                                  FramePC, ArtObjectPC)
 
 # avoiding circular import
 PLATFORM_WINDOWS = b'w'
@@ -25,16 +25,26 @@ class ArtObjectReader(BaseTypeReader, TypeReaderPlugin):
     reader_name = 'FezEngine.Readers.ArtObjectReader'
 
     def read(self):
-        name = self.stream.read_string()
-        cubemap_path = self.stream.read_string()
-        size = self.stream.read_vector3()
-        geometry = self.stream.read_object(ShaderInstancedIndexedPrimitivesReader,
-                                           [VertexPositionNormalTextureInstanceReader, MatrixReader])
-        actor_type = self.stream.read_object(ActorTypeReader)
-        no_silhouette = self.stream.read_boolean()
-        laser_outlets = self.stream.read_object(ReflectiveReader, [generic_reader_type(SetReader,
-                                                                                       [FaceOrientationReader])])
-        return ArtObject(name, cubemap_path, size, geometry, actor_type, no_silhouette, laser_outlets)
+        if self.file_platform == PLATFORM_WINDOWS:
+            name = self.stream.read_string()
+            cubemap = self.stream.read_object(Texture2DReader)
+            size = self.stream.read_vector3()
+            geometry = self.stream.read_object(ShaderInstancedIndexedPrimitivesReader,
+                                               [VertexPositionNormalTextureInstanceReader, MatrixReader])
+            actor_type = self.stream.read_object(ActorTypeReader)
+            no_silhouette = self.stream.read_boolean()
+            return ArtObjectPC(name, cubemap, size, geometry, actor_type, no_silhouette)
+        else:
+            name = self.stream.read_string()
+            cubemap_path = self.stream.read_string()
+            size = self.stream.read_vector3()
+            geometry = self.stream.read_object(ShaderInstancedIndexedPrimitivesReader,
+                                               [VertexPositionNormalTextureInstanceReader, MatrixReader])
+            actor_type = self.stream.read_object(ActorTypeReader)
+            no_silhouette = self.stream.read_boolean()
+            laser_outlets = self.stream.read_object(ReflectiveReader, [generic_reader_type(SetReader,
+                                                                                           [FaceOrientationReader])])
+            return ArtObject(name, cubemap_path, size, geometry, actor_type, no_silhouette, laser_outlets)
 
 
 class ShaderInstancedIndexedPrimitivesReader(GenericTypeReader, TypeReaderPlugin):

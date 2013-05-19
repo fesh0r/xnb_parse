@@ -41,6 +41,36 @@ class ArtObject(object):
         return root
 
 
+class ArtObjectPC(object):
+    def __init__(self, name, cubemap, size, geometry, actor_type, no_silhouette):
+        self.name = name
+        self.cubemap = cubemap
+        self.size = size
+        self.geometry = geometry
+        self.actor_type = actor_type
+        self.no_silhouette = no_silhouette
+
+    def __str__(self):
+        return "ArtObjectPC '{}' s:{} g:{}".format(self.name, self.size, len(self.geometry.vertices))
+
+    def xml(self, parent=None):
+        if parent is None:
+            root = ET.Element('ArtObject')
+        else:
+            root = ET.SubElement(parent, 'ArtObject')
+        root.set('name', self.name)
+        root.set('noSilhouette', str(self.no_silhouette))
+        self.size.xml(ET.SubElement(root, 'Size'))
+        if self.actor_type is not None:
+            root.set('actorType', str(self.actor_type))
+        if self.geometry is not None:
+            self.geometry.xml(root)
+        return root
+
+    def export(self, filename):
+        self.cubemap.export(filename)
+
+
 class ShaderInstancedIndexedPrimitives(object):
     __slots__ = ('primitive_type', 'vertices', 'indices')
 
