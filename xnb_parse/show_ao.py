@@ -1,4 +1,3 @@
-# coding=utf-8
 """
 Display ArtObject
 """
@@ -11,12 +10,8 @@ import pyglet
 from pyglet.gl import *  # pylint: disable-msg=W0614,W0401
 
 from xnb_parse.trackball_camera import TrackballCamera, norm1, vec_args
-from xnb_parse.type_reader import ReaderError
 from xnb_parse.xnb_reader import XNBReader
-from xnb_parse.type_reader_manager import TypeReaderManager
 from xnb_parse.xna_types.xna_math import Vector3
-from xnb_parse.xna_types.xna_graphics import Texture2D
-from xnb_parse.xna_types.fez.fez_graphics import ArtObject
 
 
 NORMALS = [Vector3(-1.0, 0.0, 0.0), Vector3(0.0, -1.0, 0.0), Vector3(0.0, 0.0, -1.0),
@@ -132,10 +127,9 @@ class AOWindow(pyglet.window.Window):  # pylint: disable-msg=W0223
 
 class AO(object):
     def __init__(self, ao_filename):
-        type_reader_manager = TypeReaderManager()
         ao_filename = os.path.normpath(ao_filename)
         ao_dir = os.path.dirname(ao_filename)
-        ao_xnb = read_xnb(ao_filename, expected_type=ArtObject, type_reader_manager=type_reader_manager)
+        ao_xnb = read_xnb(ao_filename, expected_type='FezEngine.Structure.ArtObject')
 
         indices = ao_xnb.geometry.indices
         vertices = []
@@ -157,8 +151,8 @@ class AO(object):
                                                        ('t2f', texture_coords))
 
         cm_filename = os.path.join(ao_dir, ao_xnb.cubemap_path.lower() + '.xnb')
-        cm_xnb = read_xnb(cm_filename, expected_type=Texture2D, type_reader_manager=type_reader_manager)
-        cm_image = pyglet.image.ImageData(cm_xnb.width, cm_xnb.height, 'RGBA', bytes(cm_xnb.full_data()))
+        cm_xnb = read_xnb(cm_filename, expected_type='Microsoft.Xna.Framework.Graphics.Texture2D')
+        cm_image = pyglet.image.ImageData(cm_xnb.width, cm_xnb.height, 'RGBA', cm_xnb.full_data())
         self.texture = cm_image.get_texture()
 
         glDisable(self.texture.target)
@@ -174,11 +168,8 @@ class AO(object):
         glDisable(self.texture.target)
 
 
-def read_xnb(filename, expected_type=None, type_reader_manager=None):
-    xnb_content = XNBReader.load(filename=filename, type_reader_manager=type_reader_manager).content
-    if expected_type is not None and not isinstance(xnb_content, expected_type):
-        raise ReaderError("Unexpected XNB type: {} != {}".format(type(xnb_content).__name__, expected_type.__name__))
-    return xnb_content
+def read_xnb(filename, expected_type=None):
+    return XNBReader.load(filename=filename, expected_type=expected_type).content
 
 
 def main():

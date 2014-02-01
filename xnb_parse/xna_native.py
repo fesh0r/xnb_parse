@@ -1,4 +1,3 @@
-# coding=utf-8
 """
 wrapper for native XNA functions
 Requires win32

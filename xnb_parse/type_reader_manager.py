@@ -1,4 +1,3 @@
-# coding=utf-8
 """
 load and manage type readers
 """
