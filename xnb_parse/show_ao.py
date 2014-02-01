@@ -31,7 +31,6 @@ class AOWindow(pyglet.window.Window):  # pylint: disable-msg=W0223
     texturing = True
 
     def __init__(self, filename, width=1000, height=750, config=None):  # pylint: disable-msg=W0231
-        #noinspection PyCallByClass,PyTypeChecker
         pyglet.window.Window.__init__(self, width=width, height=height, resizable=True, config=config)
         self.gl_setup()
         self.art_object = AO(filename)
@@ -94,7 +93,6 @@ class AOWindow(pyglet.window.Window):  # pylint: disable-msg=W0223
         glDisable(GL_CULL_FACE)
         glDisable(GL_LIGHTING)
 
-    #noinspection PyUnusedLocal
     def on_key_press(self, symbol, modifiers):
         if symbol == pyglet.window.key.W:
             self.wireframe = not self.wireframe
@@ -133,7 +131,6 @@ class AOWindow(pyglet.window.Window):  # pylint: disable-msg=W0223
 
 
 class AO(object):
-    #noinspection PyUnresolvedReferences
     def __init__(self, ao_filename):
         type_reader_manager = TypeReaderManager()
         ao_filename = os.path.normpath(ao_filename)
@@ -178,9 +175,7 @@ class AO(object):
 
 
 def read_xnb(filename, expected_type=None, type_reader_manager=None):
-    with open(filename, 'rb') as handle:
-        data = handle.read()
-    xnb_content = XNBReader.load(data, type_reader_manager).content
+    xnb_content = XNBReader.load(filename=filename, type_reader_manager=type_reader_manager).content
     if expected_type is not None and not isinstance(xnb_content, expected_type):
         raise ReaderError("Unexpected XNB type: {} != {}".format(type(xnb_content).__name__, expected_type.__name__))
     return xnb_content

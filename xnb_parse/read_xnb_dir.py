@@ -28,11 +28,8 @@ def read_xnb_dir(in_dir, out_dir=None, type_reader_manager=None):
             if out_dir is not None:
                 out_file = os.path.normpath(os.path.join(out_dir, short_name).replace('.xnb', ''))
             print(in_file)
-            with open(in_file, 'rb') as in_handle:
-                in_data = in_handle.read()
             try:
-                xnb = XNBReader.load(in_data, type_reader_manager, parse=False)
-                xnb.parse()
+                xnb = XNBReader.load(filename=in_file, type_reader_manager=type_reader_manager)
                 if out_file is not None:
                     xnb.export(out_file)
             except ReaderError as ex:

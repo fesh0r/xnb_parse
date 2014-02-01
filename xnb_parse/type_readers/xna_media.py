@@ -17,9 +17,9 @@ class SoundEffectReader(BaseTypeReader, TypeReaderPlugin):
 
     def read(self):
         format_size = self.stream.read_int32()
-        wave_format = self.stream.read_bytes(format_size)
+        wave_format = self.stream.read(format_size)
         data_size = self.stream.read_int32()
-        wave_data = self.stream.read_bytes(data_size)
+        wave_data = self.stream.read(data_size)
         loop_start = self.stream.read_int32()
         loop_length = self.stream.read_int32()
         duration = self.stream.read_int32()

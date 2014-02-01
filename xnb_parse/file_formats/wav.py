@@ -8,7 +8,7 @@ from __future__ import print_function
 from uuid import UUID
 
 from xnb_parse.type_reader import ReaderError
-from xnb_parse.binstream import BinaryWriter, BinaryReader
+from xnb_parse.binstream import BinaryStream
 
 
 WAVE_FORMAT_WMAUDIO2 = 0x161
@@ -40,7 +40,7 @@ class PyWavWriter(object):
         self.seek_raw = seek
         self.needs_swap = needs_swap
 
-        h_s = BinaryReader(self.header_raw, needs_swap)
+        h_s = BinaryStream(data=self.header_raw, big_endian=needs_swap)
         waveformatex_size = h_s.calc_size(self._waveformatex)
         (self.h_format_tag, self.h_channels, self.h_samples_per_sec, self.h_avg_bytes_per_sec, self.h_block_align,
          self.h_bits_per_sample) = h_s.unpack(self._waveformatex)
@@ -70,12 +70,11 @@ class PyWavWriter(object):
                 header_size += waveformat_extensible_size
                 self.he_remainder = None
                 if self.h_size > waveformat_extensible_size:
-                    self.he_remainder = h_s.read_bytes(self.h_size - waveformat_extensible_size)
+                    self.he_remainder = h_s.read(self.h_size - waveformat_extensible_size)
                     header_size += self.h_size - waveformat_extensible_size
-                    raise ReaderError("Extra bytes in WAVEFORMATEXTENSIBLE: {}".format(h_s.remaining))
-            self.h_remainder = None
-            if h_s.remaining():
-                self.h_remainder = h_s.remainder()
+                    raise ReaderError("Extra bytes in WAVEFORMATEXTENSIBLE: {}".format(len(self.he_remainder)))
+            self.h_remainder = h_s.read()
+            if len(self.h_remainder):
                 header_size += len(self.h_remainder)
                 raise ReaderError("Trailing bytes in header: {}".format(len(self.h_remainder)))
         if header_size != len(self.header_raw):
@@ -105,7 +104,7 @@ class PyWavWriter(object):
         print(out_str)
 
     def write(self, filename):
-        h_s = BinaryWriter()
+        h_s = BinaryStream()
         h_s.pack(self._waveformatex, self.h_format_tag, self.h_channels, self.h_samples_per_sec,
                  self.h_avg_bytes_per_sec, self.h_block_align, self.h_bits_per_sample)
         if self.h_size is not None:
@@ -123,10 +122,10 @@ class PyWavWriter(object):
                 h_s.pack(self._waveformat_extensible, self.he_valid_bits_per_sample, self.he_channel_mask,
                          self.he_subformat.bytes_le)
                 if self.he_remainder:
-                    h_s.write_bytes(self.he_remainder)
+                    h_s.write(self.he_remainder)
             if self.h_remainder:
-                h_s.write_bytes(self.h_remainder)
-        header_raw = h_s.serial()
+                h_s.write(self.h_remainder)
+        header_raw = h_s.getvalue()
         if self.dpds_raw:
             dpds_size = len(self.dpds_raw)
         else:
@@ -135,7 +134,7 @@ class PyWavWriter(object):
             seek_size = len(self.seek_raw)
         else:
             seek_size = None
-        o_s = BinaryWriter()
+        o_s = BinaryStream()
         if self.h_format_tag == WAVE_FORMAT_WMAUDIO2 or self.h_format_tag == WAVE_FORMAT_WMAUDIO3:
             riff_type = b'XWMA'
         else:
@@ -147,15 +146,13 @@ class PyWavWriter(object):
         if self.seek_raw:
             self.write_chunk(o_s, b'seek', self.seek_raw)
         self.write_chunk(o_s, b'data', self.data_raw)
-        wav_data = o_s.serial()
         if self.h_format_tag == WAVE_FORMAT_XMA2:
             full_filename = filename + '.xma'
         elif self.h_format_tag == WAVE_FORMAT_WMAUDIO2 or self.h_format_tag == WAVE_FORMAT_WMAUDIO2:
             full_filename = filename + '.xwma'
         else:
             full_filename = filename + '.wav'
-        with open(full_filename, 'wb') as out_file:
-            out_file.write(wav_data)
+        o_s.write_file(full_filename)
 
     @staticmethod
     def write_header(o_s, riff_type, header_size, data_size, dpds_size=None, seek_size=None):
@@ -164,15 +161,15 @@ class PyWavWriter(object):
             full_size += 8 + dpds_size
         if seek_size:
             full_size += 8 + seek_size
-        o_s.write_bytes(b'RIFF')
+        o_s.write(b'RIFF')
         o_s.write_uint32(full_size)
-        o_s.write_bytes(riff_type)
+        o_s.write(riff_type)
 
     @staticmethod
     def write_chunk(o_s, name, data):
-        o_s.write_bytes(name)
+        o_s.write(name)
         o_s.write_uint32(len(data))
-        o_s.write_bytes(data)
+        o_s.write(data)
 
 
 def write_wav(filename, header, data, needs_swap):
