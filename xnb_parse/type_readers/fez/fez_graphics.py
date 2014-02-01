@@ -7,7 +7,7 @@ from __future__ import print_function
 from xnb_parse.type_reader import BaseTypeReader, ValueTypeReader, GenericTypeReader, generic_reader_type
 from xnb_parse.type_reader_manager import TypeReaderPlugin
 from xnb_parse.type_readers.xna_system import ListReader, ArrayReader, TimeSpanReader, ReflectiveReader
-from xnb_parse.type_readers.xna_math import ColorReader, MatrixReader
+from xnb_parse.type_readers.xna_math import MatrixReader
 from xnb_parse.type_readers.xna_graphics import PrimitiveTypeReader
 from xnb_parse.type_readers.xna_primitive import StringReader, UInt16Reader
 from xnb_parse.type_readers.fez.fez_basic import NpcActionReader, ActorTypeReader, SetReader, FaceOrientationReader
@@ -87,5 +87,7 @@ class FrameReader(BaseTypeReader, TypeReaderPlugin):
 
     def read(self):
         duration = self.stream.read_object(TimeSpanReader)
-        data = self.stream.read_object(ArrayReader, [ColorReader])
+        _ = self.stream.read_7bit_encoded_int()
+        elements = self.stream.read_uint32()
+        data = self.stream.read(elements * 4)
         return Frame(duration, data)

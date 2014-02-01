@@ -4,7 +4,6 @@ FEZ graphics types
 
 from __future__ import print_function
 
-from xnb_parse.binstream import BinaryStream
 from xnb_parse.xnb_reader import VERSION_31
 from xnb_parse.file_formats.xml_utils import E
 from xnb_parse.xna_types.xna_graphics import Texture2D, FORMAT_COLOR, get_surface_format
@@ -140,10 +139,7 @@ class AnimatedTexture(object):
 class Frame(object):
     def __init__(self, duration, data):
         self.duration = duration
-        raw_stream = BinaryStream()
-        for col in data:
-            raw_stream.write_uint32(col.to_packed())
-        self.data = raw_stream.getvalue()
+        self.data = data
 
     def __str__(self):
         return "Frame d:{} s:{}".format(self.duration, len(self.data))

@@ -95,7 +95,7 @@ def generic_reader_name(main_type, args=None):
     try:
         return main_type.generic_reader_name + '[' + ','.join(full_args) + ']'
     except AttributeError:
-        raise ReaderError("Not generic type: '{}'".format(main_type))
+        raise NotGenericError("Not generic type: '{}'".format(main_type))
 
 
 def generic_reader_type(main_type, args=None):

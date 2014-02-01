@@ -38,6 +38,9 @@ def _name_unescape(name):
 ArraySpec = namedtuple('ArraySpec', ['dimensions', 'bound'])  # pylint: disable-msg=C0103
 
 
+_CACHED_TYPES = {}
+
+
 class TypeSpec(object):
     def __init__(self, complete_name):
         self.complete_name = complete_name
@@ -88,9 +91,12 @@ class TypeSpec(object):
     def parse(type_name):
         if not type_name:
             raise TypeSpecError("type_name empty")
+        if type_name in _CACHED_TYPES:
+            return _CACHED_TYPES[type_name]
         res, pos = TypeSpec._parse(type_name)
         if pos < len(type_name):
             raise TypeSpecError("Could not parse the whole type name: {} < {}".format(pos, len(type_name)))
+        _CACHED_TYPES[type_name] = res
         return res
 
     def add_name(self, type_name):

@@ -9,7 +9,7 @@ import sys
 from io import BytesIO, SEEK_END
 
 
-_TYPE_FMT = ['Q', 'q', 'I', 'i', 'H', 'h', 'B', 'b', 'c', 'f', 'd', '?']
+_TYPE_FMT = ['Q', 'q', 'I', 'i', 'H', 'h', 'B', 'b', 'f', 'd', '?']
 
 
 # pylint: disable-msg=W0201
@@ -53,11 +53,9 @@ class BinaryStream(BytesIO):
             val = self._types['B'].unpack(self.read(1))[0]
             value |= (val & 0x7F) << shift
             if val & 128 == 0:
-                break
+                return value
             shift += 7
-        if shift >= 32:
-            raise ValueError("Shift out of range")
-        return value
+        raise ValueError("Shift out of range")
 
     def write_7bit_encoded_int(self, value):
         temp = value
@@ -126,12 +124,6 @@ class BinaryStream(BytesIO):
 
     def write_sbyte(self, value):
         return self.write(self._types['b'].pack(value))
-
-    def read_cbyte(self):
-        return self._types['c'].unpack(self.read(1))[0]
-
-    def write_cbyte(self, value):
-        return self.write(self._types['c'].pack(value))
 
     def read_int16(self):
         return self._types['h'].unpack(self.read(2))[0]
