@@ -16,8 +16,7 @@ class XNAList(list):
 
     def xml(self, parent=None, xml_tag='List', xml_entry='Entry', attrib=None):
         if sys.version < '3':
-            #noinspection PyUnresolvedReferences
-            conv = unicode  # pylint: disable-msg=E0602
+            conv = unicode
         else:
             conv = str
         if parent is None:
@@ -41,8 +40,7 @@ class XNADict(OrderedDict):
 
     def xml(self, parent=None, xml_tag='Dict', xml_entry='Entry', attrib=None):
         if sys.version < '3':
-            #noinspection PyUnresolvedReferences
-            conv = unicode  # pylint: disable-msg=E0602
+            conv = unicode
         else:
             conv = str
         if parent is None:

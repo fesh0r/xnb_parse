@@ -223,7 +223,7 @@ class TrileEmplacementReader(ValueTypeReader, TypeReaderPlugin):
     reader_name = 'FezEngine.Readers.TrileEmplacementReader'
 
     def read(self):
-        return TrileEmplacement._make(self.stream.unpack('3i'))  # pylint: disable-msg=W0212,E1101
+        return TrileEmplacement._make(self.stream.unpack('3i'))
 
 
 class TrileInstanceReader(BaseTypeReader, TypeReaderPlugin):
@@ -232,7 +232,7 @@ class TrileInstanceReader(BaseTypeReader, TypeReaderPlugin):
 
     def read(self):
         values = self.stream.unpack('3f i B ?')
-        position = Vector3._make(values[0:3])  # pylint: disable-msg=W0212,E1101
+        position = Vector3._make(values[0:3])
         trile_id = values[3]
         orientation = values[4]
         actor_settings = None
@@ -250,9 +250,9 @@ class ArtObjectInstanceReader(BaseTypeReader, TypeReaderPlugin):
     def read(self):
         name = self.stream.read_string()
         values = self.stream.unpack('3f 4f 3f')
-        position = Vector3._make(values[0:3])  # pylint: disable-msg=W0212,E1101
-        rotation = Quaternion._make(values[3:7])  # pylint: disable-msg=W0212,E1101
-        scale = Vector3._make(values[7:10])  # pylint: disable-msg=W0212,E1101
+        position = Vector3._make(values[0:3])
+        rotation = Quaternion._make(values[3:7])
+        scale = Vector3._make(values[7:10])
         actor_settings = self.stream.read_object(ArtObjectActorSettingsReader)
         return ArtObjectInstance(name, position, rotation, scale, actor_settings)
 

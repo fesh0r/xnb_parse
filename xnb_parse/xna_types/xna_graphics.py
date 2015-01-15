@@ -126,7 +126,6 @@ def get_surface_format(xna_version, surface_format):
         raise ReaderError("Invalid surface format for V{}: {}".format(xna_version, surface_format))
 
 
-# noinspection PyArgumentList
 class Texture2D(object):
     def __init__(self, surface_format, width, height, mip_levels, needs_swap=False):
         self.surface_format = surface_format

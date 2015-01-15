@@ -34,7 +34,6 @@ class PyWavWriter(object):
     _waveformat_xma2 = 'H I I I I I I I B B H'
     _waveformat_extensible = 'H I 16s'
 
-    #noinspection PyUnusedLocal
     def __init__(self, header, data, dpds=None, seek=None, needs_swap=False):
         self.header_raw = header
         self.data_raw = data

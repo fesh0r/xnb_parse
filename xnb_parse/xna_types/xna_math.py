@@ -9,11 +9,10 @@ from collections import namedtuple
 from xnb_parse.file_formats.xml_utils import ET
 
 
-_Color = namedtuple('Color', ['r', 'g', 'b', 'a'])  # pylint: disable-msg=C0103
+_Color = namedtuple('Color', ['r', 'g', 'b', 'a'])
 
 
-class Color(_Color):  # pylint: disable-msg=W0232
-    # pylint: disable-msg=E1101,E1001
+class Color(_Color):
     __slots__ = ()
 
     def to_packed(self):
@@ -51,11 +50,10 @@ class Color(_Color):  # pylint: disable-msg=W0232
         return root
 
 
-_Rectangle = namedtuple('Rectangle', ['x', 'y', 'w', 'h'])  # pylint: disable-msg=C0103
+_Rectangle = namedtuple('Rectangle', ['x', 'y', 'w', 'h'])
 
 
-class Rectangle(_Rectangle):  # pylint: disable-msg=W0232
-    # pylint: disable-msg=E1101,E1001
+class Rectangle(_Rectangle):
     __slots__ = ()
 
     def xml(self, parent):
@@ -67,11 +65,10 @@ class Rectangle(_Rectangle):  # pylint: disable-msg=W0232
         return root
 
 
-_Quarternion = namedtuple('Quarternion', ['x', 'y', 'z', 'w'])  # pylint: disable-msg=C0103
+_Quarternion = namedtuple('Quarternion', ['x', 'y', 'z', 'w'])
 
 
-class Quaternion(_Quarternion):  # pylint: disable-msg=W0232
-    # pylint: disable-msg=E1101,E1001
+class Quaternion(_Quarternion):
     __slots__ = ()
 
     def xml(self, parent):
@@ -83,11 +80,10 @@ class Quaternion(_Quarternion):  # pylint: disable-msg=W0232
         return root
 
 
-_Vector2 = namedtuple('Vector2', ['x', 'y'])  # pylint: disable-msg=C0103
+_Vector2 = namedtuple('Vector2', ['x', 'y'])
 
 
-class Vector2(_Vector2):  # pylint: disable-msg=W0232
-    # pylint: disable-msg=E1101,E1001
+class Vector2(_Vector2):
     __slots__ = ()
 
     def xml(self, parent):
@@ -97,11 +93,10 @@ class Vector2(_Vector2):  # pylint: disable-msg=W0232
         return root
 
 
-_Vector3 = namedtuple('Vector3', ['x', 'y', 'z'])  # pylint: disable-msg=C0103
+_Vector3 = namedtuple('Vector3', ['x', 'y', 'z'])
 
 
-class Vector3(_Vector3):  # pylint: disable-msg=W0232
-    # pylint: disable-msg=E1101,E1001
+class Vector3(_Vector3):
     __slots__ = ()
 
     def xml(self, parent):
@@ -112,11 +107,10 @@ class Vector3(_Vector3):  # pylint: disable-msg=W0232
         return root
 
 
-_Vector4 = namedtuple('Vector4', ['x', 'y', 'z', 'w'])  # pylint: disable-msg=C0103
+_Vector4 = namedtuple('Vector4', ['x', 'y', 'z', 'w'])
 
 
-class Vector4(_Vector4):  # pylint: disable-msg=W0232
-    # pylint: disable-msg=E1101,E1001
+class Vector4(_Vector4):
     __slots__ = ()
 
     def xml(self, parent):
@@ -128,11 +122,10 @@ class Vector4(_Vector4):  # pylint: disable-msg=W0232
         return root
 
 
-_Point = namedtuple('Point', ['x', 'y'])  # pylint: disable-msg=C0103
+_Point = namedtuple('Point', ['x', 'y'])
 
 
-class Point(_Point):  # pylint: disable-msg=W0232
-    # pylint: disable-msg=E1101,E1001
+class Point(_Point):
     __slots__ = ()
 
     def xml(self, parent):
@@ -142,11 +135,10 @@ class Point(_Point):  # pylint: disable-msg=W0232
         return root
 
 
-_Plane = namedtuple('Plane', ['normal', 'd'])  # pylint: disable-msg=C0103
+_Plane = namedtuple('Plane', ['normal', 'd'])
 
 
-class Plane(_Plane):  # pylint: disable-msg=W0232
-    # pylint: disable-msg=E1101,E1001
+class Plane(_Plane):
     __slots__ = ()
 
     def xml(self, parent):
@@ -156,11 +148,10 @@ class Plane(_Plane):  # pylint: disable-msg=W0232
         return root
 
 
-_BoundingBox = namedtuple('BoundingBox', ['min', 'max'])  # pylint: disable-msg=C0103
+_BoundingBox = namedtuple('BoundingBox', ['min', 'max'])
 
 
-class BoundingBox(_BoundingBox):  # pylint: disable-msg=W0232
-    # pylint: disable-msg=E1101,E1001
+class BoundingBox(_BoundingBox):
     __slots__ = ()
 
     def xml(self, parent):
@@ -170,11 +161,10 @@ class BoundingBox(_BoundingBox):  # pylint: disable-msg=W0232
         return root
 
 
-_BoundingSphere = namedtuple('BoundingSphere', ['center', 'radius'])  # pylint: disable-msg=C0103
+_BoundingSphere = namedtuple('BoundingSphere', ['center', 'radius'])
 
 
-class BoundingSphere(_BoundingSphere):  # pylint: disable-msg=W0232
-    # pylint: disable-msg=E1101,E1001
+class BoundingSphere(_BoundingSphere):
     __slots__ = ()
 
     def xml(self, parent):
@@ -184,11 +174,10 @@ class BoundingSphere(_BoundingSphere):  # pylint: disable-msg=W0232
         return root
 
 
-_Ray = namedtuple('Ray', ['pos', 'dir'])  # pylint: disable-msg=C0103
+_Ray = namedtuple('Ray', ['pos', 'dir'])
 
 
-class Ray(_Ray):  # pylint: disable-msg=W0232
-    # pylint: disable-msg=E1101,E1001
+class Ray(_Ray):
     __slots__ = ()
 
     def xml(self, parent):
@@ -214,11 +203,10 @@ class Matrix(object):
         return root
 
 
-_BoundingFrustum = namedtuple('BoundingFrustum', ['v'])  # pylint: disable-msg=C0103
+_BoundingFrustum = namedtuple('BoundingFrustum', ['v'])
 
 
-class BoundingFrustum(_BoundingFrustum):  # pylint: disable-msg=W0232
-    # pylint: disable-msg=E1101,E1001
+class BoundingFrustum(_BoundingFrustum):
     __slots__ = ()
 
     def xml(self, parent):

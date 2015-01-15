@@ -6,7 +6,7 @@ from __future__ import print_function
 
 import sys
 import pyglet
-from pyglet.gl import *  # pylint: disable-msg=W0614,W0401
+from pyglet.gl import *
 
 from xnb_parse.fez_content_manager import FezContentManager
 from xnb_parse.trackball_camera import TrackballCamera, norm1, vec_args
@@ -19,14 +19,13 @@ NORMALS = [Vector3(-1.0, 0.0, 0.0), Vector3(0.0, -1.0, 0.0), Vector3(0.0, 0.0, -
            Vector3(1.0, 0.0, 0.0), Vector3(0.0, 1.0, 0.0), Vector3(0.0, 0.0, 1.0)]
 
 
-#noinspection PyMethodOverriding
-class AOWindow(pyglet.window.Window):  # pylint: disable-msg=W0223
+class AOWindow(pyglet.window.Window):
     wireframe = False
     lighting = True
     culling = False
     texturing = True
 
-    def __init__(self, content_manager, asset_name, width=1000, height=750, config=None):  # pylint: disable-msg=W0231
+    def __init__(self, content_manager, asset_name, width=1000, height=750, config=None):
         pyglet.window.Window.__init__(self, width=width, height=height, resizable=True, config=config)
         self.gl_setup()
         self.art_object = AO(content_manager, asset_name)
@@ -65,7 +64,7 @@ class AOWindow(pyglet.window.Window):  # pylint: disable-msg=W0223
         glMatrixMode(GL_MODELVIEW)
         return pyglet.event.EVENT_HANDLED
 
-    def on_draw(self):  # pylint: disable-msg=W0221
+    def on_draw(self):
         self.clear()
 
         if self.culling:
@@ -101,8 +100,7 @@ class AOWindow(pyglet.window.Window):  # pylint: disable-msg=W0223
         elif symbol == pyglet.window.key.ESCAPE:
             self.dispatch_event('on_close')
 
-    #noinspection PyUnresolvedReferences,PyUnusedLocal
-    def on_mouse_press(self, x, y, button, modifiers):  # pylint: disable-msg=W0221,C0103
+    def on_mouse_press(self, x, y, button, modifiers):
         if button == pyglet.window.mouse.LEFT:
             self.tbcam.mouse_roll(
                 norm1(x, self.width),
@@ -114,8 +112,7 @@ class AOWindow(pyglet.window.Window):  # pylint: disable-msg=W0223
                 norm1(y, self.height),
                 False)
 
-    #noinspection PyUnresolvedReferences,PyUnusedLocal
-    def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):  # pylint: disable-msg=W0221,C0103
+    def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
         if buttons & pyglet.window.mouse.LEFT:
             self.tbcam.mouse_roll(
                 norm1(x, self.width),

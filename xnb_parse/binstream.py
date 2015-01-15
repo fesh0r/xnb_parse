@@ -12,7 +12,6 @@ from io import BytesIO, SEEK_END
 _TYPE_FMT = ['Q', 'q', 'I', 'i', 'H', 'h', 'B', 'b', 'f', 'd', '?']
 
 
-# pylint: disable-msg=W0201
 class BinaryStream(BytesIO):
     def __init__(self, data=None, filename=None, big_endian=False):
         if filename is not None:
@@ -79,8 +78,7 @@ class BinaryStream(BytesIO):
             raw_value |= self._types['B'].unpack(self.read(1))[0] & 0x3f
             byte_count -= 1
         if sys.version < '3':
-            #noinspection PyUnresolvedReferences
-            return unichr(raw_value)  # pylint: disable-msg=E0602
+            return unichr(raw_value)
         else:
             return chr(raw_value)
 

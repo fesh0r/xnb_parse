@@ -35,7 +35,7 @@ def _name_unescape(name):
     return _UNESCAPE_RE.sub(r'\1', name)
 
 
-ArraySpec = namedtuple('ArraySpec', ['dimensions', 'bound'])  # pylint: disable-msg=C0103
+ArraySpec = namedtuple('ArraySpec', ['dimensions', 'bound'])
 
 _CACHED_TYPES = {}
 

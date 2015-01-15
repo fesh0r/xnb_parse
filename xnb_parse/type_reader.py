@@ -103,7 +103,7 @@ class EnumTypeReader(ValueTypeReader):
         else:
             enum_type = self.enum_type
         if callable(enum_type):
-            return enum_type(value)  # pylint: disable-msg=E1102
+            return enum_type(value)
         else:
             return value
 

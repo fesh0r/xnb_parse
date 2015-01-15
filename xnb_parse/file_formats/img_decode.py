@@ -52,8 +52,7 @@ def decode32(data, width, height, conv, alpha='yes'):
         yield row
 
 
-#noinspection PyUnusedLocal
-def decode_a(data, width, height, needs_swap, alpha='yes'):  # pylint: disable-msg=W0613
+def decode_a(data, width, height, needs_swap, alpha='yes'):
     return decode8(data, width, height, 'a_xxxa')
 
 

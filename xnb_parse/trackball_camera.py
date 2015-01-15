@@ -85,7 +85,7 @@ __version__ = "1.0"
 
 import math
 
-from pyglet.gl import *  # pylint: disable-msg=W0614,W0401
+from pyglet.gl import *
 
 
 # a little vector library that is misused in odd ways below.
@@ -206,14 +206,12 @@ def project_z(rad, x_c, y_c):
 
 def vec_args(*args):
     """GLfloat vector of args"""
-    #noinspection PyCallingNonCallable,PyTypeChecker
     return (GLfloat * len(args))(*args)
 
 
 def vec_mat(mat):
     """GLfloat vector of matrix"""
-    #noinspection PyCallingNonCallable,PyTypeChecker
-    return (GLfloat * len(mat))(*mat)  # pylint: disable-msg=W0142
+    return (GLfloat * len(mat))(*mat)
 
 
 def norm1(val, max_val):

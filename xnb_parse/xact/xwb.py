@@ -79,12 +79,10 @@ ADPCM_COEF = [
     (392, -232)
 ]
 
-# pylint: disable-msg=C0103
 XWBRegion = namedtuple('XWBRegion', ['offset', 'length'])
 XWBEntry = namedtuple('XWBEntry', ['flags_duration', 'format', 'play_offset', 'play_length', 'loop_start',
                                    'loop_total'])
 Entry = namedtuple('Entry', ['name', 'header', 'data', 'dpds', 'seek'])
-# pylint: enable-msg=C0103
 
 
 _FILETIME_NULL = datetime.datetime(1601, 1, 1, 0, 0, 0)
@@ -107,8 +105,6 @@ _XMA_WAVEFORMAT = Struct('<H I I I I I I I B B H')
 
 
 class XWB(object):
-    #noinspection PyUnusedLocal
-    # pylint: disable-msg=W0612
     def __init__(self, data=None, filename=None, audio_engine=None):
         self.audio_engine = audio_engine
 
@@ -128,7 +124,7 @@ class XWB(object):
         # switch stream to correct endianess
         stream.set_endian(big_endian)
         (h_sig, self.h_version, self.h_header_version) = stream.unpack(_WB_HEADER)
-        regions = {k: XWBRegion._make(stream.unpack(_WB_REGION)) for k in _REGIONS}  # pylint: disable-msg=W0212
+        regions = {k: XWBRegion._make(stream.unpack(_WB_REGION)) for k in _REGIONS}
 
         # check if we have a valid BANKDATA region and parse it
         bankdata_size = stream.calc_size(_WB_DATA)
@@ -155,7 +151,7 @@ class XWB(object):
             raise ReaderError("Invalid ENTRYMETADATA size: {} != {}".format(regions['ENTRYMETADATA'].length,
                                                                             bankentry_size * h_entry_count))
         stream.seek(regions['ENTRYMETADATA'].offset)
-        entry_metadata = [XWBEntry._make(stream.unpack(_WB_ENTRY))  # pylint: disable-msg=W0212,E1101
+        entry_metadata = [XWBEntry._make(stream.unpack(_WB_ENTRY))
                           for _ in range(h_entry_count)]
 
         # read ENTRYNAMES if present

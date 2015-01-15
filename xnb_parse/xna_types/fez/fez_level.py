@@ -399,11 +399,10 @@ class Volume(object):
         return root
 
 
-_TrileEmplacement = namedtuple('TrileEmplacement', ['x', 'y', 'z'])  # pylint: disable-msg=C0103
+_TrileEmplacement = namedtuple('TrileEmplacement', ['x', 'y', 'z'])
 
 
-class TrileEmplacement(_TrileEmplacement):  # pylint: disable-msg=W0232
-    # pylint: disable-msg=E1101,E1001
+class TrileEmplacement(_TrileEmplacement):
     __slots__ = ()
 
     def xml(self, parent):

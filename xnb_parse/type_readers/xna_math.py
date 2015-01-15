@@ -15,7 +15,7 @@ class Vector2Reader(ValueTypeReader, TypeReaderPlugin):
     reader_name = 'Microsoft.Xna.Framework.Content.Vector2Reader'
 
     def read(self):
-        return Vector2._make(self.stream.unpack('2f'))  # pylint: disable-msg=W0212,E1101
+        return Vector2._make(self.stream.unpack('2f'))
 
 
 class Vector3Reader(ValueTypeReader, TypeReaderPlugin):
@@ -23,7 +23,7 @@ class Vector3Reader(ValueTypeReader, TypeReaderPlugin):
     reader_name = 'Microsoft.Xna.Framework.Content.Vector3Reader'
 
     def read(self):
-        return Vector3._make(self.stream.unpack('3f'))  # pylint: disable-msg=W0212,E1101
+        return Vector3._make(self.stream.unpack('3f'))
 
 
 class Vector4Reader(ValueTypeReader, TypeReaderPlugin):
@@ -31,7 +31,7 @@ class Vector4Reader(ValueTypeReader, TypeReaderPlugin):
     reader_name = 'Microsoft.Xna.Framework.Content.Vector4Reader'
 
     def read(self):
-        return Vector4._make(self.stream.unpack('4f'))  # pylint: disable-msg=W0212,E1101
+        return Vector4._make(self.stream.unpack('4f'))
 
 
 class MatrixReader(ValueTypeReader, TypeReaderPlugin):
@@ -47,7 +47,7 @@ class QuaternionReader(ValueTypeReader, TypeReaderPlugin):
     reader_name = 'Microsoft.Xna.Framework.Content.QuaternionReader'
 
     def read(self):
-        return Quaternion._make(self.stream.unpack('4f'))  # pylint: disable-msg=W0212,E1101
+        return Quaternion._make(self.stream.unpack('4f'))
 
 
 class ColorReader(ValueTypeReader, TypeReaderPlugin):
@@ -55,7 +55,7 @@ class ColorReader(ValueTypeReader, TypeReaderPlugin):
     reader_name = 'Microsoft.Xna.Framework.Content.ColorReader'
 
     def read(self):
-        return Color._make(self.stream.unpack('4B'))  # pylint: disable-msg=W0212,E1101
+        return Color._make(self.stream.unpack('4B'))
 
 
 class PlaneReader(ValueTypeReader, TypeReaderPlugin):
@@ -64,7 +64,7 @@ class PlaneReader(ValueTypeReader, TypeReaderPlugin):
 
     def read(self):
         values = self.stream.unpack('3f f')
-        plane_normal = Vector3._make(values[0:3])  # pylint: disable-msg=W0212,E1101
+        plane_normal = Vector3._make(values[0:3])
         plane_d = values[3]
         return Plane(plane_normal, plane_d)
 
@@ -74,7 +74,7 @@ class PointReader(ValueTypeReader, TypeReaderPlugin):
     reader_name = 'Microsoft.Xna.Framework.Content.PointReader'
 
     def read(self):
-        return Point._make(self.stream.unpack('2i'))  # pylint: disable-msg=W0212,E1101
+        return Point._make(self.stream.unpack('2i'))
 
 
 class RectangleReader(ValueTypeReader, TypeReaderPlugin):
@@ -82,7 +82,7 @@ class RectangleReader(ValueTypeReader, TypeReaderPlugin):
     reader_name = 'Microsoft.Xna.Framework.Content.RectangleReader'
 
     def read(self):
-        return Rectangle._make(self.stream.unpack('4i'))  # pylint: disable-msg=W0212,E1101
+        return Rectangle._make(self.stream.unpack('4i'))
 
 
 class BoundingBoxReader(ValueTypeReader, TypeReaderPlugin):
@@ -91,8 +91,8 @@ class BoundingBoxReader(ValueTypeReader, TypeReaderPlugin):
 
     def read(self):
         values = self.stream.unpack('3f 3f')
-        v_min = Vector3._make(values[0:3])  # pylint: disable-msg=W0212,E1101
-        v_max = Vector3._make(values[3:6])  # pylint: disable-msg=W0212,E1101
+        v_min = Vector3._make(values[0:3])
+        v_max = Vector3._make(values[3:6])
         return BoundingBox(v_min, v_max)
 
 
@@ -102,7 +102,7 @@ class BoundingSphereReader(ValueTypeReader, TypeReaderPlugin):
 
     def read(self):
         values = self.stream.unpack('3f f')
-        v_centre = Vector3._make(values[0:3])  # pylint: disable-msg=W0212,E1101
+        v_centre = Vector3._make(values[0:3])
         v_radius = values[3]
         return BoundingSphere(v_centre, v_radius)
 
@@ -112,7 +112,7 @@ class BoundingFrustumReader(BaseTypeReader, TypeReaderPlugin):
     reader_name = 'Microsoft.Xna.Framework.Content.BoundingFrustumReader'
 
     def read(self):
-        return BoundingFrustum._make(Matrix(XNAList(self.stream.unpack('16f'))))  # pylint: disable-msg=W0212,E1101
+        return BoundingFrustum._make(Matrix(XNAList(self.stream.unpack('16f'))))
 
 
 class RayReader(ValueTypeReader, TypeReaderPlugin):
@@ -121,8 +121,8 @@ class RayReader(ValueTypeReader, TypeReaderPlugin):
 
     def read(self):
         values = self.stream.unpack('3f 3f')
-        v_pos = Vector3._make(values[0:3])  # pylint: disable-msg=W0212,E1101
-        v_dir = Vector3._make(values[3:6])  # pylint: disable-msg=W0212,E1101
+        v_pos = Vector3._make(values[0:3])
+        v_dir = Vector3._make(values[3:6])
         return Ray(v_pos, v_dir)
 
 
