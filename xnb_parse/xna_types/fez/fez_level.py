@@ -604,14 +604,14 @@ class TrileFace(object):
 
 
 class NpcInstance(object):
-    def __init__(self, name, position, destination_offset, walk_speed, randomize_speech, say_first_speed_line_once,
+    def __init__(self, name, position, destination_offset, walk_speed, randomize_speech, say_first_speech_line_once,
                  avoids_gomez, actor_type, speech, actions):
         self.name = name
         self.position = position
         self.destination_offset = destination_offset
         self.walk_speed = walk_speed
         self.randomize_speech = randomize_speech
-        self.say_first_speed_line_once = say_first_speed_line_once
+        self.say_first_speech_line_once = say_first_speech_line_once
         self.avoids_gomez = avoids_gomez
         self.actor_type = actor_type
         self.speech = speech
@@ -624,8 +624,8 @@ class NpcInstance(object):
         root = ET.SubElement(parent, 'NpcInstance')
         root.set('name', self.name)
         root.set('walkSpeed', str(self.walk_speed))
-        root.set('randomizeSpeed', str(self.randomize_speech))
-        root.set('sayFirstSpeedLineOnce', str(self.say_first_speed_line_once))
+        root.set('randomizeSpeech', str(self.randomize_speech))
+        root.set('sayFirstSpeechLineOnce', str(self.say_first_speech_line_once))
         root.set('avoidsGomez', str(self.avoids_gomez))
         if self.position is not None:
             self.position.xml(ET.SubElement(root, 'Position'))

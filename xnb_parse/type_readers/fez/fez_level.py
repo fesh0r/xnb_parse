@@ -339,12 +339,12 @@ class NpcInstanceReader(BaseTypeReader, TypeReaderPlugin):
         destination_offset = self.stream.read_vector3()
         walk_speed = self.stream.read_single()
         randomize_speech = self.stream.read_boolean()
-        say_first_speed_line_once = self.stream.read_boolean()
+        say_first_speech_line_once = self.stream.read_boolean()
         avoids_gomez = self.stream.read_boolean()
         actor_type = self.stream.read_object(ActorTypeReader)
         speech = self.stream.read_object(ListReader, [SpeechLineReader])
         actions = self.stream.read_object(DictionaryReader, [NpcActionReader, NpcActionContentReader])
-        return NpcInstance(name, position, destination_offset, walk_speed, randomize_speech, say_first_speed_line_once,
+        return NpcInstance(name, position, destination_offset, walk_speed, randomize_speech, say_first_speech_line_once,
                            avoids_gomez, actor_type, speech, actions)
 
 
