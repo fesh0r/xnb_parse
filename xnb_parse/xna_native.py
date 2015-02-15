@@ -100,3 +100,7 @@ def decompress(in_buf, out_size):
             compressed_todo -= r_compressed_size
             decompressed_todo -= r_decompressed_size
     return s_out_buf.raw
+
+
+def main():
+    _find_native()
