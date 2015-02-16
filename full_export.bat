@@ -1,7 +1,7 @@
 @echo off
 
 if exist Content\Essentials.pak if exist Content\Other.pak goto content
-echo Essentials.pak and Other.pak not found in Content
+echo *** Essentials.pak and Other.pak not found in Content
 goto music
 
 :content
@@ -31,7 +31,7 @@ if errorlevel 1 goto error
 :music
 if exist Content\Music.pak goto music_pak
 if exist "Content\Music\XACT Music.xgs" if exist "Content\Music\Sound Bank.xsb" if exist "Content\Music\Sound Bank.xsb" goto music_xact
-echo Music.pak or Music folder not found in Content
+echo *** Music.pak or Music folder not found in Content
 goto end
 
 :music_pak
