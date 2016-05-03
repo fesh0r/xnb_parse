@@ -190,4 +190,4 @@ def main():
         AOWindow(content_manager=content_manager, asset_name=sys.argv[2], config=config)
         pyglet.app.run()
     else:
-        print('show_ao.py Content|out objectao')
+        print('show_ao.py Content|out objectao', file=sys.stderr)

@@ -41,4 +41,4 @@ def main():
         read_xact(in_xgs_file, in_xsb_file, in_xwb_file, out_dir)
         print('> Done in {:.2f} seconds'.format(time.time() - totaltime))
     else:
-        print('read_xact.py file.xgs file.xsb file.xwb [export_dir]')
+        print('read_xact.py file.xgs file.xsb file.xwb [export_dir]', file=sys.stderr)

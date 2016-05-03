@@ -20,7 +20,7 @@ def read_xnb_dir(content_dir, export_dir=None):
             if export_dir is not None:
                 content_manager.export(asset, asset_name, export_dir)
         except (ReaderError, KeyError) as ex:
-            print('FAILED: {}: {}'.format(type(ex).__name__, ex))
+            print('FAILED: {}: {}'.format(type(ex).__name__, ex), file=sys.stderr)
 
 
 def main():
@@ -33,4 +33,4 @@ def main():
         read_xnb_dir(content_dir, export_dir)
         print('> Done in {:.2f} seconds'.format(time.time() - totaltime))
     else:
-        print('read_xnb_dir.py content_dir [export_dir]')
+        print('read_xnb_dir.py content_dir [export_dir]', file=sys.stderr)

@@ -27,4 +27,4 @@ def main():
         unpack(os.path.normpath(sys.argv[1]), os.path.normpath(sys.argv[2]))
         print('> Done in {:.2f} seconds'.format(time.time() - totaltime))
     else:
-        print('fez_decomp.py Content out_dir')
+        print('fez_decomp.py Content out_dir', file=sys.stderr)

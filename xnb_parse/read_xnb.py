@@ -27,4 +27,4 @@ def main():
             read_xnb(filename)
         print('> Done in {:.2f} seconds'.format(time.time() - totaltime))
     else:
-        print('read_xnb.py file1.xnb ...')
+        print('read_xnb.py file1.xnb ...', file=sys.stderr)
