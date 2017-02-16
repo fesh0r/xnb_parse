@@ -21,7 +21,10 @@ class ContentManager(object):
         if not os.path.isdir(root_dir):
             raise ReaderError("Content root directory not found: '%s'" % root_dir)
         self.root_dir = root_dir
-        self._asset_dict = OrderedDict(self.find_assets())
+        self._asset_dict = OrderedDict()
+        for k, v in self.find_assets():
+            if k not in self._asset_dict:
+                self._asset_dict[k] = v
         self.assets = self._asset_dict.keys()
 
     def xnb(self, asset_name, expected_type=None, parse=True):
