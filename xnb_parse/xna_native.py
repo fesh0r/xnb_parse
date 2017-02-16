@@ -37,7 +37,7 @@ def _find_native():
             key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, 'SOFTWARE\\Microsoft\\XNA\\Framework\\' + ver)
             lib_path, _ = winreg.QueryValueEx(key, 'NativeLibraryPath')
             if lib_path:
-                lib_path = os.path.join(os.path.normpath(lib_path), _DLL_NAME)
+                lib_path = os.path.join(os.path.normpath(str(lib_path)), _DLL_NAME)
                 if os.path.isfile(lib_path):
                     native_path = lib_path
                     break
