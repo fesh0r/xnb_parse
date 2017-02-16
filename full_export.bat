@@ -9,13 +9,13 @@ echo Checking for XNA runtime
 call xna_native.bat 2>NUL
 if errorlevel 1 goto no_xna
 
-echo Decompressing Essentials.pak and Other.pak...
+echo Decompressing Essentials.pak, Other.pak and Updates.pak...
 call fez_decomp.bat Content out
 if errorlevel 1 goto error
 goto convert
 
 :no_xna
-echo Unpacking Essentials.pak and Other.pak...
+echo Unpacking Essentials.pak, Other.pak and Updates.pak...
 call fez_unpack.bat Content out_c
 if errorlevel 1 goto error
 

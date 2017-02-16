@@ -13,22 +13,21 @@ from xnb_parse.binstream import BinaryStream
 
 
 class FezContentManager(ContentManager):
-    content_pak_files = ['Essentials.pak', 'Other.pak']
+    content_pak_files = ['Essentials.pak', 'Updates.pak', 'Other.pak']
 
     def find_assets(self):
         for pak_file in self.content_pak_files:
             filename = os.path.join(self.root_dir, pak_file)
-            if not os.path.isfile(filename):
-                raise ReaderError("Content pak not found in content root: '{}'".format(filename))
-            stream = BinaryStream(filename=filename)
-            capacity = stream.read_int32()
-            for _ in range(capacity):
-                asset_name = stream.read_string()
-                asset_size = stream.read_int32()
-                asset_data = stream.read(asset_size)
-                asset_name = asset_name.replace('\\', '/')
-                asset_name = asset_name.lower()
-                yield asset_name, asset_data
+            if os.path.isfile(filename):
+                stream = BinaryStream(filename=filename)
+                capacity = stream.read_int32()
+                for _ in range(capacity):
+                    asset_name = stream.read_string()
+                    asset_size = stream.read_int32()
+                    asset_data = stream.read(asset_size)
+                    asset_name = asset_name.replace('\\', '/')
+                    asset_name = asset_name.lower()
+                    yield asset_name, asset_data
 
     def xnb(self, asset_name, expected_type=None, parse=True):
         asset_name = asset_name.replace('\\', '/')
