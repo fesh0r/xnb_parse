@@ -6,8 +6,8 @@ from __future__ import print_function
 
 import os
 
+from xnb_parse.identify import identify_buffer
 from xnb_parse.xna_content_manager import ContentManager
-from xnb_parse.type_reader import ReaderError
 from xnb_parse.xnb_reader import XNBReader
 from xnb_parse.binstream import BinaryStream
 
@@ -36,7 +36,8 @@ class FezContentManager(ContentManager):
 
     def save(self, asset_name, out_dir):
         asset_data = self._asset_dict[asset_name]
-        filename = os.path.join(out_dir, os.path.normpath(asset_name) + self.content_extension)
+        extension = identify_buffer(asset_data)
+        filename = os.path.join(out_dir, os.path.normpath(asset_name) + extension)
         dirname = os.path.dirname(filename)
         if not os.path.isdir(dirname):
             os.makedirs(dirname)
