@@ -22,7 +22,7 @@ def unpack(content_dir, out_dir):
             out_file = os.path.join(out_dir, os.path.normpath(asset_name))
             xnb.save(filename=out_file)
         except ReaderError as ex:
-            print('FAILED: {}: {}'.format(type(ex).__name__, ex), file=sys.stderr)
+            print('FAILED: \'{}\' {}: {}'.format(asset_name, type(ex).__name__, ex), file=sys.stderr)
 
 
 def main():
