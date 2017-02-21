@@ -22,7 +22,7 @@ class TypeReaderManager(object):
                 if class_.generic_reader_name in self.generic_type_readers:
                     raise ReaderError("Duplicate generic type reader name: '{}'".format(class_.generic_reader_name))
                 self.generic_type_readers[class_.generic_reader_name] = class_
-                if class_.generic_target_type in self.generic_type_readers:
+                if class_.generic_target_type in self.generic_type_readers_type:
                     raise ReaderError("Duplicate generic type reader type: '{}'".format(class_.generic_target_type))
                 self.generic_type_readers_type[class_.generic_target_type] = class_
             elif issubclass(class_, BaseTypeReader):

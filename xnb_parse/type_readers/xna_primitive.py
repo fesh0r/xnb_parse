@@ -116,4 +116,4 @@ class ObjectReader(BaseTypeReader, TypeReaderPlugin):
     reader_name = 'Microsoft.Xna.Framework.Content.ObjectReader'
 
     def read(self):
-        raise ReaderError("ObjectReader should never be invoked directly")
+        raise ReaderError('ObjectReader invoked for {}'.format(self.target_type))

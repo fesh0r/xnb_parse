@@ -20,7 +20,7 @@ def read_xnb_dir(content_dir, export_dir=None):
             if export_dir is not None:
                 content_manager.export(asset, asset_name, export_dir)
         except (ReaderError, KeyError) as ex:
-            print('FAILED: \'{}\' {}: {}'.format(asset_name, type(ex).__name__, ex), file=sys.stderr)
+            print("FAILED: '{}' {}: {}".format(asset_name, type(ex).__name__, ex), file=sys.stderr)
 
 
 def main():

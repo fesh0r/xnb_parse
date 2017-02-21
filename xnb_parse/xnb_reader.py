@@ -6,6 +6,8 @@ from __future__ import print_function
 
 import os
 
+import sys
+
 from xnb_parse.binstream import BinaryStream
 from xnb_parse.type_reader_manager import TypeReaderManager
 from xnb_parse.xna_native import decompress
@@ -94,7 +96,7 @@ class XNBReader(BinaryStream):
 
         remaining = self.read()
         if len(remaining):
-            raise ReaderError("remaining: {}".format(len(remaining)))
+            print("remaining bytes: {}".format(len(remaining)), file=sys.stderr)
         return self.content
 
     def get_type_reader(self, type_reader, version=None):
@@ -193,15 +195,24 @@ class XNBReader(BinaryStream):
             except AttributeError:
                 raise ReaderError("bad expected_type_reader: '{}'".format(expected_type_reader))
         if expected_type is not None:
-            if type_reader.target_type != expected_type:
-                raise ReaderError("Unexpected type: '{}' != '{}'".format(type_reader.target_type, expected_type))
+            if expected_type != 'System.Object':
+                if type_reader.target_type != expected_type:
+                    # check parent type readers
+                    for cls in type_reader.__class__.__mro__:
+                        if hasattr(cls, 'target_type'):
+                            if cls.target_type == expected_type:
+                                break
+                    else:
+                        raise ReaderError("Unexpected type: '{}' != '{}'".format(type_reader.target_type,
+                                                                                 expected_type))
         return type_reader.read()
 
-    def read_value_or_object(self, type_reader):
-        if type_reader.is_value_type:
+    def read_value_or_object(self, expected_type):
+        if expected_type.is_value_type:
+            type_reader = self.get_type_reader(expected_type)
             return type_reader.read()
         else:
-            return self.read_object(type_reader)
+            return self.read_object(expected_type=expected_type)
 
     def read_type_id(self):
         type_id = self.read_7bit_encoded_int()
